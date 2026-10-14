@@ -1070,8 +1070,14 @@ function fitFont(text, base, min, maxW, fam, maxH=0){
     if(maxH) s=Math.max(min,Math.min(s,Math.floor(maxH/per))); c.font=`${s}px ${fam}`; }
   return s;
 }
-// Canvas normally centres by advance width and alphabetic baseline. Use actual glyph bounds for
-// display-name plates, so ornate Devanagari characters sit exactly in the visual middle of the capsule.
+// Canvas normally centres by advance width and alphabetic baseline. These helpers use the
+// painted glyph box instead, so visual left/right and top/bottom are centred—not just font metrics.
+function visualCenterStart(text,cx,font){
+  c.save(); c.font=font; c.textAlign='left';
+  const m=c.measureText(String(text||'')),left=Number(m.actualBoundingBoxLeft)||0,right=Number(m.actualBoundingBoxRight)||m.width||0;
+  c.restore();
+  return cx+(left-right)/2;
+}
 function visualCenterPoint(text,cx,cy,font){
   c.save(); c.font=font; c.textAlign='left';
   const m=c.measureText(String(text||'')),left=Number(m.actualBoundingBoxLeft)||0,right=Number(m.actualBoundingBoxRight)||m.width||0;
@@ -1080,33 +1086,62 @@ function visualCenterPoint(text,cx,cy,font){
   c.restore();
   return {x:cx+(left-right)/2,y:cy+(asc-desc)/2};
 }
-// Measure the actual glyph box, not just nominal font pixels. This keeps every pill's
-// padding and baseline balanced across Hindi, English and mixed labels.
+// Measure every rendered line. A pill expands to the visible ink, including balanced horizontal
+// and vertical padding. Long campaign labels can deliberately occupy up to two readable lines.
 function measuredPillLabel(label,opt={},fallbackPadX=12,fallbackPadY=7){
   const fam=opt.fam||S.hiBody,maxW=opt.maxW||99999,padX=opt.padX??fallbackPadX,padY=opt.padY??fallbackPadY;
-  const innerW=Math.max(8,maxW-padX*2),fs=fitFont(label,opt.base||24,opt.min||LEGIBLE_TEXT_FLOOR,innerW,fam,opt.maxH||0);
+  const innerW=Math.max(8,maxW-padX*2),min=Math.max(Number(opt.min)||0,LEGIBLE_TEXT_FLOOR),maxLines=Math.max(1,Math.min(2,Number(opt.maxLines)||1));
+  let fs=Math.max(Number(opt.base)||24,min), lines=[];
+  const makeLines=px=>wrapLines(String(label||''),innerW,`${px}px ${fam}`);
+  lines=makeLines(fs);
+  while(fs>min&&lines.length>maxLines){ fs-=2; lines=makeLines(fs); }
+  let truncated=false;
+  if(lines.length>maxLines){
+    truncated=true;
+    const keep=lines.slice(0,maxLines);
+    keep[maxLines-1]=ellipsisLine(lines.slice(maxLines-1).join(' '),innerW,`${fs}px ${fam}`);
+    lines=keep; markTextSafety(opt.safetyLabel||'पिल टेक्स्ट');
+  }
+  // Empty input still receives a compact, valid pill geometry.
+  if(!lines.length) lines=[''];
+  let measured=0,asc=fs*.68,desc=fs*.18;
   c.font=`${fs}px ${fam}`;
-  const metrics=c.measureText(String(label||'')),measured=metrics.width;
-  if(measured>innerW+.5) markTextSafety(opt.safetyLabel||'पिल टेक्स्ट');
-  const asc=Math.max(fs*.68,metrics.actualBoundingBoxAscent||fs*.78),desc=Math.max(fs*.18,metrics.actualBoundingBoxDescent||fs*.22);
+  for(const line of lines){
+    const m=c.measureText(line||'अ');
+    measured=Math.max(measured,m.width||0);
+    asc=Math.max(asc,m.actualBoundingBoxAscent||fs*.78);
+    desc=Math.max(desc,m.actualBoundingBoxDescent||fs*.22);
+  }
+  const lineHeight=Math.max(asc+desc,Number(opt.lineHeight)||Math.ceil(fs*1.18));
+  const inkH=asc+desc+(lines.length-1)*lineHeight;
   const w=Math.min(maxW,Math.max(opt.minW||0,measured+padX*2));
-  const h=Math.max(opt.minH||0,asc+desc+padY*2);
-  return {fam,maxW,padX,padY,innerW,fs,measured,asc,desc,w,h,baseline:(asc-desc)/2};
+  const h=Math.max(opt.minH||0,inkH+padY*2);
+  // First alphabetic baseline for a group whose visible ink is vertically centred at cy.
+  const firstBaseline=-inkH/2+asc;
+  return {fam,maxW,padX,padY,innerW,fs,lines,truncated,measured,asc,desc,lineHeight,inkH,w,h,firstBaseline};
+}
+function drawCentredPillLines(q,cx,cy,ink,opt={}){
+  const font=`${q.fs}px ${q.fam}`,min=Math.max(Number(opt.min)||0,LEGIBLE_TEXT_FLOOR),usableW=Math.max(8,q.w-q.padX*2);
+  q.lines.forEach((line,i)=>{
+    const baseY=cy+q.firstBaseline+i*q.lineHeight;
+    // Use visible glyph bounds for each line, rather than its advance width.
+    txt(line,visualCenterStart(line,cx,font),baseY,font,ink,'left',usableW,min);
+  });
 }
 // Every label pill is measured from its own text first, so short and long labels both get balanced padding.
 function textPill(label,cx,cy,opt={}){
   const q=measuredPillLabel(label,opt,12,7),r=Math.min(q.h/2,opt.radius||q.h/2),fill=opt.fill||'#222',ink=readablePillInk(opt.text||'#fff',fill);
   c.save(); rr(cx-q.w/2,cy-q.h/2,q.w,q.h,r); c.fillStyle=fill; c.fill();
   if(opt.stroke){c.strokeStyle=opt.stroke;c.lineWidth=opt.lineWidth||1;rr(cx-q.w/2,cy-q.h/2,q.w,q.h,r);c.stroke();} c.restore();
-  txt(label,cx,cy+q.baseline,`${q.fs}px ${q.fam}`,ink,'center',Math.max(8,q.w-q.padX*2),opt.min||LEGIBLE_TEXT_FLOOR);
-  return {w:q.w,h:q.h,fs:q.fs};
+  drawCentredPillLines(q,cx,cy,ink,opt);
+  return {w:q.w,h:q.h,fs:q.fs,lines:q.lines,inkH:q.inkH};
 }
 // Dynamic trapezoid variant for T2 post labels: the coloured background follows its own label width.
 function textTrapezoid(label,cx,cy,opt={}){
   const q=measuredPillLabel(label,opt,18,9),cut=Math.min(q.h*.42,opt.cut||q.h*.28),x=cx-q.w/2,y=cy-q.h/2,ink=readablePillInk(opt.text||'#fff',opt.fill||'#222');
   c.save();c.beginPath();c.moveTo(x+cut,y);c.lineTo(x+q.w,y);c.lineTo(x+q.w-cut,y+q.h);c.lineTo(x,y+q.h);c.closePath();c.fillStyle=opt.fill||'#222';c.fill();if(opt.stroke){c.lineWidth=opt.lineWidth||1;c.strokeStyle=opt.stroke;c.stroke();}c.restore();
-  txt(label,cx,cy+q.baseline,`${q.fs}px ${q.fam}`,ink,'center',Math.max(8,q.w-q.padX*2),opt.min||LEGIBLE_TEXT_FLOOR);
-  return {w:q.w,h:q.h,fs:q.fs};
+  drawCentredPillLines(q,cx,cy,ink,opt);
+  return {w:q.w,h:q.h,fs:q.fs,lines:q.lines,inkH:q.inkH};
 }
 
 /* ============ PORTRAIT (2:3 / 9:16 / A4) ============ */
@@ -1157,7 +1192,7 @@ function drawT1P(W,H,img){
   rr(X(60),Y(1302),F(16),F(118),F(8)); c.fillStyle='#4a2a5e'; c.fill();
   chatIcon(X(96),Y(1330),F(72),'#4a2a5e');
   txt(S.q2, X(200), Y(1374), `${fitFont(S.q2, F(36), F(22), F(920), S.hiBody)}px ${S.hiBody}`, P.ink);
-  textPill(S.cta,X(600),Y(1498),{base:F(34),min:F(18),maxW:F(1080),padX:F(34),padY:F(16),fill:P.dark,text:'#ffffff',fam:S.hiBody});
+  textPill(S.cta,X(600),Y(1498),{base:F(34),min:F(18),maxW:F(1080),maxLines:2,padX:F(34),padY:F(16),fill:P.dark,text:'#ffffff',fam:S.hiBody});
   // Expand the footer into the unused blank strip, then give each text row its own dedicated band.
   c.fillStyle=P.dark; c.fillRect(0,Y(1560),W,H-Y(1560));
   textPill(`${S.dateDay} ${S.dateMonth}`,X(600),Y(1604),{base:F(28),min:F(16),maxW:F(640),padX:F(24),padY:F(10),fill:P.gold,text:P.dark,fam:S.hiBody});
@@ -1377,7 +1412,7 @@ function drawT3S(img){
   const sm=fitFont(S.sloganMain, 38, 24, 980, S.hiBody);
   txt(S.sloganMain, 540, 907, `${sm}px ${S.hiBody}`, G.gold, 'center');
   txt(S.sloganSub, 540, 948, `24px MuktaB`, '#fff', 'center', 940,18);
-  textPill(`${S.ctaBottom}  ·  ${S.contact}`,540,994,{base:24,min:18,maxW:850,padX:28,padY:10,fill:G.orange,text:'#fff',fam:S.hiBody});
+  textPill(`${S.ctaBottom}  ·  ${S.contact}`,540,994,{base:24,min:18,maxW:850,maxLines:2,padX:28,padY:10,fill:G.orange,text:'#fff',fam:S.hiBody});
 }
 
 /* ============ LANDSCAPE 16:9 ============ */
@@ -1400,7 +1435,7 @@ function drawT1L(img){
   c.lineWidth=5; c.strokeStyle='#fff'; rr(60,560,920,170,22); c.stroke();
   const hw=wrapFit(S.headline, 840, 36, 20, S.hiBody, 2);
   hw.lines.forEach((ln,i)=> txt(ln,520,625+i*52,`${hw.s}px ${S.hiBody}`,P.ink,'center'));
-  textPill(S.cta,520,795,{base:27,min:16,maxW:920,padX:28,padY:12,fill:P.dark,text:'#fff',fam:S.hiBody});
+  textPill(S.cta,520,795,{base:27,min:18,maxW:920,maxLines:2,padX:28,padY:12,fill:P.dark,text:'#fff',fam:S.hiBody});
   photoArch(img, 1250, 140, 520, 700, P.gold, 8); pframe(1250,140,520,700,'arch');
   c.fillStyle=P.dark; c.fillRect(0,960,1920,120);
   textPill(`${S.dateDay} ${S.dateMonth}`,270,1015,{base:31,min:17,maxW:480,padX:22,padY:10,fill:P.gold,text:P.dark,fam:S.hiBody});
@@ -1500,7 +1535,7 @@ function drawT1B(img){
   txt(S.nameLine2, 428, 450, `${nzs}px ${S.hiName}`, P.gold);
   const hw=wrapFit(S.headline, 800, 34, 18, S.hiBody, 2);
   hw.lines.forEach((ln,i)=> txt(ln,430,540+i*48,`${hw.s}px ${S.hiBody}`,P.gold));
-  textPill(S.cta,830,682,{base:25,min:14,maxW:800,padX:26,padY:11,fill:P.dark,text:'#fff',fam:S.hiBody});
+  textPill(S.cta,830,682,{base:25,min:18,maxW:800,maxLines:2,padX:26,padY:11,fill:P.dark,text:'#fff',fam:S.hiBody});
   if(S.showBadge) dateBadge(1560,620,150,168);
   c.fillStyle=P.dark; c.fillRect(0,810,1800,90);
   txt(`${S.dateDay} ${S.dateMonth}   ·   ${S.contact}   ·   ${S.requester}`, 900, 864, `${fitFont(`${S.dateDay} ${S.dateMonth}   ·   ${S.contact}   ·   ${S.requester}`, 28, 15, 1700, S.hiBody)}px ${S.hiBody}`, P.gold, 'center');
