@@ -81,6 +81,14 @@
   .top-photo-title span{font-size:10px;font-weight:700;letter-spacing:.6px;color:#161224;background:#f6c445;border-radius:999px;padding:3px 7px;}
   .top-photo-picker label.f{margin:8px 0 0;}
   .top-photo-picker label.f>span{color:#d9d3ea;}
+  .photo-choice-heading{font-size:11px;color:#d9d3ea;margin:9px 0 6px;font-weight:600;}
+  .photo-choice-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;}
+  .photo-choice{min-width:0;padding:5px 3px 4px;border:1px solid #ffffff25;border-radius:9px;background:#12101db0;color:#ded9eb;cursor:pointer;font:600 10px/1.15 inherit;}
+  .photo-choice img{display:block;width:100%;height:74px;object-fit:contain;background:#f6f5ee;border-radius:6px;margin-bottom:4px;}
+  .photo-choice.active{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc);background:#3c324f; color:#fff2bd;}
+  .photo-choice:focus-visible{outline:2px solid #fff;outline-offset:1px;}
+  .photo-select-fallback{margin-top:7px!important;}
+  @media(max-width:380px){.photo-choice img{height:62px}.photo-choice{font-size:9px}}
   .auto-crop-toggle{display:flex;align-items:center;gap:9px;margin-top:9px;padding:8px 9px;border:1px solid #ffffff20;border-radius:9px;background:#14112066;cursor:pointer;}
   .auto-crop-toggle input{width:17px;height:17px;accent-color:var(--acc);flex:none;}
   .auto-crop-toggle span{display:grid;gap:1px;color:#fff0bd;font-size:12px;line-height:1.2;}
@@ -139,7 +147,22 @@
         <button class="btn ghost" id="uploadBtn" type="button">⬆ अपनी फ़ोटो अपलोड करें</button>
         <input type="file" id="photoFile" accept="image/*" class="hidden">
       </div>
-      <label class="f"><span>फ्रेम के हिसाब से फ़ोटो</span>
+      <div class="photo-choice-heading">तस्वीर पर टैप करके चुनें</div>
+      <div class="photo-choice-grid" id="photoChoiceGrid" role="group" aria-label="Prepared candidate photos">
+        <button class="photo-choice active" type="button" data-photo="auto" title="Auto Fit">
+          <img src="assets/candidate-expanded-9x16.png?v=1" alt="Portrait Auto Fit"><span>Auto Fit</span>
+        </button>
+        <button class="photo-choice" type="button" data-photo="assets/candidate-expanded-4x5.png?v=1" title="4 by 5 portrait">
+          <img src="assets/candidate-expanded-4x5.png?v=1" alt="4 by 5 expanded candidate photo"><span>4:5</span>
+        </button>
+        <button class="photo-choice" type="button" data-photo="assets/candidate-expanded-square.png?v=1" title="Square photo">
+          <img src="assets/candidate-expanded-square.png?v=1" alt="Square expanded candidate photo"><span>Square</span>
+        </button>
+        <button class="photo-choice" type="button" data-photo="assets/candidate.jpg?v=20261014" title="Original photo">
+          <img src="assets/candidate.jpg?v=20261014" alt="Original candidate photo"><span>Original</span>
+        </button>
+      </div>
+      <label class="f photo-select-fallback"><span>या सूची से चुनें</span>
         <select id="preparedPhoto"><option value="auto">Auto Fit — frame के हिसाब से फोटो</option><option value="assets/candidate-expanded-9x16.png?v=1">Portrait Safe — लंबे / oval frames</option><option value="assets/candidate-expanded-square.png?v=1">Square Safe — circle / square frames</option><option value="assets/candidate-expanded-4x5.png?v=1">4:5 Safe — सामान्य vertical frame</option><option value="assets/candidate.jpg?v=20261014">Original फोटो</option></select>
       </label>
       <label class="auto-crop-toggle"><input id="autoCrop" type="checkbox" checked><span><b>Smart Auto Crop</b><small>हर नए design / frame पर photo को safe तरीके से adjust करें</small></span></label>
@@ -1526,25 +1549,30 @@ function bind(){
     draw();
   });
   const thumb=document.getElementById('photoThumb');
-  thumb.src=photo.src;
-  const usePhoto=(src,mode='manual')=>{ const im=new Image(); im.onload=()=>{ photo=im; photoMode=mode; photoIsCustom=mode==='custom'; thumb.src=im.src; draw(); }; im.src=src; };
+  const preparedSelect=document.getElementById('preparedPhoto');
+  const syncPhotoChoice=value=>document.querySelectorAll('.photo-choice').forEach(btn=>btn.classList.toggle('active',btn.dataset.photo===value));
+  thumb.src=photo.src; syncPhotoChoice('auto');
+  const usePhoto=(src,mode='manual',choiceValue='')=>{ const im=new Image(); im.onload=()=>{ photo=im; photoMode=mode; photoIsCustom=mode==='custom'; thumb.src=im.src; syncPhotoChoice(choiceValue); draw(); }; im.src=src; };
+  const applyPreparedPhoto=value=>{
+    if(preparedSelect) preparedSelect.value=value;
+    if(value==='auto') usePhoto(autoPortraitPhoto.src,'auto','auto');
+    else usePhoto(value,'manual',value);
+  };
   window.enableAutoPhotoFit=()=>{
     if(photoIsCustom) return; // keep the user's own upload while still applying safe dynamic crop.
     photo=autoPortraitPhoto; photoMode='auto';
-    const choice=document.getElementById('preparedPhoto'); if(choice) choice.value='auto';
-    thumb.src=autoPortraitPhoto.src; draw();
+    if(preparedSelect) preparedSelect.value='auto';
+    thumb.src=autoPortraitPhoto.src; syncPhotoChoice('auto'); draw();
   };
   const cropBox=document.getElementById('autoCrop'), cropStatus=document.getElementById('autoCropStatus');
   if(cropBox){ cropBox.checked=S.autoCrop; cropBox.addEventListener('change',()=>{ S.autoCrop=cropBox.checked; if(cropStatus) cropStatus.textContent=S.autoCrop?'✓ Dynamic frame-fill चालू है — हर नए design/frame में safe fitting होगी।':'Safe contain mode — कोई crop नहीं, पूरी फ़ोटो दिखाई जाएगी।'; draw(); }); }
-  document.getElementById('preparedPhoto').addEventListener('change',e=>{
-    if(e.target.value==='auto') usePhoto(autoPortraitPhoto.src,'auto');
-    else usePhoto(e.target.value,'manual');
-  });
+  preparedSelect.addEventListener('change',e=>applyPreparedPhoto(e.target.value));
+  document.querySelectorAll('.photo-choice').forEach(btn=>btn.addEventListener('click',()=>applyPreparedPhoto(btn.dataset.photo)));
   document.getElementById('uploadBtn').addEventListener('click',()=>document.getElementById('photoFile').click());
   document.getElementById('photoFile').addEventListener('change',e=>{
     const f=e.target.files[0]; if(!f) return;
     const r=new FileReader();
-    r.onload=()=>usePhoto(r.result,'custom');
+    r.onload=()=>usePhoto(r.result,'custom','');
     r.readAsDataURL(f);
   });
   document.getElementById('export').addEventListener('click',()=>{
