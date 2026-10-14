@@ -894,7 +894,9 @@ function dotGrid(x,y,cols,rows,gap,color,r){
   for(let i=0;i<cols;i++)for(let j=0;j<rows;j++){ c.beginPath(); c.arc(x+i*gap,y+j*gap,r,0,TAU); c.fill(); }
 }
 function dateBadge(cx,cy,r,rMax){
-  rMax=rMax||r*1.08;
+  // Keep the voting-day badge 20% smaller across every poster format.
+  rMax=(rMax||r*1.08)*.8;
+  r*=.8;
   c.save();
   c.font='100px MuktaXB'; const wm=c.measureText(String(S.dateMonth)).width/100;
   r=Math.min(rMax, Math.max(r, wm/1.5));
