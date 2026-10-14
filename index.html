@@ -244,8 +244,11 @@
     <label class="f"><span>प्रो लेआउट <b id="layoutNum">#7</b>/95</span>
       <button class="btn ghost" id="layoutBtn" type="button">🎲 नया प्रो लेआउट (96 styles)</button>
     </label>
-    <label class="f"><span>प्रो फोटो फ्रेम <b id="pfNum">#17</b>/239</span>
-      <button class="btn ghost" id="pfBtn" type="button">🎲 नया प्रो फ्रेम (240 styles)</button>
+    <label class="f"><span>प्रो फोटो फ्रेम <b id="pfNum">#17</b>/359</span>
+      <button class="btn ghost" id="pfBtn" type="button">🎲 नया प्रो फ्रेम (360 styles)</button>
+    </label>
+    <label class="f"><span>🇮🇳 तिरंगा सर्कल फ्रेम <b id="triFrameNum">—</b>/120</span>
+      <button class="btn ghost" id="triFrameBtn" type="button">🇮🇳 नया तिरंगा सर्कल फ्रेम</button>
     </label>
     <label class="f"><span>नेम स्टाइल <b id="nsNum">#0</b>/3</span>
       <button class="btn ghost" id="nsBtn" type="button">✍️ नेम बदलें</button>
@@ -422,7 +425,9 @@ function designNumber(){
 }
 const dp=(W,H,col)=>drawPattern(S.patIdx,W,H,col);
 function bgImg(W,H,tint){ const im=S.bgIdx===-2?DRIVE_RANDOM_IMAGE:(S.bgIdx<0?null:BGIMGS[S.bgIdx]); if(!im||!im.naturalWidth) return; const a=Math.max(0,Math.min(1,(Number(S.bgOpacity)||100)/100)); c.save(); c.globalAlpha=a; cover(im,0,0,W,H); c.globalAlpha=.46; c.fillStyle=tint; c.fillRect(0,0,W,H); const vignette=c.createLinearGradient(0,0,W,H); vignette.addColorStop(0,'rgba(0,0,0,.20)');vignette.addColorStop(.52,'rgba(0,0,0,.02)');vignette.addColorStop(1,'rgba(0,0,0,.16)');c.globalAlpha=.62;c.fillStyle=vignette;c.fillRect(0,0,W,H);c.restore(); }
-const PHOTO_FRAME_COUNT=240;
+const PHOTO_FRAME_COUNT=360;
+const TRICOLOR_FRAME_START=240;
+const TRICOLOR_FRAME_COUNT=120;
 const LAYOUT_COUNT=96;
 const TOTAL_DESIGNS = 3*3*6*LAYOUT_COUNT*PHOTO_FRAME_COUNT*4*4*PALETTES.length*BG_COUNT*180*NAME_FONTS.length*BODY_FONTS.length;
 const ELEM_IMGS={}; const ICONK=['ic_panchayat','ic_women','ic_streetlight','ic_school','ic_senior','ic_sports'];
@@ -448,8 +453,31 @@ function elemOverlay(W,H){ const v=S.elemV|0; if(!v) return;
   if(set[2]){ const ic=ELEM_IMGS[set[2]]; if(ic&&ic.complete&&ic.naturalWidth){ const s2=Math.min(W,H)*0.07;
     c.drawImage(ic,W-s2*1.25,H-s2*1.45,s2,s2); } }
   c.restore(); }
+function tricolorCircleFrame(x,y,w,h,shape,variant){
+  const p=curPal(), saffron='#f58220', white='#fffdf5', green='#138808', navy='#173b82', gold=p.accent||'#f6c445';
+  const cx=x+w/2, cy=y+h*.50, unit=Math.max(3,Math.min(w,h)*.019), family=variant%12, tier=(variant/12)|0;
+  const rx=w*.50-unit*.5, ry=(shape==='oval'?h*.485:Math.min(h*.47,w*.66))-unit*.5, turn=(tier%6)*Math.PI/18;
+  const ring=(scale,col,lw,start=0,end=TAU,dash)=>{c.save();c.strokeStyle=col;c.lineWidth=lw;c.lineCap='round';if(dash&&c.setLineDash)c.setLineDash(dash);c.beginPath();c.ellipse(cx,cy,Math.max(2,rx*scale),Math.max(2,ry*scale),turn,start,end);c.stroke();c.restore();};
+  const dotRing=(scale,col,n,size)=>{c.save();c.fillStyle=col;for(let i=0;i<n;i++){const a=turn+i/n*TAU, X=cx+Math.cos(a)*rx*scale,Y=cy+Math.sin(a)*ry*scale;c.beginPath();c.arc(X,Y,size,0,TAU);c.fill();}c.restore();};
+  const chakra=(scale,spokes)=>{c.save();c.strokeStyle=navy;c.lineWidth=unit*.38;c.globalAlpha=.9;c.beginPath();c.ellipse(cx,cy,rx*scale,ry*scale,turn,0,TAU);c.stroke();for(let i=0;i<spokes;i++){const a=turn+i/spokes*TAU;c.beginPath();c.moveTo(cx,cy);c.lineTo(cx+Math.cos(a)*rx*scale,cy+Math.sin(a)*ry*scale);c.stroke();}c.beginPath();c.arc(cx,cy,unit*.85,0,TAU);c.fillStyle=navy;c.fill();c.restore();};
+  c.save();c.shadowColor='rgba(0,0,0,.24)';c.shadowBlur=unit*2.2;
+  if(family===0){ring(1.02,saffron,unit*1.25,Math.PI*1.02,TAU*.99);ring(1.02,green,unit*1.25,.02,Math.PI*.98);ring(.94,white,unit*1.55);ring(.86,navy,unit*.38);chakra(.25,12+tier%6);}
+  else if(family===1){ring(1.02,white,unit*2.25);ring(1.02,saffron,unit*.7,Math.PI*1.06,TAU*.94);ring(1.02,green,unit*.7,.06,Math.PI*.94);dotRing(.90,navy,12+tier*2,unit*.28);}
+  else if(family===2){ring(1.02,saffron,unit*.98,[0]);ring(.94,white,unit*1.55);ring(.86,green,unit*.98);chakra(.48,16+tier%8);}
+  else if(family===3){ring(1.02,white,unit*1.9);ring(.94,saffron,unit*.7,[unit*1.7,unit*.7]);ring(.86,green,unit*.7,[unit*.7,unit*1.6]);dotRing(1.10,navy,8+tier,unit*.36);}
+  else if(family===4){ring(1.04,saffron,unit*1.35,Math.PI*1.10,TAU*.90);ring(1.04,green,unit*1.35,.10,Math.PI*.90);ring(.95,white,unit*1.1);ring(.87,navy,unit*.38,[unit*.38,unit*.75]);chakra(.20,12);}
+  else if(family===5){ring(1.05,navy,unit*.45);ring(.97,white,unit*1.8);ring(.89,saffron,unit*.7,Math.PI*1.02,TAU*.98);ring(.89,green,unit*.7,.02,Math.PI*.98);dotRing(.80,gold,14+tier,unit*.24);}
+  else if(family===6){ring(1.04,saffron,unit*.68,[unit*2.1,unit*.65]);ring(.96,white,unit*1.65);ring(.88,green,unit*.68,[unit*.65,unit*2.1]);chakra(.39,8+tier%10);}
+  else if(family===7){ring(1.03,green,unit*1.38,.08,Math.PI*.92);ring(1.03,saffron,unit*1.38,Math.PI*1.08,TAU*.92);ring(.94,white,unit*1.22);ring(.84,navy,unit*.38);for(let i=0;i<6;i++){const a=turn+i/6*TAU;c.fillStyle=i%2?saffron:green;c.beginPath();c.arc(cx+Math.cos(a)*rx*.74,cy+Math.sin(a)*ry*.74,unit*.42,0,TAU);c.fill();}}
+  else if(family===8){ring(1.04,white,unit*2.35);ring(.96,saffron,unit*.52);ring(.89,green,unit*.52);ring(.82,navy,unit*.36,[unit*.55,unit*.65]);chakra(.31,20);}
+  else if(family===9){ring(1.04,saffron,unit*1.2,Math.PI*1.03,TAU*.97);ring(1.04,green,unit*1.2,.03,Math.PI*.97);ring(.95,white,unit*1.8);dotRing(.84,navy,18+tier,unit*.21);chakra(.16,12);}
+  else if(family===10){ring(1.05,navy,unit*.48);ring(.97,saffron,unit*.84,[unit*.42,unit*.6]);ring(.89,white,unit*1.6);ring(.81,green,unit*.84,[unit*1.4,unit*.55]);dotRing(1.11,gold,10+tier,unit*.30);}
+  else {ring(1.05,green,unit*.82);ring(.98,white,unit*1.75);ring(.91,saffron,unit*.82);chakra(.45,16);dotRing(.70,gold,9+tier,unit*.26);}
+  c.restore();
+}
 function pframe(x,y,w,h,shape){
   const f=Math.abs(S.photoF|0)%PHOTO_FRAME_COUNT; if(!f) return;
+  if(f>=TRICOLOR_FRAME_START){tricolorCircleFrame(x,y,w,h,shape,f-TRICOLOR_FRAME_START);return;}
   const family=f%24, variant=(f/24)|0, p=curPal();
   const colours=[p.accent||'#e8b64c','#ffffff',p.primary||'#5b1244',p.sec1||'#f58220',p.sec2||'#1a8a3c',p.light||'#f6efdc'];
   const gold=colours[(variant+0)%colours.length], light=colours[(variant+1)%colours.length], deep=colours[(variant+2)%colours.length], warm=colours[(variant+3)%colours.length];
@@ -491,14 +519,18 @@ function pframe(x,y,w,h,shape){
   if(variant){clipped(()=>{c.globalAlpha=.56;c.fillStyle=variant%2?gold:light;const count=3+variant;for(let i=0;i<count;i++){const X=x+w*(.15+rand()*.7),Y=y+h*(.12+rand()*.76);c.beginPath();c.arc(X,Y,unit*(.22+rand()*.22),0,TAU);c.fill();}});}
   c.restore();
 }
-let PHOTO_FRAME_QUEUE=[];
+let PHOTO_FRAME_QUEUE=[], TRICOLOR_FRAME_QUEUE=[];
+function setPhotoFrameUi(){const f=Math.abs(S.photoF|0)%PHOTO_FRAME_COUNT, e=document.getElementById('pfNum'), tri=document.getElementById('triFrameNum');if(e)e.textContent='#'+f;if(tri)tri.textContent=f>=TRICOLOR_FRAME_START?'#'+(f-TRICOLOR_FRAME_START+1):'—';}
 function freshProfessionalFrame(previous){
   if(!PHOTO_FRAME_QUEUE.length){PHOTO_FRAME_QUEUE=Array.from({length:PHOTO_FRAME_COUNT-1},(_,i)=>i+1);for(let i=PHOTO_FRAME_QUEUE.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[PHOTO_FRAME_QUEUE[i],PHOTO_FRAME_QUEUE[j]]=[PHOTO_FRAME_QUEUE[j],PHOTO_FRAME_QUEUE[i]];}}
-  let n=PHOTO_FRAME_QUEUE.pop();
-  if(n===previous&&PHOTO_FRAME_QUEUE.length)n=PHOTO_FRAME_QUEUE.pop();
-  return n||1;
+  let n=PHOTO_FRAME_QUEUE.pop(); if(n===previous&&PHOTO_FRAME_QUEUE.length)n=PHOTO_FRAME_QUEUE.pop(); return n||1;
 }
-function nextProfessionalFrame(){const old=Math.abs(S.photoF|0)%PHOTO_FRAME_COUNT;const n=freshProfessionalFrame(old);S.photoF=n;const e=document.getElementById('pfNum');if(e)e.textContent='#'+n;draw();}
+function freshTricolorFrame(previous){
+  if(!TRICOLOR_FRAME_QUEUE.length){TRICOLOR_FRAME_QUEUE=Array.from({length:TRICOLOR_FRAME_COUNT},(_,i)=>TRICOLOR_FRAME_START+i);for(let i=TRICOLOR_FRAME_QUEUE.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[TRICOLOR_FRAME_QUEUE[i],TRICOLOR_FRAME_QUEUE[j]]=[TRICOLOR_FRAME_QUEUE[j],TRICOLOR_FRAME_QUEUE[i]];}}
+  let n=TRICOLOR_FRAME_QUEUE.pop();if(n===previous&&TRICOLOR_FRAME_QUEUE.length)n=TRICOLOR_FRAME_QUEUE.pop();return n||TRICOLOR_FRAME_START;
+}
+function nextProfessionalFrame(){const old=Math.abs(S.photoF|0)%PHOTO_FRAME_COUNT;S.photoF=freshProfessionalFrame(old);setPhotoFrameUi();draw();}
+function nextTricolorFrame(){const old=Math.abs(S.photoF|0)%PHOTO_FRAME_COUNT;S.photoF=freshTricolorFrame(old);setPhotoFrameUi();draw();}
 function ndraw(tstr,x,y,size,fam,col,align){ const ns=S.nameS|0; c.font=`${size}px ${fam}`; c.textAlign=align||'left'; c.textBaseline='alphabetic';
   if(ns===3){ const w2=c.measureText(tstr).width; const px= align==='center'? x-w2/2 : x;
     c.fillStyle='rgba(0,0,0,0.28)'; rr(px-size*0.18,y-size*0.98,w2+size*0.36,size*1.3,size*0.22); c.fill(); }
@@ -1378,6 +1410,8 @@ function bind(){
   setLayout();
   document.getElementById('layoutBtn').addEventListener('click',()=>{ nextProfessionalLayout(); });
   document.getElementById('pfBtn').addEventListener('click',()=>{ nextProfessionalFrame(); });
+  document.getElementById('triFrameBtn').addEventListener('click',()=>{ nextTricolorFrame(); });
+  setPhotoFrameUi();
   document.getElementById('quickDesign').addEventListener('click',()=>document.getElementById('shuffle').click());
   document.getElementById('quickLayout').addEventListener('click',()=>document.getElementById('layoutBtn').click());
   document.getElementById('quickFrame').addEventListener('click',()=>document.getElementById('pfBtn').click());
@@ -2015,7 +2049,7 @@ document.getElementById('rand').addEventListener('click',()=>{
   if(window.syncVisibility) syncVisibility();
   FIELDS.forEach(id=>{ const e=document.getElementById(id); if(e&&!e.disabled) e.value=S[id]; });
   document.getElementById('palTheme').value=S.palIdx;
-  setBg(); setDv(); setLayout(); { const pf=document.getElementById('pfNum'); if(pf) pf.textContent='#'+(S.photoF|0); const ns2=document.getElementById('nsNum'); if(ns2) ns2.textContent='#'+(S.nameS|0); const ev=document.getElementById('evNum'); if(ev) ev.textContent='#'+(S.elemV|0); }
+  setBg(); setDv(); setLayout(); { setPhotoFrameUi(); const ns2=document.getElementById('nsNum'); if(ns2) ns2.textContent='#'+(S.nameS|0); const ev=document.getElementById('evNum'); if(ev) ev.textContent='#'+(S.elemV|0); }
   setBs();
   if(window.loadFam){ loadFam(S.hiName); loadFam(S.hiBody); loadFam(S.engFont); }
   if(window.refreshFontBtns) refreshFontBtns();
