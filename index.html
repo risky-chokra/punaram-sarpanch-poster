@@ -95,6 +95,7 @@
   .fit-choice b{font-size:10px;color:#f7f3ff;}.fit-choice small{margin-top:3px;font-size:9px;color:#bdb6ce;font-weight:500;}
   .fit-choice.active{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc);background:#3c324f;}.fit-choice.active b{color:#fff0ae;}
   .fit-mode-status{font-size:10.5px;line-height:1.35;color:#cfc9df;margin-top:6px;min-height:28px;}
+  .photo-gesture-row{display:flex;align-items:center;gap:7px;margin-top:6px;}.photo-gesture-row .btn{padding:6px 8px;font-size:10px;white-space:nowrap;}.photo-gesture-row span{font-size:9.5px;color:#cfc9df;line-height:1.25;}
   @media(max-width:380px){.photo-choice img{height:62px}.photo-choice{font-size:9px}.fit-choice{font-size:9px}}
   .auto-crop-toggle{display:flex;align-items:center;gap:9px;margin-top:9px;padding:8px 9px;border:1px solid #ffffff20;border-radius:9px;background:#14112066;cursor:pointer;}
   .auto-crop-toggle input{width:17px;height:17px;accent-color:var(--acc);flex:none;}
@@ -130,7 +131,7 @@
     overflow:auto;
   }
   #poster{
-    max-width:100%; max-height:calc(100vh - 36px); width:auto; height:auto;
+    max-width:100%; max-height:calc(100vh - 36px); width:auto; height:auto; touch-action:none; cursor:grab;
     border-radius:6px; box-shadow:0 18px 60px #000a, 0 0 0 1px #ffffff22;
     background:#fff;
   }
@@ -176,6 +177,7 @@
         <button class="fit-choice" type="button" data-fit="cover"><b>⛶ Force Crop</b><small>पूरा frame भरें</small></button>
       </div>
       <div class="fit-mode-status" id="fitModeStatus">Auto Fill: frame के अनुसार candidate को बड़ा और साफ़ दिखाया जाएगा।</div>
+      <div class="photo-gesture-row"><button class="btn ghost" id="resetPhotoTransform" type="button">↺ Zoom / Position Reset</button><span>🤏 2 उंगली pinch • 1 उंगली drag<br><b id="photoZoomValue">Zoom 100%</b></span></div>
       <label class="f photo-select-fallback"><span>या सूची से चुनें</span>
         <select id="preparedPhoto"><option value="auto">Auto Fit — frame के हिसाब से फोटो</option><option value="assets/candidate-expanded-9x16.png?v=1">Portrait Safe — लंबे / oval frames</option><option value="assets/candidate-expanded-square.png?v=1">Square Safe — circle / square frames</option><option value="assets/candidate-expanded-4x5.png?v=1">4:5 Safe — सामान्य vertical frame</option><option value="assets/candidate.jpg?v=20261014">Original फोटो</option></select>
       </label>
@@ -402,7 +404,7 @@ const S = {
   p5:'समान न्याय एवं भ्रष्टाचार मुक्त पंचायत', p6:'हर परिवार के लिए सम्मान एवं सहयोग',
   dateDay:'24', dateMonth:'अक्टूबर 2026', dateWeekday:'शनिवार',
   polling:'मतदान केंद्र : राजकीय विद्यालय, नादाना भाटान',
-  hiName:'Modak', hiBody:'MuktaXB', engFont:'Poppins', showBadge:true, autoCrop:true, photoFit:'auto', badgeStyle:0, decoV:0, layoutV:7, photoF:17, nameS:0, elemV:0,
+  hiName:'Modak', hiBody:'MuktaXB', engFont:'Poppins', showBadge:true, autoCrop:true, photoFit:'auto', photoZoom:1, photoPanX:.5, photoPanY:1, badgeStyle:0, decoV:0, layoutV:7, photoF:17, nameS:0, elemV:0,
 };
 
 const SIZES = {
@@ -694,6 +696,8 @@ async function loadFonts(){ for(const core of ['Modak','Khand','MuktaXB','MuktaB
 const cv = document.getElementById('poster');
 const c = cv.getContext('2d');
 const TAU = Math.PI*2;
+// Active aperture + drawable viewport are updated by every photo-frame renderer for direct manipulation.
+let PHOTO_HIT=null, PHOTO_VIEW=null;
 
 /* ---------- helpers ---------- */
 function rr(x,y,w,h,r){
@@ -779,25 +783,27 @@ function drawPhotoBackdrop(ctx,img,x,y,w,h){
   veil.addColorStop(0,'rgba(255,255,255,.10)');veil.addColorStop(.52,'rgba(255,255,255,.035)');veil.addColorStop(1,'rgba(9,28,36,.12)');
   ctx.globalAlpha=1;ctx.fillStyle=veil;ctx.fillRect(x,y,w,h);ctx.restore();
 }
+function clampPhoto(v,min,max){ return Math.max(min,Math.min(max,v)); }
+function drawAdjustedCandidate(ctx,img,sx,sy,w,h,baseW,baseH){
+  const z=clampPhoto(Number(S.photoZoom)||1,1,3), dw=baseW*z, dh=baseH*z;
+  const canPanX=dw>w+.01, canPanY=dh>h+.01;
+  const minX=sx+w-dw, maxX=sx, minY=sy+h-dh, maxY=sy;
+  const px=clampPhoto(Number(S.photoPanX),0,1), py=clampPhoto(Number(S.photoPanY),0,1);
+  const dx=canPanX ? minX+(maxX-minX)*px : sx+(w-dw)/2;
+  const dy=canPanY ? minY+(maxY-minY)*py : sy+(h-dh)/2;
+  ctx.drawImage(img,dx,dy,dw,dh);
+  // Coordinates are translated by photoOvalFade after its offscreen canvas is composited.
+  PHOTO_VIEW={x:sx,y:sy,w,h,minX,maxX,minY,maxY,canPanX,canPanY};
+}
 function containPhoto(ctx,img,x,y,w,h,pad=.028){
-  // Audited frame-fill policy:
-  // 1) a matching expanded asset is selected for each aperture;
-  // 2) small, background-only trims may fill the aperture;
-  // 3) every larger mismatch receives a blurred photo backdrop + full uncropped foreground.
   const safeW=w*(1-pad*2), safeH=h*(1-pad*2), sx=x+w*pad, sy=y+h*pad;
   const sw=img.naturalWidth||img.width, sh=img.naturalHeight||img.height;
   if(!sw||!sh) return;
-  const scale=Math.max(safeW/sw,safeH/sh), dw=sw*scale, dh=sh*scale;
-  const cutX=Math.max(0,(dw-safeW)/dw), cutY=Math.max(0,(dh-safeH)/dh);
   const mode=S.photoFit||'auto';
-  if(mode==='cover' || (mode==='auto' && S.autoCrop)){
-    // Auto Fill is the default: use the closest aspect photo and fill the complete aperture.
-    // Top anchoring gives priority to face/hair; any unavoidable trim comes from the lower shirt / outer edges.
-    ctx.drawImage(img,sx+(safeW-dw)/2,sy,dw,dh); return;
-  }
-  // Full Fit is the explicit no-crop mode. The candidate remains fully visible and the frame gets a soft photo backdrop.
-  drawPhotoBackdrop(ctx,img,sx,sy,safeW,safeH);
-  drawAspectSafe(ctx,img,sx,sy,safeW,safeH);
+  const baseScale=mode==='fit' ? Math.min(safeW/sw,safeH/sh) : Math.max(safeW/sw,safeH/sh);
+  const baseW=sw*baseScale, baseH=sh*baseScale;
+  if(mode==='fit') drawPhotoBackdrop(ctx,img,sx,sy,safeW,safeH);
+  drawAdjustedCandidate(ctx,img,sx,sy,safeW,safeH,baseW,baseH);
 }
 function drawAspectSafe(ctx,source,x,y,w,h){
   const sw=source.naturalWidth||source.videoWidth||source.width, sh=source.naturalHeight||source.videoHeight||source.height;
@@ -805,12 +811,35 @@ function drawAspectSafe(ctx,source,x,y,w,h){
   const scale=Math.min(w/sw,h/sh), dw=sw*scale, dh=sh*scale;
   ctx.drawImage(source,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
 }
+
+function updatePhotoZoomUi(){ const e=document.getElementById('photoZoomValue'); if(e) e.textContent='Zoom '+Math.round((Number(S.photoZoom)||1)*100)+'%'; }
+function resetCandidateTransform(redraw=true){ S.photoZoom=1; S.photoPanX=.5; S.photoPanY=1; updatePhotoZoomUi(); if(redraw) draw(); }
+function pointInPhotoFrame(pt){
+  if(!PHOTO_HIT) return false;
+  if(PHOTO_HIT.kind==='oval'){ const q=PHOTO_HIT,dx=(pt.x-q.cx)/q.rx,dy=(pt.y-q.cy)/q.ry; return dx*dx+dy*dy<=1; }
+  const q=PHOTO_HIT;if(pt.x<q.x||pt.x>q.x+q.w||pt.y<q.y||pt.y>q.y+q.h) return false;
+  const r=q.w/2;if(pt.y>=q.y+r) return true;const dx=pt.x-(q.x+r),dy=pt.y-(q.y+r);return dx*dx+dy*dy<=r*r;
+}
+function installPhotoGestures(){
+  const pts=new Map(); let last=null,pinch=null;
+  const at=e=>{const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*cv.width/r.width,y:(e.clientY-r.top)*cv.height/r.height};};
+  const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+  const start=()=>{const a=[...pts.values()];if(a.length===1){last={...a[0]};pinch=null;}else if(a.length>=2){pinch={d:Math.max(1,dist(a[0],a[1])),z:S.photoZoom};last=null;}};
+  const queue=()=>{ if(!installPhotoGestures.raf) installPhotoGestures.raf=requestAnimationFrame(()=>{installPhotoGestures.raf=0;draw();}); };
+  cv.addEventListener('pointerdown',e=>{const p=at(e);if(!pointInPhotoFrame(p)) return;pts.set(e.pointerId,p);try{cv.setPointerCapture(e.pointerId);}catch(_){}start();e.preventDefault();});
+  cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId)) return;const p=at(e);pts.set(e.pointerId,p);const a=[...pts.values()];
+    if(a.length===1&&last&&PHOTO_VIEW){const dx=p.x-last.x,dy=p.y-last.y,v=PHOTO_VIEW;if(v.canPanX&&v.maxX>v.minX) S.photoPanX=clampPhoto(S.photoPanX+dx/(v.maxX-v.minX),0,1);if(v.canPanY&&v.maxY>v.minY) S.photoPanY=clampPhoto(S.photoPanY+dy/(v.maxY-v.minY),0,1);last={...p};queue();}
+    else if(a.length>=2&&pinch){S.photoZoom=clampPhoto(pinch.z*dist(a[0],a[1])/pinch.d,1,3);updatePhotoZoomUi();queue();}e.preventDefault();});
+  const finish=e=>{if(!pts.has(e.pointerId))return;pts.delete(e.pointerId);start();};cv.addEventListener('pointerup',finish);cv.addEventListener('pointercancel',finish);
+}
+
 function archPath(x,y,w,h){
   const r=w/2;
   c.beginPath(); c.moveTo(x,y+h); c.lineTo(x,y+r); c.arc(x+r,y+r,r,Math.PI,0);
   c.lineTo(x+w,y+h); c.closePath();
 }
 function photoArch(img,x,y,w,h,border,bw){
+  PHOTO_HIT={kind:'arch',x,y,w,h};
   img=photoForFrame('portrait',img,w/h);
   const pad=frameGutter(w,h);c.save();archPath(x,y,w,h);c.clip();
   const g=c.createLinearGradient(x,y,x+w,y+h);g.addColorStop(0,'#f8f8fb');g.addColorStop(1,'#e8edf2');c.fillStyle=g;c.fillRect(x,y,w,h);
@@ -818,10 +847,13 @@ function photoArch(img,x,y,w,h,border,bw){
   if(border){c.save();archPath(x,y,w,h);c.lineWidth=bw;c.strokeStyle=border;c.stroke();c.restore();}
 }
 function photoOvalFade(img,cx,cy,rx,ry){
+  PHOTO_HIT={kind:'oval',cx,cy,rx,ry};
   img=photoForFrame('oval',img,(rx*2)/(ry*2));
   const off=document.createElement('canvas');off.width=Math.ceil(rx*2);off.height=Math.ceil(ry*2);const o=off.getContext('2d'),pad=frameGutter(off.width,off.height);
   o.save();o.beginPath();o.ellipse(rx,ry,rx*.995,ry*.995,0,0,TAU);o.clip();const g=o.createLinearGradient(0,0,off.width,off.height);g.addColorStop(0,'#f8f8fb');g.addColorStop(1,'#e7edf1');o.fillStyle=g;o.fillRect(0,0,off.width,off.height);
-  if(pad){o.beginPath();o.ellipse(rx,ry,Math.max(2,rx-pad),Math.max(2,ry-pad),0,0,TAU);o.clip();containPhoto(o,img,pad,pad,off.width-pad*2,off.height-pad*2,.02);}else containPhoto(o,img,0,0,off.width,off.height,.028);o.restore();c.drawImage(off,cx-rx,cy-ry);
+  if(pad){o.beginPath();o.ellipse(rx,ry,Math.max(2,rx-pad),Math.max(2,ry-pad),0,0,TAU);o.clip();containPhoto(o,img,pad,pad,off.width-pad*2,off.height-pad*2,.02);}else containPhoto(o,img,0,0,off.width,off.height,.028);o.restore();
+  if(PHOTO_VIEW){ const ox=cx-rx,oy=cy-ry,v=PHOTO_VIEW; PHOTO_VIEW={...v,x:v.x+ox,y:v.y+oy,minX:v.minX+ox,maxX:v.maxX+ox,minY:v.minY+oy,maxY:v.maxY+oy}; }
+  c.drawImage(off,cx-rx,cy-ry);
 }
 function chatIcon(x,y,s,color){
   c.save(); c.strokeStyle=color; c.lineWidth=Math.max(2,s*0.08); c.lineJoin='round';
@@ -1433,6 +1465,7 @@ function photoForFrame(shape, fallback, frameRatio=0){
 
 function draw(){
   const W=cv.width, H=cv.height;
+  PHOTO_HIT=null; PHOTO_VIEW=null;
   c.clearRect(0,0,W,H);
   if(!photo.complete || !photo.naturalWidth){ c.fillStyle='#eee'; c.fillRect(0,0,W,H); }
   const o=ORIENT[S.size];
@@ -1571,7 +1604,7 @@ function bind(){
   const FIT_STATUS={auto:'Auto Fill: candidate को frame में बड़ा, साफ़ और edge-to-edge दिखाया जाएगा।',fit:'Full Fit: पूरी photo दिखेगी; कोई crop नहीं होगा।',cover:'Force Crop: photo पूरा frame भरेगी; ऊपर से safe crop लागू होगा।'};
   const setPhotoFit=mode=>{ S.photoFit=mode; document.querySelectorAll('.fit-choice').forEach(btn=>btn.classList.toggle('active',btn.dataset.fit===mode)); if(fitStatus) fitStatus.textContent=FIT_STATUS[mode]||FIT_STATUS.auto; draw(); };
   thumb.src=photo.src; syncPhotoChoice('auto'); setPhotoFit(S.photoFit||'auto');
-  const usePhoto=(src,mode='manual',choiceValue='')=>{ const im=new Image(); im.onload=()=>{ photo=im; photoMode=mode; photoIsCustom=mode==='custom'; thumb.src=im.src; syncPhotoChoice(choiceValue); draw(); }; im.src=src; };
+  const usePhoto=(src,mode='manual',choiceValue='')=>{ resetCandidateTransform(false); const im=new Image(); im.onload=()=>{ photo=im; photoMode=mode; photoIsCustom=mode==='custom'; thumb.src=im.src; syncPhotoChoice(choiceValue); draw(); }; im.src=src; };
   const applyPreparedPhoto=value=>{
     if(preparedSelect) preparedSelect.value=value;
     if(value==='auto') usePhoto(autoPortraitPhoto.src,'auto','auto');
@@ -1587,6 +1620,7 @@ function bind(){
   preparedSelect.addEventListener('change',e=>applyPreparedPhoto(e.target.value));
   document.querySelectorAll('.photo-choice').forEach(btn=>btn.addEventListener('click',()=>applyPreparedPhoto(btn.dataset.photo)));
   document.querySelectorAll('.fit-choice').forEach(btn=>btn.addEventListener('click',()=>setPhotoFit(btn.dataset.fit)));
+  document.getElementById('resetPhotoTransform').addEventListener('click',()=>resetCandidateTransform());
   document.getElementById('uploadBtn').addEventListener('click',()=>document.getElementById('photoFile').click());
   document.getElementById('photoFile').addEventListener('change',e=>{
     const f=e.target.files[0]; if(!f) return;
@@ -1605,7 +1639,7 @@ function bind(){
 }
 
 (async function init(){
-  bind(); syncVisibility();
+  bind(); installPhotoGestures(); syncVisibility();
   await loadFonts();
   if(window.loadFam) window.loadFam(S.engFont);
   await new Promise(res=>{ if(photo.complete) res(); else { photo.onload=res; photo.onerror=res; } });
