@@ -578,7 +578,7 @@ function tricolorCircleFrame(x,y,w,h,shape,variant){
   c.restore();
 }
 // A consistent, slightly shorter silhouette keeps the campaign photo prominent without dominating the copy.
-const PHOTO_FRAME_HEIGHT_SCALE=.86;
+const PHOTO_FRAME_HEIGHT_SCALE=.82;
 function pframe(x,y,w,h,shape){
   y+=h*(1-PHOTO_FRAME_HEIGHT_SCALE)/2; h*=PHOTO_FRAME_HEIGHT_SCALE;
   const f=Math.abs(S.photoF|0)%PHOTO_FRAME_COUNT;if(!f)return;
