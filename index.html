@@ -1046,9 +1046,7 @@ function drawT1P(W,H,img){
   rr(X(60),Y(1302),F(16),F(118),F(8)); c.fillStyle='#4a2a5e'; c.fill();
   chatIcon(X(96),Y(1330),F(72),'#4a2a5e');
   txt(S.q2, X(200), Y(1374), `${fitFont(S.q2, F(36), F(22), F(920), S.hiBody)}px ${S.hiBody}`, P.ink);
-  rr(X(60),Y(1448),F(1080),F(100),F(14)); c.fillStyle=P.dark; c.fill();
-  const cs=fitFont(S.cta, F(34), F(22), F(1000), S.hiBody);
-  txt(S.cta, X(600), Y(1510), `${cs}px ${S.hiBody}`, '#ffffff', 'center');
+  textPill(S.cta,X(600),Y(1498),{base:F(34),min:F(18),maxW:F(1080),padX:F(34),padY:F(16),fill:P.dark,text:'#ffffff',fam:S.hiBody});
   // Expand the footer into the unused blank strip, then give each text row its own dedicated band.
   c.fillStyle=P.dark; c.fillRect(0,Y(1560),W,H-Y(1560));
   textPill(`${S.dateDay} ${S.dateMonth}`,X(600),Y(1604),{base:F(25),min:F(15),maxW:F(640),padX:F(24),padY:F(10),fill:P.gold,text:P.dark,fam:S.hiBody});
@@ -1166,8 +1164,7 @@ function drawT3P(W,H,img){
     const ln=wrapLines(t,F(420))[0]||'';
     txt(ln, x+F(30), y, `${F(26)}px MuktaB`, '#22301f');
   }
-  rr(X(150),Y(1678),F(900),F(48),F(24)); c.fillStyle=G.orange; c.fill();
-  txt(S.ctaBottom, X(600), Y(1710), `${fitFont(S.ctaBottom,F(25),F(15),F(820),S.hiBody)}px ${S.hiBody}`, '#ffffff', 'center',F(860),F(15));
+  textPill(S.ctaBottom,X(600),Y(1702),{base:F(25),min:F(15),maxW:F(900),padX:F(28),padY:F(10),fill:G.orange,text:'#ffffff',fam:S.hiBody});
   txt(S.contact, X(600), Y(1744), `${fitFont(S.contact,F(20),F(14),F(1050),'MuktaB')}px MuktaB`, '#ffffff', 'center',F(1060),F(14));
   txt(S.requester, X(600), Y(1775), `${fitFont(S.requester,F(16),F(12),F(1050),'MuktaB')}px MuktaB`, G.gold, 'center',F(1060),F(12));
   c.fillStyle=G.orange; c.fillRect(X(20),Y(1794),F(380),F(6));
@@ -1204,8 +1201,7 @@ function drawT1S(img){
   const q2s=fitFont(S.q2, 26, 16, 880, S.hiBody);
   txt(S.q2, 130, 953, `${q2s}px ${S.hiBody}`, P.ink);
   c.fillStyle=P.dark; c.fillRect(0,980,1080,100);
-  rr(300,992,480,46,23); c.fillStyle=P.gold; c.fill();
-  txt(`${S.dateDay} ${S.dateMonth}`, 540, 1024, `25px ${S.hiBody}`, P.dark, 'center', 480,14);
+  textPill(`${S.dateDay} ${S.dateMonth}`,540,1015,{base:25,min:14,maxW:500,padX:20,padY:8,fill:P.gold,text:P.dark,fam:S.hiBody});
   txt(S.contact, 540, 1066, `${fitFont(S.contact, 21, 12, 1000, S.hiBody)}px ${S.hiBody}`, '#fff', 'center');
 }
 function drawT2S(img){
@@ -1268,8 +1264,7 @@ function drawT3S(img){
   const sm=fitFont(S.sloganMain, 34, 20, 980, S.hiBody);
   txt(S.sloganMain, 540, 962, `${sm}px ${S.hiBody}`, G.gold, 'center');
   txt(S.sloganSub, 540, 1000, `21px MuktaB`, '#fff', 'center', 940,12);
-  rr(120,1016,840,52,26); c.fillStyle=G.orange; c.fill();
-  txt(`${S.ctaBottom}  ·  ${S.contact}`, 540, 1049, `${fitFont(`${S.ctaBottom}  ·  ${S.contact}`, 19, 11, 820, S.hiBody)}px ${S.hiBody}`, '#fff', 'center');
+  textPill(`${S.ctaBottom}  ·  ${S.contact}`,540,1042,{base:19,min:11,maxW:840,padX:22,padY:9,fill:G.orange,text:'#fff',fam:S.hiBody});
 }
 
 /* ============ LANDSCAPE 16:9 ============ */
@@ -1292,13 +1287,10 @@ function drawT1L(img){
   c.lineWidth=5; c.strokeStyle='#fff'; rr(60,560,920,170,22); c.stroke();
   const hw=wrapFit(S.headline, 840, 36, 20, S.hiBody, 2);
   hw.lines.forEach((ln,i)=> txt(ln,520,625+i*52,`${hw.s}px ${S.hiBody}`,P.ink,'center'));
-  rr(60,760,920,70,12); c.fillStyle=P.dark; c.fill();
-  const cs=fitFont(S.cta, 27, 16, 880, S.hiBody);
-  txt(S.cta, 520, 805, `${cs}px ${S.hiBody}`, '#fff', 'center');
+  textPill(S.cta,520,795,{base:27,min:16,maxW:920,padX:28,padY:12,fill:P.dark,text:'#fff',fam:S.hiBody});
   photoArch(img, 1250, 140, 520, 700, P.gold, 8); pframe(1250,140,520,700,'arch');
   c.fillStyle=P.dark; c.fillRect(0,960,1920,120);
-  rr(60,985,420,60,30); c.fillStyle=P.gold; c.fill();
-  txt(`${S.dateDay} ${S.dateMonth}`, 270, 1025, `28px ${S.hiBody}`, P.dark, 'center', 480,16);
+  textPill(`${S.dateDay} ${S.dateMonth}`,270,1015,{base:28,min:16,maxW:480,padX:22,padY:10,fill:P.gold,text:P.dark,fam:S.hiBody});
   txt(S.contact, 520, 1002, `${fitFont(S.contact, 27, 16, 1280, S.hiBody)}px ${S.hiBody}`, '#fff');
   txt(S.requester, 1860, 1002, `22px MuktaB`, P.gold, 'right', 560,12);
 }
@@ -1394,9 +1386,7 @@ function drawT1B(img){
   txt(S.nameLine2, 428, 450, `${nzs}px ${S.hiName}`, P.gold);
   const hw=wrapFit(S.headline, 800, 34, 18, S.hiBody, 2);
   hw.lines.forEach((ln,i)=> txt(ln,430,540+i*48,`${hw.s}px ${S.hiBody}`,P.gold));
-  rr(430,650,800,64,12); c.fillStyle=P.dark; c.fill();
-  const cs=fitFont(S.cta, 25, 14, 760, S.hiBody);
-  txt(S.cta, 830, 691, `${cs}px ${S.hiBody}`, '#fff', 'center');
+  textPill(S.cta,830,682,{base:25,min:14,maxW:800,padX:26,padY:11,fill:P.dark,text:'#fff',fam:S.hiBody});
   if(S.showBadge) dateBadge(1560,620,150,168);
   c.fillStyle=P.dark; c.fillRect(0,810,1800,90);
   txt(`${S.dateDay} ${S.dateMonth}   ·   ${S.contact}   ·   ${S.requester}`, 900, 864, `${fitFont(`${S.dateDay} ${S.dateMonth}   ·   ${S.contact}   ·   ${S.requester}`, 26, 14, 1700, S.hiBody)}px ${S.hiBody}`, P.gold, 'center');
