@@ -201,7 +201,8 @@
 
     <h2>साइज़</h2>
     <div class="sizes">
-      <button class="sz on" data-s="p23">पोस्टर 2:3<small>1200×1800</small></button>
+      <button class="sz on" data-s="p1080">Default Poster<small>1080 × 1720 · 300 DPI</small></button>
+      <button class="sz" data-s="p23">पोस्टर 2:3<small>1200×1800 · Alternative</small></button>
       <button class="sz" data-s="s916">Status/Story 9:16<small>1080×1920</small></button>
       <button class="sz" data-s="a4">A4 प्रिंट 300dpi<small>2480×3508</small></button>
       <button class="sz" data-s="sq">Square 1:1<small>1080×1080</small></button>
@@ -351,7 +352,7 @@
       <button class="quick-action" id="quickBackground" type="button"><span class="qa-icon">☁</span><span>Drive<br>Background</span></button>
       <button class="quick-action" id="quickPhoto" type="button"><span class="qa-icon">◉</span><span>Upload<br>Photo</span></button>
     </div>
-    <canvas id="poster" width="1200" height="1800"></canvas>
+    <canvas id="poster" width="1080" height="1720"></canvas>
   </section>
 </main>
 <div id="driveBgModal" class="drive-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="driveModalTitle">
@@ -384,7 +385,7 @@
 <script>
 "use strict";
 const S = {
-  template:'t1', size:'p23', palIdx:0, patIdx:0, bgIdx:-1, bgOpacity:100,
+  template:'t1', size:'p1080', palIdx:0, patIdx:0, bgIdx:-1, bgOpacity:100,
   village:'नादाना भाटान',
   nameLine1:'पुनाराम', nameLine2:'विराह्यस',
   postBadge:'सरपंच प्रत्याशी',
@@ -415,10 +416,10 @@ const S = {
 };
 
 const SIZES = {
-  p23:{w:1200,h:1800}, s916:{w:1080,h:1920}, a4:{w:2480,h:3508},
+  p1080:{w:1080,h:1720}, p23:{w:1200,h:1800}, s916:{w:1080,h:1920}, a4:{w:2480,h:3508},
   sq:{w:1080,h:1080}, l169:{w:1920,h:1080}, b21:{w:1800,h:900},
 };
-const ORIENT = { p23:'P', s916:'P', a4:'P', sq:'S', l169:'L', b21:'B' };
+const ORIENT = { p1080:'P', p23:'P', s916:'P', a4:'P', sq:'S', l169:'L', b21:'B' };
 
 /* रंग थीम्स — roles: bg(dark), deep(footer), primary, accent, light, light2, ink, card1, card2, sec1, sec2 */
 const PALETTES = [
@@ -501,7 +502,7 @@ const PHOTO_FRAME_COUNT=360;
 const TRICOLOR_FRAME_START=240;
 const TRICOLOR_FRAME_COUNT=120;
 const LAYOUT_COUNT=36;
-const TOTAL_DESIGNS = 3*3*6*LAYOUT_COUNT*PHOTO_FRAME_COUNT*4*4*PALETTES.length*BG_COUNT*180*NAME_FONTS.length*BODY_FONTS.length;
+const TOTAL_DESIGNS = 3*3*7*LAYOUT_COUNT*PHOTO_FRAME_COUNT*4*4*PALETTES.length*BG_COUNT*180*NAME_FONTS.length*BODY_FONTS.length;
 const ELEM_IMGS={}; const ICONK=['ic_panchayat','ic_women','ic_streetlight','ic_school','ic_senior','ic_sports'];
 [['corner_fans','assets/elems/corner_fans.svg'],['floral_corners','assets/elems/floral_corners.svg'],['sun_corners','assets/elems/sun_corners.svg'],
  ['bead_line','assets/elems/bead_line.svg'],['diamond_chain','assets/elems/diamond_chain.svg'],['double_wave','assets/elems/double_wave.svg'],
@@ -1655,11 +1656,15 @@ function bind(){
     r.onload=()=>usePhoto(r.result,'custom','');
     r.readAsDataURL(f);
   });
+  const pngCrc32=bytes=>{ let c=0xffffffff; for(const b of bytes){ c^=b; for(let k=0;k<8;k++) c=(c>>>1)^((c&1)?0xedb88320:0); } return (c^0xffffffff)>>>0; };
+  const pngChunk=(type,payload)=>{ const out=new Uint8Array(12+payload.length),v=new DataView(out.buffer); v.setUint32(0,payload.length,false); for(let i=0;i<4;i++)out[4+i]=type.charCodeAt(i); out.set(payload,8); v.setUint32(8+payload.length,pngCrc32(out.slice(4,8+payload.length)),false); return out; };
+  const withPngDpi=async(blob,dpi=300)=>{ const raw=new Uint8Array(await blob.arrayBuffer()); if(raw.length<20||raw[1]!==80||raw[2]!==78||raw[3]!==71)return blob; const parts=[raw.slice(0,8)],ppm=Math.round(dpi/.0254); let at=8,added=false; while(at+12<=raw.length){ const n=new DataView(raw.buffer,raw.byteOffset+at,4).getUint32(0,false),end=at+12+n;if(end>raw.length)break;const type=String.fromCharCode(...raw.slice(at+4,at+8));if(type!=='pHYs')parts.push(raw.slice(at,end));if(type==='IHDR'&&!added){const d=new Uint8Array(9),dv=new DataView(d.buffer);dv.setUint32(0,ppm,false);dv.setUint32(4,ppm,false);d[8]=1;parts.push(pngChunk('pHYs',d));added=true;}at=end;}return new Blob(parts,{type:'image/png'}); };
   document.getElementById('export').addEventListener('click',()=>{
-    cv.toBlob(b=>{
+    cv.toBlob(async b=>{
+      const out=await withPngDpi(b,300);
       const a=document.createElement('a');
-      a.href=URL.createObjectURL(b);
-      a.download=`sarpanch_poster_${S.template}_${S.size}.png`;
+      a.href=URL.createObjectURL(out);
+      a.download=`sarpanch_poster_${S.template}_${S.size}_300dpi.png`;
       a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),4000);
     },'image/png');
   });
