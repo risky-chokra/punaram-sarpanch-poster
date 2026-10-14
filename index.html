@@ -309,10 +309,10 @@
       <button class="btn ghost" id="layoutBtn" type="button">🎲 नया कॉमन लेआउट (36 styles)</button>
     </label>
     <label class="f"><span>प्रो फोटो फ्रेम <b id="pfNum">#17</b>/359</span>
-      <button class="btn ghost" id="pfBtn" type="button">🎲 नया प्रो फ्रेम (360 styles)</button>
+      <button class="btn ghost" id="pfBtn" type="button">🎲 नया तिरंगा प्रो फ्रेम (360 designs)</button>
     </label>
     <label class="f"><span>🇮🇳 तिरंगा सर्कल फ्रेम <b id="triFrameNum">—</b>/120</span>
-      <button class="btn ghost" id="triFrameBtn" type="button">🇮🇳 नया तिरंगा सर्कल फ्रेम</button>
+      <button class="btn ghost" id="triFrameBtn" type="button">🇮🇳 नया प्रीमियम तिरंगा फ्रेम (120)</button>
     </label>
     <label class="f"><span>नेम स्टाइल <b id="nsNum">#0</b>/3</span>
       <button class="btn ghost" id="nsBtn" type="button">✍️ नेम बदलें</button>
@@ -566,9 +566,22 @@ function tricolorFramePaint(x,y,w,h,variant=0){
   const vertical=variant%2===1, g=vertical?c.createLinearGradient(x,y,x,y+h):c.createLinearGradient(x,y,x+w,y+h);
   g.addColorStop(0,'#f58220');g.addColorStop(.31,'#f58220');g.addColorStop(.40,'#fffdf5');g.addColorStop(.60,'#fffdf5');g.addColorStop(.69,'#138808');g.addColorStop(1,'#138808');return g;
 }
+function frameDash(style,unit){const k=style%6;return k===1?[unit*2.5,unit*1.15]:k===2?[unit*.28,unit*1.2]:k===3?[unit*4.2,unit*.75,unit*.7,unit*.75]:null;}
+// A small top ornament is attached to the same single outline; it is never a second frame/ring.
+function tricolorFrameOrnament(x,y,w,h,style,unit,g){
+  const mode=style%8;if(mode<3)return;const cx=x+w/2,cy=y+g*.52,r=Math.max(2,unit*.44);
+  c.save();
+  if(mode===3){[['#f58220',-1.25],['#fffdf5',0],['#138808',1.25]].forEach(([col,dx])=>{c.beginPath();c.arc(cx+dx*r,cy,r,0,TAU);c.fillStyle=col;c.fill();});}
+  else if(mode===4){c.strokeStyle='#173b82';c.lineWidth=Math.max(1,unit*.16);c.beginPath();c.arc(cx,cy,r*1.15,0,TAU);c.stroke();for(let i=0;i<8;i++){const a=i/8*TAU;c.beginPath();c.moveTo(cx,cy);c.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);c.stroke();}}
+  else if(mode===5){c.beginPath();c.moveTo(cx,cy-r*1.45);c.lineTo(cx+r*1.45,cy);c.lineTo(cx,cy+r*1.45);c.lineTo(cx-r*1.45,cy);c.closePath();c.fillStyle='#fffdf5';c.fill();c.lineWidth=Math.max(1,unit*.16);c.strokeStyle='#138808';c.stroke();}
+  else if(mode===6){c.strokeStyle='#f58220';c.lineWidth=Math.max(1,unit*.22);c.lineCap='round';c.beginPath();c.moveTo(cx-r*1.7,cy);c.lineTo(cx+r*1.7,cy);c.stroke();c.strokeStyle='#138808';c.beginPath();c.moveTo(cx-r*.85,cy-r*.72);c.lineTo(cx+r*.85,cy-r*.72);c.stroke();}
+  else {c.fillStyle='#173b82';c.beginPath();c.arc(cx,cy,r*1.05,0,TAU);c.fill();c.fillStyle='#fffdf5';c.beginPath();c.arc(cx,cy,r*.3,0,TAU);c.fill();}
+  c.restore();
+}
 function tricolorCircleFrame(x,y,w,h,shape,variant){
   const g=frameGutter(w,h),unit=Math.max(2,Math.min(w,h)*.013),tier=(variant/12)|0;
-  externalFrameStroke(x,y,w,h,shape,g*.52,tricolorFramePaint(x,y,w,h,variant),unit*(1.45+(tier%4)*.12),null,unit*(.75+tier*.08));
+  externalFrameStroke(x,y,w,h,shape,g*.52,tricolorFramePaint(x,y,w,h,variant),unit*(1.45+(tier%4)*.12),frameDash(variant,unit),unit*(.75+tier*.08));
+  tricolorFrameOrnament(x,y,w,h,variant,unit,g);
 }
 // A compact 4:5 frame preserves the 4:5 candidate's full head and namaste hands without crop.
 // The supplied 4:5-safe portrait raster is 928×1152 (29:36); matching that exact ratio prevents any head/hand crop.
@@ -585,8 +598,9 @@ function pframe(x,y,w,h,shape){
   ({x,y,w,h}=fourFiveFrameBox(x,y,w,h));
   const f=Math.abs(S.photoF|0)%PHOTO_FRAME_COUNT;if(!f)return;
   if(f>=TRICOLOR_FRAME_START){tricolorCircleFrame(x,y,w,h,shape,f-TRICOLOR_FRAME_START);return;}
-  const g=frameGutter(w,h),unit=Math.max(2,Math.min(w,h)*.013),style=f%24,variant=(f/24)|0;
-  externalFrameStroke(x,y,w,h,shape,g*.52,tricolorFramePaint(x,y,w,h,style+variant),unit*(1.35+(style%5)*.14),null,style%5===0?unit*1.1:0);
+  const g=frameGutter(w,h),unit=Math.max(2,Math.min(w,h)*.013),style=f%24,variant=(f/24)|0,profile=style+variant*3;
+  externalFrameStroke(x,y,w,h,shape,g*.52,tricolorFramePaint(x,y,w,h,profile),unit*(1.25+(style%5)*.16),frameDash(profile,unit),style%5===0?unit*1.1:0);
+  tricolorFrameOrnament(x,y,w,h,profile,unit,g);
 }
 let PHOTO_FRAME_QUEUE=[], TRICOLOR_FRAME_QUEUE=[];
 function setPhotoFrameUi(){const f=Math.abs(S.photoF|0)%PHOTO_FRAME_COUNT, e=document.getElementById('pfNum'), tri=document.getElementById('triFrameNum');if(e)e.textContent='#'+f;if(tri)tri.textContent=f>=TRICOLOR_FRAME_START?'#'+(f-TRICOLOR_FRAME_START+1):'—';}
