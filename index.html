@@ -561,26 +561,32 @@ function externalFrameDots(x,y,w,h,shape,inset,col,count,size){
   else {const step=(2*w+2*h-8*inset)/count;for(let d=0;d<2*w+2*h-8*inset;d+=step){let X=x+inset,Y=y+inset;if(d<w-2*inset)X+=d;else if(d<w+h-4*inset){X=w-inset+x;Y+=d-(w-2*inset);}else if(d<2*w+h-6*inset){X=x+w-inset-(d-(w+h-4*inset));Y=y+h-inset;}else {X=x+inset;Y=y+h-inset-(d-(2*w+h-6*inset));}c.beginPath();c.arc(X,Y,size,0,TAU);c.fill();}}
   c.restore();
 }
-function tricolorCircleFrame(x,y,w,h,shape,variant){
-  // One selected frame means one outline: never stack multiple rings/borders around a photo.
-  const g=frameGutter(w,h),unit=Math.max(2,Math.min(w,h)*.013),style=variant%12,tier=(variant/12)|0;
-  const colors=['#f58220','#fffdf5','#138808','#173b82',curPal().accent||'#f6c445'];
-  const dash=style%3===1?[unit*(1.3+tier*.15),unit*(.8+style%3*.25)]:style%3===2?[unit*.45,unit*(1.15+tier*.1)]:null;
-  const glow=style%4===0?unit*(1.2+tier*.08):0;
-  externalFrameStroke(x,y,w,h,shape,g*.52,colors[style%colors.length],unit*(1.05+(style%4)*.18),dash,glow);
+// All selected photo frames use a single continuous Indian-tricolour outline — never stacked rings.
+function tricolorFramePaint(x,y,w,h,variant=0){
+  const vertical=variant%2===1, g=vertical?c.createLinearGradient(x,y,x,y+h):c.createLinearGradient(x,y,x+w,y+h);
+  g.addColorStop(0,'#f58220');g.addColorStop(.31,'#f58220');g.addColorStop(.40,'#fffdf5');g.addColorStop(.60,'#fffdf5');g.addColorStop(.69,'#138808');g.addColorStop(1,'#138808');return g;
 }
-// A consistent, slightly shorter silhouette keeps the campaign photo prominent without dominating the copy.
-const PHOTO_FRAME_HEIGHT_SCALE=.74;
+function tricolorCircleFrame(x,y,w,h,shape,variant){
+  const g=frameGutter(w,h),unit=Math.max(2,Math.min(w,h)*.013),tier=(variant/12)|0;
+  externalFrameStroke(x,y,w,h,shape,g*.52,tricolorFramePaint(x,y,w,h,variant),unit*(1.45+(tier%4)*.12),null,unit*(.75+tier*.08));
+}
+// A compact 4:5 frame preserves the 4:5 candidate's full head and namaste hands without crop.
+// The supplied 4:5-safe portrait raster is 928×1152 (29:36); matching that exact ratio prevents any head/hand crop.
+const PHOTO_FRAME_HEIGHT_SCALE=.74, PHOTO_FRAME_RATIO=29/36;
+function fourFiveFrameBox(x,y,w,h){
+  const fh=Math.max(2,Math.min(h*PHOTO_FRAME_HEIGHT_SCALE,w/PHOTO_FRAME_RATIO)),fw=fh*PHOTO_FRAME_RATIO;
+  return {x:x+(w-fw)/2,y:y+(h-fh)/2,w:fw,h:fh};
+}
+function fourFiveInnerBox(x,y,w,h,pad=0){
+  const aw=Math.max(2,w-pad*2),ah=Math.max(2,h-pad*2),ih=Math.max(2,Math.min(ah,aw/PHOTO_FRAME_RATIO)),iw=ih*PHOTO_FRAME_RATIO;
+  return {x:x+(w-iw)/2,y:y+(h-ih)/2,w:iw,h:ih};
+}
 function pframe(x,y,w,h,shape){
-  y+=h*(1-PHOTO_FRAME_HEIGHT_SCALE)/2; h*=PHOTO_FRAME_HEIGHT_SCALE;
+  ({x,y,w,h}=fourFiveFrameBox(x,y,w,h));
   const f=Math.abs(S.photoF|0)%PHOTO_FRAME_COUNT;if(!f)return;
   if(f>=TRICOLOR_FRAME_START){tricolorCircleFrame(x,y,w,h,shape,f-TRICOLOR_FRAME_START);return;}
-  // Every professional style resolves to exactly one decorative outline, never layered borders.
-  const g=frameGutter(w,h),unit=Math.max(2,Math.min(w,h)*.013),style=f%24,variant=(f/24)|0,p=curPal();
-  const cols=[p.accent||'#e8b64c','#ffffff',p.primary||'#5b1244',p.sec1||'#f58220',p.sec2||'#1a8a3c',p.light||'#f6efdc'];
-  const dash=style%4===1?[unit*(1.2+(variant%3)*.25),unit*(.75+(style%3)*.2)]:style%4===2?[unit*.42,unit*(1.15+(variant%3)*.18)]:null;
-  const glow=style%5===0?unit*(1.15+(variant%4)*.15):0;
-  externalFrameStroke(x,y,w,h,shape,g*.52,cols[(style+variant)%cols.length],unit*(1.0+(style%5)*.16),dash,glow);
+  const g=frameGutter(w,h),unit=Math.max(2,Math.min(w,h)*.013),style=f%24,variant=(f/24)|0;
+  externalFrameStroke(x,y,w,h,shape,g*.52,tricolorFramePaint(x,y,w,h,style+variant),unit*(1.35+(style%5)*.14),null,style%5===0?unit*1.1:0);
 }
 let PHOTO_FRAME_QUEUE=[], TRICOLOR_FRAME_QUEUE=[];
 function setPhotoFrameUi(){const f=Math.abs(S.photoF|0)%PHOTO_FRAME_COUNT, e=document.getElementById('pfNum'), tri=document.getElementById('triFrameNum');if(e)e.textContent='#'+f;if(tri)tri.textContent=f>=TRICOLOR_FRAME_START?'#'+(f-TRICOLOR_FRAME_START+1):'—';}
@@ -923,9 +929,9 @@ function archPathOn(ctx,x,y,w,h){
 }
 function archPath(x,y,w,h){archPathOn(c,x,y,w,h);}
 function photoArch(img,x,y,w,h,border,bw){
-  y+=h*(1-PHOTO_FRAME_HEIGHT_SCALE)/2; h*=PHOTO_FRAME_HEIGHT_SCALE;
-  img=photoForFrame('portrait',img,w/h);
-  const pad=photoApertureGutter(w,h),ax=pad,ay=pad,aw=w-pad*2,ah=h-pad*2;
+  ({x,y,w,h}=fourFiveFrameBox(x,y,w,h));
+  img=photoForFrame('portrait',img,PHOTO_FRAME_RATIO);
+  const pad=photoApertureGutter(w,h),inner=fourFiveInnerBox(0,0,w,h,pad),ax=inner.x,ay=inner.y,aw=inner.w,ah=inner.h;
   PHOTO_HIT={kind:'arch',x:x+ax,y:y+ay,w:aw,h:ah};
   // With a selected frame the margin stays transparent, so it cannot look like a second stacked frame.
   if(!Math.abs(S.photoF|0)){c.save();archPath(x,y,w,h);c.clip();const g=c.createLinearGradient(x,y,x+w,y+h);g.addColorStop(0,'#f8f8fb');g.addColorStop(1,'#e8edf2');c.fillStyle=g;c.fillRect(x,y,w,h);c.restore();}
@@ -939,12 +945,12 @@ function photoArch(img,x,y,w,h,border,bw){
   if(border&&!Math.abs(S.photoF|0)){c.save();archPath(x,y,w,h);c.lineWidth=bw;c.strokeStyle=border;c.stroke();c.restore();}
 }
 function photoOvalFade(img,cx,cy,rx,ry){
-  ry*=PHOTO_FRAME_HEIGHT_SCALE;
-  img=photoForFrame('oval',img,(rx*2)/(ry*2));
+  const frame=fourFiveFrameBox(cx-rx,cy-ry,rx*2,ry*2);cx=frame.x+frame.w/2;cy=frame.y+frame.h/2;rx=frame.w/2;ry=frame.h/2;
+  img=photoForFrame('oval',img,PHOTO_FRAME_RATIO);
   const off=document.createElement('canvas');off.width=Math.ceil(rx*2);off.height=Math.ceil(ry*2);
-  const o=off.getContext('2d'),pad=photoApertureGutter(off.width,off.height);
-  // The photo aperture is intentionally inset beyond the INNER oval. Decorative rings never receive candidate pixels.
-  const ax=Math.max(2,rx-(pad||rx*.018)),ay=Math.max(2,ry-(pad||ry*.018));
+  const o=off.getContext('2d'),pad=photoApertureGutter(off.width,off.height),inner=fourFiveInnerBox(0,0,rx*2,ry*2,pad);
+  // The photo aperture is an inset 4:5 oval. Decorative rings never receive candidate pixels.
+  const ax=Math.max(2,inner.w/2),ay=Math.max(2,inner.h/2);
   PHOTO_HIT={kind:'oval',cx,cy,rx:ax,ry:ay};
   o.save();o.beginPath();o.ellipse(rx,ry,ax,ay,0,0,TAU);o.clip();
   o.fillStyle='#f8f8fb';o.fillRect(rx-ax,ry-ay,ax*2,ay*2);
