@@ -166,7 +166,7 @@
         <select id="preparedPhoto"><option value="auto">Auto Fit — frame के हिसाब से फोटो</option><option value="assets/candidate-expanded-9x16.png?v=1">Portrait Safe — लंबे / oval frames</option><option value="assets/candidate-expanded-square.png?v=1">Square Safe — circle / square frames</option><option value="assets/candidate-expanded-4x5.png?v=1">4:5 Safe — सामान्य vertical frame</option><option value="assets/candidate.jpg?v=20261014">Original फोटो</option></select>
       </label>
       <label class="auto-crop-toggle"><input id="autoCrop" type="checkbox" checked><span><b>Smart Auto Crop</b><small>हर नए design / frame पर photo को safe तरीके से adjust करें</small></span></label>
-      <p class="note" id="autoCropStatus">✓ Dynamic frame-fill चालू है — photo stretch नहीं होगी; जरूरत पर soft photo background से frame पूरा भरेगा।</p>
+      <p class="note" id="autoCropStatus">✓ चुनी हुई photo हर नए design में बनी रहेगी; frame-fit अपने-आप फिर से apply होगा।</p>
     </section>
     <div class="quick-grid" aria-label="Quick poster actions">
       <button class="quick-action primary" id="rand" type="button"><span class="qa-icon">🎲</span><span>Random<br>Poster</span></button>
@@ -1559,13 +1559,12 @@ function bind(){
     else usePhoto(value,'manual',value);
   };
   window.enableAutoPhotoFit=()=>{
-    if(photoIsCustom) return; // keep the user's own upload while still applying safe dynamic crop.
-    photo=autoPortraitPhoto; photoMode='auto';
-    if(preparedSelect) preparedSelect.value='auto';
-    thumb.src=autoPortraitPhoto.src; syncPhotoChoice('auto'); draw();
+    // Recalculate frame fitting on every generation WITHOUT replacing the photo the user selected.
+    // In Auto Fit mode the closest prepared aspect is selected internally; all other choices stay selected.
+    draw();
   };
   const cropBox=document.getElementById('autoCrop'), cropStatus=document.getElementById('autoCropStatus');
-  if(cropBox){ cropBox.checked=S.autoCrop; cropBox.addEventListener('change',()=>{ S.autoCrop=cropBox.checked; if(cropStatus) cropStatus.textContent=S.autoCrop?'✓ Dynamic frame-fill चालू है — हर नए design/frame में safe fitting होगी।':'Safe contain mode — कोई crop नहीं, पूरी फ़ोटो दिखाई जाएगी।'; draw(); }); }
+  if(cropBox){ cropBox.checked=S.autoCrop; cropBox.addEventListener('change',()=>{ S.autoCrop=cropBox.checked; if(cropStatus) cropStatus.textContent=S.autoCrop?'✓ चुनी हुई photo बनी रहेगी और हर नए design/frame में safe fitting होगी।':'Safe contain mode — कोई crop नहीं, पूरी फ़ोटो दिखाई जाएगी।'; draw(); }); }
   preparedSelect.addEventListener('change',e=>applyPreparedPhoto(e.target.value));
   document.querySelectorAll('.photo-choice').forEach(btn=>btn.addEventListener('click',()=>applyPreparedPhoto(btn.dataset.photo)));
   document.getElementById('uploadBtn').addEventListener('click',()=>document.getElementById('photoFile').click());
