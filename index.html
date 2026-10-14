@@ -901,11 +901,14 @@ function photoArch(img,x,y,w,h,border,bw){
 function photoOvalFade(img,cx,cy,rx,ry){
   PHOTO_HIT={kind:'oval',cx,cy,rx,ry};
   img=photoForFrame('oval',img,(rx*2)/(ry*2));
-  const off=document.createElement('canvas');off.width=Math.ceil(rx*2);off.height=Math.ceil(ry*2);const o=off.getContext('2d'),pad=frameGutter(off.width,off.height);
-  o.save();o.beginPath();o.ellipse(rx,ry,rx*.995,ry*.995,0,0,TAU);o.clip();const g=o.createLinearGradient(0,0,off.width,off.height);g.addColorStop(0,'#f8f8fb');g.addColorStop(1,'#e7edf1');o.fillStyle=g;o.fillRect(0,0,off.width,off.height);
+  const off=document.createElement('canvas');off.width=Math.ceil(rx*2);off.height=Math.ceil(ry*2);const o=off.getContext('2d'),pad=frameGutter(off.width,off.height),safeX=rx*.992,safeY=ry*.992;
+  // Keep both the drawing canvas and the final compositing pass inside the same oval aperture.
+  // The second mask prevents any source-image pixels or anti-aliased canvas edge from ever escaping the frame.
+  o.save();o.beginPath();o.ellipse(rx,ry,safeX,safeY,0,0,TAU);o.clip();const g=o.createLinearGradient(0,0,off.width,off.height);g.addColorStop(0,'#f8f8fb');g.addColorStop(1,'#e7edf1');o.fillStyle=g;o.fillRect(0,0,off.width,off.height);
   if(pad){o.beginPath();o.ellipse(rx,ry,Math.max(2,rx-pad),Math.max(2,ry-pad),0,0,TAU);o.clip();containPhoto(o,img,pad,pad,off.width-pad*2,off.height-pad*2,.02);}else containPhoto(o,img,0,0,off.width,off.height,.028);o.restore();
+  o.save();o.globalCompositeOperation='destination-in';o.beginPath();o.ellipse(rx,ry,safeX,safeY,0,0,TAU);o.fill();o.restore();
   if(PHOTO_VIEW){ const ox=cx-rx,oy=cy-ry,v=PHOTO_VIEW; PHOTO_VIEW={...v,x:v.x+ox,y:v.y+oy,minX:v.minX+ox,maxX:v.maxX+ox,minY:v.minY+oy,maxY:v.maxY+oy}; }
-  c.drawImage(off,cx-rx,cy-ry);
+  c.save();c.beginPath();c.ellipse(cx,cy,safeX,safeY,0,0,TAU);c.clip();c.drawImage(off,cx-rx,cy-ry);c.restore();
 }
 function chatIcon(x,y,s,color){
   c.save(); c.strokeStyle=color; c.lineWidth=Math.max(2,s*0.08); c.lineJoin='round';
