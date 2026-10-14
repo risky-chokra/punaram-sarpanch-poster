@@ -1704,7 +1704,8 @@ sec.innerHTML = `
   <input type="file" id="packFile" accept=".json,application/json" class="hidden">
   <button class="btn ghost" id="resReset" style="margin-top:6px">🗑 जोड़े संसाधन हटाएं (reset)</button>
   <p class="note" id="resNote">जोड़े गए संसाधन इसी browser में सहेजे रहते हैं। Pack export करके Drive/team में share करें।</p>`;
-panel.insertBefore(sec, panel.querySelector('p.note'));
+const quickActions=panel.querySelector(':scope > .quick-grid');
+panel.insertBefore(sec, quickActions ? quickActions.nextElementSibling : null);
 const $ = id => sec.querySelector('#'+id);
 const flash = m => { $('resNote').textContent = m; };
 const save = () => { if(!LS){ flash('इस browser में storage उपलब्ध नहीं'); return false; }
