@@ -1070,6 +1070,14 @@ function fitFont(text, base, min, maxW, fam, maxH=0){
     if(maxH) s=Math.max(min,Math.min(s,Math.floor(maxH/per))); c.font=`${s}px ${fam}`; }
   return s;
 }
+// Canvas centers by advance width by default; use the actual glyph bounds for display-name plates
+// so ornate Devanagari characters remain visually centred inside their cream capsule.
+function visualCenterStart(text,cx,font){
+  c.save(); c.font=font; c.textAlign='left';
+  const m=c.measureText(String(text||'')),left=Number(m.actualBoundingBoxLeft)||0,right=Number(m.actualBoundingBoxRight)||m.width||0;
+  c.restore();
+  return cx+(left-right)/2;
+}
 // Measure the actual glyph box, not just nominal font pixels. This keeps every pill's
 // padding and baseline balanced across Hindi, English and mixed labels.
 function measuredPillLabel(label,opt={},fallbackPadX=12,fallbackPadY=7){
@@ -1242,10 +1250,12 @@ function drawT3P(W,H,img){
   rr(X(150),Y(965),F(900),F(118),F(18)); c.fillStyle=G.cream; c.fill();
   c.lineWidth=F(4); c.strokeStyle=G.gold; rr(X(150),Y(965),F(900),F(118),F(18)); c.stroke();
   const nf=fitFont(`${S.nameLine1} ${S.nameLine2}`, F(76), F(40), F(860), S.hiName, F(84));
-  c.font=`${nf}px ${S.hiName}`; c.textAlign='center';
+  const displayName=`${S.nameLine1} ${S.nameLine2}`, nameFont=`${nf}px ${S.hiName}`;
+  c.font=nameFont; c.textAlign='left';
+  const nameX=visualCenterStart(displayName,X(600),nameFont);
   c.lineWidth=F(8); c.strokeStyle=G.gold; c.lineJoin='round';
-  c.strokeText(`${S.nameLine1} ${S.nameLine2}`, X(600), Y(1053));
-  c.fillStyle=G.dark; c.fillText(`${S.nameLine1} ${S.nameLine2}`, X(600), Y(1053));
+  c.strokeText(displayName, nameX, Y(1053));
+  c.fillStyle=G.dark; c.fillText(displayName, nameX, Y(1053));
   textPill(S.postBadge,X(600),Y(1137),{base:F(34),min:F(20),maxW:F(740),padX:F(46),padY:F(13),fill:G.orange,text:'#ffffff',fam:S.hiBody});
   const sm=fitFont(S.sloganMain, F(50), F(30), F(1040), S.hiBody);
   txt(S.sloganMain, X(600), Y(1235), `${sm}px ${S.hiBody}`, G.gold, 'center');
@@ -1355,10 +1365,12 @@ function drawT3S(img){
   rr(120,700,840,90,14); c.fillStyle=G.cream; c.fill();
   c.lineWidth=3; c.strokeStyle=G.gold; rr(120,700,840,90,14); c.stroke();
   const nf=fitFont(`${S.nameLine1} ${S.nameLine2}`, 56, 30, 800, S.hiName, 70);
-  c.font=`${nf}px ${S.hiName}`; c.textAlign='center';
+  const displayName=`${S.nameLine1} ${S.nameLine2}`, nameFont=`${nf}px ${S.hiName}`;
+  c.font=nameFont; c.textAlign='left';
+  const nameX=visualCenterStart(displayName,540,nameFont);
   c.lineWidth=6; c.strokeStyle=G.gold; c.lineJoin='round';
-  c.strokeText(`${S.nameLine1} ${S.nameLine2}`, 540, 763);
-  c.fillStyle=G.dark; c.fillText(`${S.nameLine1} ${S.nameLine2}`, 540, 763);
+  c.strokeText(displayName, nameX, 763);
+  c.fillStyle=G.dark; c.fillText(displayName, nameX, 763);
   textPill(S.postBadge,540,837,{base:28,min:18,maxW:520,padX:32,padY:11,fill:G.orange,text:'#fff',fam:S.hiBody});
   const sm=fitFont(S.sloganMain, 38, 24, 980, S.hiBody);
   txt(S.sloganMain, 540, 907, `${sm}px ${S.hiBody}`, G.gold, 'center');
@@ -1443,10 +1455,12 @@ function drawT3L(img){
   rr(80,785,760,95,14); c.fillStyle=G.cream; c.fill();
   c.lineWidth=3; c.strokeStyle=G.gold; rr(80,785,760,95,14); c.stroke();
   const nf=fitFont(`${S.nameLine1} ${S.nameLine2}`, 60, 32, 720, S.hiName, 70);
-  c.font=`${nf}px ${S.hiName}`; c.textAlign='center';
+  const displayName=`${S.nameLine1} ${S.nameLine2}`, nameFont=`${nf}px ${S.hiName}`;
+  c.font=nameFont; c.textAlign='left';
+  const nameX=visualCenterStart(displayName,460,nameFont);
   c.lineWidth=6; c.strokeStyle=G.gold; c.lineJoin='round';
-  c.strokeText(`${S.nameLine1} ${S.nameLine2}`, 460, 851);
-  c.fillStyle=G.dark; c.fillText(`${S.nameLine1} ${S.nameLine2}`, 460, 851);
+  c.strokeText(displayName, nameX, 851);
+  c.fillStyle=G.dark; c.fillText(displayName, nameX, 851);
   textPill(S.postBadge,460,924,{base:28,min:18,maxW:540,padX:34,padY:10,fill:G.orange,text:'#fff',fam:S.hiBody});
   const sm=fitFont(S.sloganMain, 40, 24, 620, S.hiBody);
   txt(S.sloganMain, 1500, 470, `${sm}px ${S.hiBody}`, G.gold, 'center');
