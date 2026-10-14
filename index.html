@@ -77,7 +77,7 @@
   .row2{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
   .hidden{display:none !important;}
   .photo-row{display:flex; gap:8px; align-items:center;}
-  .photo-row img{width:52px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line);}
+  .photo-row img{width:52px;height:64px;object-fit:contain;background:#f7f8fb;border-radius:8px;border:1px solid var(--line);}
   .note{font-size:11.5px;color:var(--mut);margin-top:6px;line-height:1.5;}
   .bg-actions{display:grid;grid-template-columns:1.2fr .8fr;gap:8px;margin:4px 0 8px;}
   .bg-preview{display:flex;align-items:center;gap:10px;padding:8px;margin:6px 0 8px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);min-height:76px;}
@@ -132,7 +132,7 @@
       <button class="quick-action" id="quickBackground" type="button"><span class="qa-icon">☁</span><span>Drive<br>Background</span></button>
       <button class="quick-action" id="quickPhoto" type="button"><span class="qa-icon">◉</span><span>Upload<br>Photo</span></button>
     </div>
-    <p class="note" style="margin:0 0 4px;color:#c7c1df">✓ Safe layout engine: text auto-fit और poster safe-zones active</p>
+    <p class="note" style="margin:0 0 4px;color:#c7c1df">✓ Safe layout engine: text auto-fit, no-stretch assets और poster safe-zones active</p>
     <h2>पोस्टर स्टाइल</h2>
     <div class="tabs">
       <button class="tab on" data-t="t1"><div class="sw sw1"></div>रॉयल पर्पल<br><small>सुझाव पोस्टर</small></button>
@@ -446,13 +446,13 @@ function elemOverlay(W,H){ const v=S.elemV|0; if(!v) return;
    ['mandala_teal','bead_line','agr_teal'],['mandala_navy','diamond_chain','agr_marigold'],['mandala_peacock','double_wave','agr_indigo'],
    ['mandala_teal','bead_line',null,'tex_navy'],['floral_corners','diamond_chain',null,'tex_teal'],['sun_corners','double_wave',null,'tex_navy']][v]; if(!set) return;
   c.save(); c.globalAlpha=0.85;
-  if(set[3]){ const tx=ELEM_IMGS[set[3]]; if(tx&&tx.complete&&tx.naturalWidth){ c.save(); c.globalAlpha=0.13; c.drawImage(tx,0,0,W,H); c.restore(); } }
+  if(set[3]){ const tx=ELEM_IMGS[set[3]]; if(tx&&tx.complete&&tx.naturalWidth){ c.save(); c.globalAlpha=0.13; const pat=c.createPattern(tx,'repeat'); if(pat){c.fillStyle=pat;c.fillRect(0,0,W,H);} c.restore(); } }
   const ci=ELEM_IMGS[set[0]]; if(ci&&ci.complete&&ci.naturalWidth){ const s=Math.min(W,H)*0.24;
-    c.drawImage(ci,0,0,s,s); c.save(); c.translate(W,0); c.scale(-1,1); c.drawImage(ci,0,0,s,s); c.restore(); }
-  const di=ELEM_IMGS[set[1]]; if(di&&di.complete&&di.naturalWidth){ const dw=W*0.55, dh=Math.max(20,dw*0.05);
-    c.drawImage(di,(W-dw)/2,H-dh*1.6,dw,dh); }
+    drawAspectSafe(c,ci,0,0,s,s); c.save(); c.translate(W,0); c.scale(-1,1); drawAspectSafe(c,ci,0,0,s,s); c.restore(); }
+  const di=ELEM_IMGS[set[1]]; if(di&&di.complete&&di.naturalWidth){ const dw=W*0.55, dh=Math.max(20,dw*0.08);
+    drawAspectSafe(c,di,(W-dw)/2,H-dh*1.6,dw,dh); }
   if(set[2]){ const ic=ELEM_IMGS[set[2]]; if(ic&&ic.complete&&ic.naturalWidth){ const s2=Math.min(W,H)*0.07;
-    c.drawImage(ic,W-s2*1.25,H-s2*1.45,s2,s2); } }
+    drawAspectSafe(c,ic,W-s2*1.25,H-s2*1.45,s2,s2); } }
   c.restore(); }
 function tricolorCircleFrame(x,y,w,h,shape,variant){
   const p=curPal(), saffron='#f58220', white='#fffdf5', green='#138808', navy='#173b82', gold=p.accent||'#f6c445';
@@ -720,9 +720,14 @@ function cover(img,x,y,w,h,vy=0.18){
 }
 function containPhoto(ctx,img,x,y,w,h,pad=.028){
   // Portraits always use contain (not cover): head, hands and shoulders stay inside every frame.
-  const safeW=w*(1-pad*2), safeH=h*(1-pad*2), scale=Math.min(safeW/img.width,safeH/img.height);
-  const dw=img.width*scale, dh=img.height*scale;
-  ctx.drawImage(img,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
+  const safeW=w*(1-pad*2), safeH=h*(1-pad*2);
+  drawAspectSafe(ctx,img,x+w*pad,y+h*pad,safeW,safeH);
+}
+function drawAspectSafe(ctx,source,x,y,w,h){
+  const sw=source.naturalWidth||source.videoWidth||source.width, sh=source.naturalHeight||source.videoHeight||source.height;
+  if(!sw||!sh||!w||!h) return;
+  const scale=Math.min(w/sw,h/sh), dw=sw*scale, dh=sh*scale;
+  ctx.drawImage(source,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
 }
 function archPath(x,y,w,h){
   const r=w/2;
@@ -980,7 +985,7 @@ function drawT3P(W,H,img){
     const x=X(140)+col*F(500), y=Y(1520)+row*F(52);
     const ikc=ELEM_IMGS[ICONK[i%6]];
     if(ikc&&ikc.complete&&ikc.naturalWidth){ c.fillStyle='#ffffff'; c.beginPath(); c.arc(x,y-F(8),F(16),0,TAU); c.fill();
-      c.drawImage(ikc, x-F(11), y-F(19), F(22), F(22)); }
+      drawAspectSafe(c,ikc,x-F(11),y-F(19),F(22),F(22)); }
     else { c.fillStyle=G.orange; c.beginPath(); c.arc(x,y-F(8),F(16),0,TAU); c.fill(); }
     txt(String(i+1), x, y-F(2), `${F(20)}px MuktaXB`, '#ffffff', 'center');
     const t=String([S.p1,S.p2,S.p3,S.p4,S.p5,S.p6][i]);
@@ -1321,7 +1326,7 @@ function layoutOverlay(W,H){
   const copy=document.createElement('canvas'); copy.width=W; copy.height=H; const cc=copy.getContext('2d'); cc.drawImage(cv,0,0);
   const m=Math.max(12,Math.min(W,H)*(0.018+tier*.0015)), r=Math.max(12,m*1.1), scale=1-(m/W)*2;
   c.clearRect(0,0,W,H);
-  const card=(x,y,w,h,rad=r)=>{c.save();c.beginPath();rr(x,y,w,h,rad);c.clip();c.drawImage(copy,x,y,w,h);c.restore();};
+  const card=(x,y,w,h,rad=r)=>{c.save();c.beginPath();rr(x,y,w,h,rad);c.clip();drawAspectSafe(c,copy,x,y,w,h);c.restore();};
   const back=(a,b)=>{const g=c.createLinearGradient(0,0,W,H);g.addColorStop(0,a);g.addColorStop(1,b);c.fillStyle=g;c.fillRect(0,0,W,H);};
   if(type===0){back(deep,accent);c.save();c.shadowColor='rgba(0,0,0,.28)';c.shadowBlur=m*2;c.shadowOffsetY=m*.6;card(m,m,W-m*2,H-m*2);c.restore();c.lineWidth=Math.max(2,m*.16);c.strokeStyle=light;rr(m,m,W-m*2,H-m*2,r);c.stroke();c.lineWidth=Math.max(1,m*.07);c.strokeStyle=accent;rr(m*1.55,m*1.55,W-m*3.1,H-m*3.1,r*.72);c.stroke();}
   else if(type===1){back(light,accent);c.fillStyle=deep;c.globalAlpha=.82;c.fillRect(0,0,m*2.2,H);c.globalAlpha=1;c.save();c.shadowColor='rgba(0,0,0,.24)';c.shadowBlur=m*2;card(m*1.35,m*.8,W-m*2.15,H-m*1.6,m*.45);c.restore();c.fillStyle=accent;c.fillRect(m*.35,H*.13,m*.42,H*.74);}
