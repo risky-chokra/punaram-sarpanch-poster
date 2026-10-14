@@ -545,6 +545,8 @@ function elemOverlay(W,H){ const v=S.elemV|0; if(!v) return;
     drawAspectSafe(c,ic,W-s2*1.25,H-s2*1.45,s2,s2); } }
   c.restore(); }
 function frameGutter(w,h){return S.photoF?Math.max(8,Math.min(w,h)*.115):0;}
+// Keep a small clean buffer between the drawable candidate image and every decorative frame/ring.
+function photoApertureGutter(w,h){const ring=frameGutter(w,h);return ring?ring+Math.max(4,Math.min(w,h)*.009):0;}
 function framePath(x,y,w,h,shape,inset=0){
   const X=x+inset,Y=y+inset,W=Math.max(2,w-inset*2),H=Math.max(2,h-inset*2);
   c.beginPath();
@@ -932,19 +934,21 @@ function archPath(x,y,w,h){
 }
 function photoArch(img,x,y,w,h,border,bw){
   y+=h*(1-PHOTO_FRAME_HEIGHT_SCALE)/2; h*=PHOTO_FRAME_HEIGHT_SCALE;
-  PHOTO_HIT={kind:'arch',x,y,w,h};
   img=photoForFrame('portrait',img,w/h);
-  const pad=frameGutter(w,h);c.save();archPath(x,y,w,h);c.clip();
+  const pad=photoApertureGutter(w,h),ax=x+pad,ay=y+pad,aw=w-pad*2,ah=h-pad*2;
+  PHOTO_HIT={kind:'arch',x:pad?ax:x,y:pad?ay:y,w:pad?aw:w,h:pad?ah:h};
+  c.save();archPath(x,y,w,h);c.clip();
   const g=c.createLinearGradient(x,y,x+w,y+h);g.addColorStop(0,'#f8f8fb');g.addColorStop(1,'#e8edf2');c.fillStyle=g;c.fillRect(x,y,w,h);
-  if(pad){archPath(x+pad,y+pad,w-pad*2,h-pad*2);c.clip();containPhoto(c,img,x+pad,y+pad,w-pad*2,h-pad*2,.02);}else containPhoto(c,img,x,y,w,h,.028);c.restore();
+  // Candidate pixels are rendered only inside the deliberately inset inner arch aperture.
+  if(pad){archPath(ax,ay,aw,ah);c.clip();containPhoto(c,img,ax,ay,aw,ah,.02);}else containPhoto(c,img,x,y,w,h,.028);c.restore();
   if(border){c.save();archPath(x,y,w,h);c.lineWidth=bw;c.strokeStyle=border;c.stroke();c.restore();}
 }
 function photoOvalFade(img,cx,cy,rx,ry){
   ry*=PHOTO_FRAME_HEIGHT_SCALE;
   img=photoForFrame('oval',img,(rx*2)/(ry*2));
   const off=document.createElement('canvas');off.width=Math.ceil(rx*2);off.height=Math.ceil(ry*2);
-  const o=off.getContext('2d'),pad=frameGutter(off.width,off.height);
-  // The photo aperture is intentionally the INNER oval. Decorative rings never receive any photo pixels.
+  const o=off.getContext('2d'),pad=photoApertureGutter(off.width,off.height);
+  // The photo aperture is intentionally inset beyond the INNER oval. Decorative rings never receive candidate pixels.
   const ax=Math.max(2,rx-(pad||rx*.018)),ay=Math.max(2,ry-(pad||ry*.018));
   PHOTO_HIT={kind:'oval',cx,cy,rx:ax,ry:ay};
   o.save();o.beginPath();o.ellipse(rx,ry,ax,ay,0,0,TAU);o.clip();
