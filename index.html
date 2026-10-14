@@ -1004,8 +1004,8 @@ function drawT1P(W,H,img){
   c.fillStyle=P.dark; c.fillRect(0,Y(1620),W,H-Y(1620));
   rr(X(390),Y(1642),F(420),F(64),F(32)); c.fillStyle=P.gold; c.fill();
   txt(`${S.dateDay} ${S.dateMonth}`, X(600), Y(1685), `${F(34)}px ${S.hiBody}`, P.dark, 'center', F(640),F(20));
-  txt(S.contact, X(600), Y(1748), `${fitFont(S.contact, F(32), F(20), F(1120), S.hiBody)}px ${S.hiBody}`, '#ffffff', 'center');
-  txt(S.requester, X(600), Y(1784), `${F(26)}px MuktaB`, P.gold, 'center', F(1100),F(16));
+  txt(S.contact, X(600), Y(1720), `${fitFont(S.contact, F(32), F(20), F(1120), S.hiBody)}px ${S.hiBody}`, '#ffffff', 'center');
+  txt(S.requester, X(600), Y(1758), `${F(26)}px MuktaB`, P.gold, 'center', F(1100),F(16));
   c.fillStyle=P.mag; c.fillRect(X(60),Y(1792),F(520),F(5));
   c.fillStyle=P.gold; c.fillRect(X(600),Y(1792),F(540),F(5));
 }
@@ -1056,8 +1056,8 @@ function drawT2P(W,H,img){
     c.moveTo(X(1000+dx),Y(1420)); c.lineTo(X(1026+dx),Y(1420)); c.lineTo(X(986+dx),Y(1580)); c.lineTo(X(960+dx),Y(1580));
     c.closePath(); c.fill();
   });
-  txt(S.contact, X(600), Y(1678), `${fitFont(S.contact, F(40), F(24), F(1120), S.hiBody)}px ${S.hiBody}`, Wd.navy, 'center');
-  txt(S.requester, X(600), Y(1734), `${F(30)}px MuktaB`, Wd.grn, 'center', X(1000),F(18));
+  txt(S.contact, X(600), Y(1660), `${fitFont(S.contact, F(40), F(24), F(1120), S.hiBody)}px ${S.hiBody}`, Wd.navy, 'center');
+  txt(S.requester, X(600), Y(1706), `${F(30)}px MuktaB`, Wd.grn, 'center', X(1000),F(18));
 }
 
 function drawT3P(W,H,img){
@@ -1122,9 +1122,9 @@ function drawT3P(W,H,img){
     txt(ln, x+F(30), y, `${F(26)}px MuktaB`, '#22301f');
   }
   rr(X(150),Y(1678),F(900),F(80),F(40)); c.fillStyle=G.orange; c.fill();
-  txt(S.ctaBottom, X(600), Y(1712), `${F(32)}px ${S.hiBody}`, '#ffffff', 'center');
-  txt(S.contact, X(600), Y(1746), `${F(25)}px MuktaB`, '#ffffff', 'center');
-  txt(S.requester, X(600), Y(1782), `${F(24)}px MuktaB`, G.gold, 'center');
+  txt(S.ctaBottom, X(600), Y(1690), `${F(32)}px ${S.hiBody}`, '#ffffff', 'center');
+  txt(S.contact, X(600), Y(1724), `${F(25)}px MuktaB`, '#ffffff', 'center');
+  txt(S.requester, X(600), Y(1758), `${F(24)}px MuktaB`, G.gold, 'center');
   c.fillStyle=G.orange; c.fillRect(X(20),Y(1794),F(380),F(6));
   c.fillStyle='#ffffff'; c.fillRect(X(400),Y(1794),F(380),F(6));
   c.fillStyle='#1a8a3c'; c.fillRect(X(780),Y(1794),F(400),F(6));
@@ -1197,8 +1197,8 @@ function drawT2S(img){
   txt(S.voteLine1, 230, 920, `24px ${S.hiBody}`, '#fff','left',700,14);
   const v2=fitFont(S.voteLine2, 32, 18, 700, S.hiBody);
   txt(S.voteLine2, 230, 968, `${v2}px ${S.hiBody}`, Wd.gold);
-  txt(S.contact, 540, 1040, `${fitFont(S.contact, 28, 16, 1000, S.hiBody)}px ${S.hiBody}`, Wd.navy, 'center');
-  txt(S.requester, 540, 1072, `20px MuktaB`, Wd.grn, 'center', 900,12);
+  txt(S.contact, 540, 1016, `${fitFont(S.contact, 28, 16, 1000, S.hiBody)}px ${S.hiBody}`, Wd.navy, 'center');
+  txt(S.requester, 540, 1050, `20px MuktaB`, Wd.grn, 'center', 900,12);
 }
 function drawT3S(img){
   const G=palT3();
@@ -1259,8 +1259,8 @@ function drawT1L(img){
   c.fillStyle=P.dark; c.fillRect(0,960,1920,120);
   rr(60,985,420,60,30); c.fillStyle=P.gold; c.fill();
   txt(`${S.dateDay} ${S.dateMonth}`, 270, 1025, `28px ${S.hiBody}`, P.dark, 'center', 480,16);
-  txt(S.contact, 520, 1027, `${fitFont(S.contact, 27, 16, 1280, S.hiBody)}px ${S.hiBody}`, '#fff');
-  txt(S.requester, 1860, 1027, `22px MuktaB`, P.gold, 'right', 560,12);
+  txt(S.contact, 520, 1002, `${fitFont(S.contact, 27, 16, 1280, S.hiBody)}px ${S.hiBody}`, '#fff');
+  txt(S.requester, 1860, 1002, `22px MuktaB`, P.gold, 'right', 560,12);
 }
 function drawT2L(img){
   const Wd=palT2();
@@ -1289,8 +1289,8 @@ function drawT2L(img){
   txt(S.voteLine1, 1020, 745, `25px ${S.hiBody}`, '#fff','left',700,15);
   const v2=fitFont(S.voteLine2, 34, 20, 660, S.hiBody);
   txt(S.voteLine2, 1020, 795, `${v2}px ${S.hiBody}`, Wd.gold);
-  txt(S.contact, 960, 905, `${fitFont(S.contact,32,18,1800,S.hiBody)}px ${S.hiBody}`, Wd.navy, 'center');
-  txt(S.requester, 960, 950, `${fitFont(S.requester,22,12,1800,S.hiBody)}px ${S.hiBody}`, Wd.grn, 'center');
+  txt(S.contact, 960, 884, `${fitFont(S.contact,32,18,1800,S.hiBody)}px ${S.hiBody}`, Wd.navy, 'center');
+  txt(S.requester, 960, 926, `${fitFont(S.requester,22,12,1800,S.hiBody)}px ${S.hiBody}`, Wd.grn, 'center');
   c.fillStyle=Wd.navy; c.fillRect(0,985,1920,95);
   c.fillStyle=Wd.saf; c.fillRect(0,985,14,95); c.fillStyle=Wd.grn; c.fillRect(1906,985,14,95);
   txt(`${S.dateDay} ${S.dateMonth}   ·   ${S.voteLine1} — ${S.voteLine2}`, 960, 1042, `${fitFont(`${S.dateDay} ${S.dateMonth}   ·   ${S.voteLine1} — ${S.voteLine2}`, 28, 15, 1700, S.hiBody)}px ${S.hiBody}`, Wd.gold, 'center');
@@ -1386,8 +1386,8 @@ function drawT2B(img){
   const v2=fitFont(S.voteLine2, 32, 18, 700, S.hiBody);
   txt(S.voteLine2, 670, 592, `${v2}px ${S.hiBody}`, Wd.gold);
   if(S.showBadge) dateBadge(1560,240,140,155);
-  txt(S.contact, 900, 700, `${fitFont(S.contact,30,16,1400,S.hiBody)}px ${S.hiBody}`, Wd.navy, 'center');
-  txt(S.requester, 900, 745, `${fitFont(S.requester,22,12,1400,S.hiBody)}px ${S.hiBody}`, Wd.grn, 'center');
+  txt(S.contact, 900, 680, `${fitFont(S.contact,30,16,1400,S.hiBody)}px ${S.hiBody}`, Wd.navy, 'center');
+  txt(S.requester, 900, 722, `${fitFont(S.requester,22,12,1400,S.hiBody)}px ${S.hiBody}`, Wd.grn, 'center');
   c.fillStyle=Wd.navy; c.fillRect(0,810,1800,90);
   txt(`${S.dateDay} ${S.dateMonth}   ·   ${S.voteLine1} — ${S.voteLine2}`, 900, 864, `${fitFont(`${S.dateDay} ${S.dateMonth}   ·   ${S.voteLine1} — ${S.voteLine2}`, 26, 14, 1700, S.hiBody)}px ${S.hiBody}`, Wd.gold, 'center');
 }
