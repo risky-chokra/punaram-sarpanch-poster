@@ -927,20 +927,27 @@ function installPhotoGestures(){
   }
 }
 
-function archPath(x,y,w,h){
+function archPathOn(ctx,x,y,w,h){
   const r=w/2;
-  c.beginPath(); c.moveTo(x,y+h); c.lineTo(x,y+r); c.arc(x+r,y+r,r,Math.PI,0);
-  c.lineTo(x+w,y+h); c.closePath();
+  ctx.beginPath(); ctx.moveTo(x,y+h); ctx.lineTo(x,y+r); ctx.arc(x+r,y+r,r,Math.PI,0);
+  ctx.lineTo(x+w,y+h); ctx.closePath();
 }
+function archPath(x,y,w,h){archPathOn(c,x,y,w,h);}
 function photoArch(img,x,y,w,h,border,bw){
   y+=h*(1-PHOTO_FRAME_HEIGHT_SCALE)/2; h*=PHOTO_FRAME_HEIGHT_SCALE;
   img=photoForFrame('portrait',img,w/h);
-  const pad=photoApertureGutter(w,h),ax=x+pad,ay=y+pad,aw=w-pad*2,ah=h-pad*2;
-  PHOTO_HIT={kind:'arch',x:pad?ax:x,y:pad?ay:y,w:pad?aw:w,h:pad?ah:h};
+  const pad=photoApertureGutter(w,h),ax=pad,ay=pad,aw=w-pad*2,ah=h-pad*2;
+  PHOTO_HIT={kind:'arch',x:x+ax,y:y+ay,w:aw,h:ah};
+  // Paint only a neutral frame-bed in the outer arch; candidate pixels never enter this region.
   c.save();archPath(x,y,w,h);c.clip();
-  const g=c.createLinearGradient(x,y,x+w,y+h);g.addColorStop(0,'#f8f8fb');g.addColorStop(1,'#e8edf2');c.fillStyle=g;c.fillRect(x,y,w,h);
-  // Candidate pixels are rendered only inside the deliberately inset inner arch aperture.
-  if(pad){archPath(ax,ay,aw,ah);c.clip();containPhoto(c,img,ax,ay,aw,ah,.02);}else containPhoto(c,img,x,y,w,h,.028);c.restore();
+  const g=c.createLinearGradient(x,y,x+w,y+h);g.addColorStop(0,'#f8f8fb');g.addColorStop(1,'#e8edf2');c.fillStyle=g;c.fillRect(x,y,w,h);c.restore();
+  // Isolated canvas + alpha mask + final main-canvas clip: three independent guards against frame leakage.
+  const off=document.createElement('canvas');off.width=Math.ceil(w);off.height=Math.ceil(h);
+  const o=off.getContext('2d');
+  o.save();archPathOn(o,ax,ay,aw,ah);o.clip();containPhoto(o,img,ax,ay,aw,ah,.02);o.restore();
+  o.save();o.globalCompositeOperation='destination-in';archPathOn(o,ax,ay,aw,ah);o.fill();o.restore();
+  if(PHOTO_VIEW){const v=PHOTO_VIEW;PHOTO_VIEW={...v,x:v.x+x,y:v.y+y,minX:v.minX+x,maxX:v.maxX+x,minY:v.minY+y,maxY:v.maxY+y};}
+  c.save();archPath(x+ax,y+ay,aw,ah);c.clip();c.drawImage(off,x,y);c.restore();
   if(border){c.save();archPath(x,y,w,h);c.lineWidth=bw;c.strokeStyle=border;c.stroke();c.restore();}
 }
 function photoOvalFade(img,cx,cy,rx,ry){
