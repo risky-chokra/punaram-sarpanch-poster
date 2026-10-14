@@ -81,6 +81,10 @@
   .top-photo-title span{font-size:10px;font-weight:700;letter-spacing:.6px;color:#161224;background:#f6c445;border-radius:999px;padding:3px 7px;}
   .top-photo-picker label.f{margin:8px 0 0;}
   .top-photo-picker label.f>span{color:#d9d3ea;}
+  .auto-crop-toggle{display:flex;align-items:center;gap:9px;margin-top:9px;padding:8px 9px;border:1px solid #ffffff20;border-radius:9px;background:#14112066;cursor:pointer;}
+  .auto-crop-toggle input{width:17px;height:17px;accent-color:var(--acc);flex:none;}
+  .auto-crop-toggle span{display:grid;gap:1px;color:#fff0bd;font-size:12px;line-height:1.2;}
+  .auto-crop-toggle small{color:#cfc9df;font-size:10px;line-height:1.3;}
   .photo-row{display:flex; gap:8px; align-items:center;}
   .photo-row img{width:52px;height:64px;object-fit:contain;background:#f7f8fb;border-radius:8px;border:1px solid var(--line);}
   .note{font-size:11.5px;color:var(--mut);margin-top:6px;line-height:1.5;}
@@ -138,7 +142,8 @@
       <label class="f"><span>फ्रेम के हिसाब से फ़ोटो</span>
         <select id="preparedPhoto"><option value="auto">Auto Fit — frame के हिसाब से फोटो</option><option value="assets/candidate-expanded-9x16.png?v=1">Portrait Safe — लंबे / oval frames</option><option value="assets/candidate-expanded-square.png?v=1">Square Safe — circle / square frames</option><option value="assets/candidate-expanded-4x5.png?v=1">4:5 Safe — सामान्य vertical frame</option><option value="assets/candidate.jpg?v=20261014">Original फोटो</option></select>
       </label>
-      <p class="note">✓ Photo aur frame ka ratio app automatically match karega — बिना stretch या crop के।</p>
+      <label class="auto-crop-toggle"><input id="autoCrop" type="checkbox" checked><span><b>Smart Auto Crop</b><small>हर नए design / frame पर photo को safe तरीके से adjust करें</small></span></label>
+      <p class="note" id="autoCropStatus">✓ Dynamic Auto Fit चालू है — photo stretch नहीं होगी और सिर, हाथ व कंधे सुरक्षित रहेंगे।</p>
     </section>
     <div class="quick-grid" aria-label="Quick poster actions">
       <button class="quick-action primary" id="rand" type="button"><span class="qa-icon">🎲</span><span>Random<br>Poster</span></button>
@@ -360,7 +365,7 @@ const S = {
   p5:'समान न्याय एवं भ्रष्टाचार मुक्त पंचायत', p6:'हर परिवार के लिए सम्मान एवं सहयोग',
   dateDay:'24', dateMonth:'अक्टूबर 2026', dateWeekday:'शनिवार',
   polling:'मतदान केंद्र : राजकीय विद्यालय, नादाना भाटान',
-  hiName:'Modak', hiBody:'MuktaXB', engFont:'Poppins', showBadge:true, badgeStyle:0, decoV:0, layoutV:7, photoF:17, nameS:0, elemV:0,
+  hiName:'Modak', hiBody:'MuktaXB', engFont:'Poppins', showBadge:true, autoCrop:true, badgeStyle:0, decoV:0, layoutV:7, photoF:17, nameS:0, elemV:0,
 };
 
 const SIZES = {
@@ -720,9 +725,18 @@ function cover(img,x,y,w,h,vy=0.18){
   c.drawImage(img, x+(w-dw)/2, y+(h-dh)*(dh>h?vy:0.5), dw, dh);
 }
 function containPhoto(ctx,img,x,y,w,h,pad=.028){
-  // Portraits always use contain (not cover): head, hands and shoulders stay inside every frame.
-  const safeW=w*(1-pad*2), safeH=h*(1-pad*2);
-  drawAspectSafe(ctx,img,x+w*pad,y+h*pad,safeW,safeH);
+  // Smart Auto Crop fills a matching frame only when the crop is tiny background-only edge trim.
+  // Larger mismatches remain contain-fit: head, hands and shoulders can never be sacrificed.
+  const safeW=w*(1-pad*2), safeH=h*(1-pad*2), sx=x+w*pad, sy=y+h*pad;
+  const sw=img.naturalWidth||img.width, sh=img.naturalHeight||img.height;
+  if(!sw||!sh){ return; }
+  if(S.autoCrop){
+    const scale=Math.max(safeW/sw,safeH/sh), dw=sw*scale, dh=sh*scale;
+    const cutX=Math.max(0,(dw-safeW)/dw), cutY=Math.max(0,(dh-safeH)/dh);
+    // 3.5% maximum per dimension is a safety cap. This only removes outer background, never the portrait.
+    if(cutX<=.035 && cutY<=.035){ ctx.drawImage(img,sx+(safeW-dw)/2,sy+(safeH-dh)/2,dw,dh); return; }
+  }
+  drawAspectSafe(ctx,img,sx,sy,safeW,safeH);
 }
 function drawAspectSafe(ctx,source,x,y,w,h){
   const sw=source.naturalWidth||source.videoWidth||source.width, sh=source.naturalHeight||source.videoHeight||source.height;
@@ -1335,7 +1349,7 @@ function layoutOverlay(W,H){
 
 /* ---------- dispatch ---------- */
 let photo = new Image();
-let photoMode='auto';
+let photoMode='auto', photoIsCustom=false;
 const autoPortraitPhoto=new Image(), autoSquarePhoto=new Image();
 autoPortraitPhoto.src='assets/candidate-expanded-9x16.png?v=1';
 autoSquarePhoto.src='assets/candidate-expanded-square.png?v=1';
@@ -1463,7 +1477,8 @@ function bind(){
     palSel.value=S.palIdx;
     if(window.loadFam){ window.loadFam(S.hiName); window.loadFam(S.hiBody); window.loadFam(S.engFont); }
     if(window.refreshFontBtns) window.refreshFontBtns();
-    draw();
+    if(S.autoCrop && window.enableAutoPhotoFit) window.enableAutoPhotoFit();
+    else draw();
     if(window.autoRandomDriveBackground) window.autoRandomDriveBackground();
   });
   const sel=document.getElementById('nare');
@@ -1481,7 +1496,15 @@ function bind(){
   });
   const thumb=document.getElementById('photoThumb');
   thumb.src=photo.src;
-  const usePhoto=(src,mode='manual')=>{ const im=new Image(); im.onload=()=>{ photo=im; photoMode=mode; thumb.src=im.src; draw(); }; im.src=src; };
+  const usePhoto=(src,mode='manual')=>{ const im=new Image(); im.onload=()=>{ photo=im; photoMode=mode; photoIsCustom=mode==='custom'; thumb.src=im.src; draw(); }; im.src=src; };
+  window.enableAutoPhotoFit=()=>{
+    if(photoIsCustom) return; // keep the user's own upload while still applying safe dynamic crop.
+    photo=autoPortraitPhoto; photoMode='auto';
+    const choice=document.getElementById('preparedPhoto'); if(choice) choice.value='auto';
+    thumb.src=autoPortraitPhoto.src; draw();
+  };
+  const cropBox=document.getElementById('autoCrop'), cropStatus=document.getElementById('autoCropStatus');
+  if(cropBox){ cropBox.checked=S.autoCrop; cropBox.addEventListener('change',()=>{ S.autoCrop=cropBox.checked; if(cropStatus) cropStatus.textContent=S.autoCrop?'✓ Dynamic Auto Crop चालू है — हर नए design/frame में सुरक्षित fitting होगी।':'Safe contain mode — कोई crop नहीं, पूरी फ़ोटो दिखाई जाएगी।'; draw(); }); }
   document.getElementById('preparedPhoto').addEventListener('change',e=>{
     if(e.target.value==='auto') usePhoto(autoPortraitPhoto.src,'auto');
     else usePhoto(e.target.value,'manual');
@@ -2072,7 +2095,8 @@ document.getElementById('rand').addEventListener('click',()=>{
   setBs();
   if(window.loadFam){ loadFam(S.hiName); loadFam(S.hiBody); loadFam(S.engFont); }
   if(window.refreshFontBtns) refreshFontBtns();
-  draw();
+  if(S.autoCrop && window.enableAutoPhotoFit) window.enableAutoPhotoFit();
+  else draw();
   if(window.autoRandomDriveBackground) window.autoRandomDriveBackground();
 });
 })();
