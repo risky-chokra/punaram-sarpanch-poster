@@ -143,7 +143,7 @@
         <select id="preparedPhoto"><option value="auto">Auto Fit — frame के हिसाब से फोटो</option><option value="assets/candidate-expanded-9x16.png?v=1">Portrait Safe — लंबे / oval frames</option><option value="assets/candidate-expanded-square.png?v=1">Square Safe — circle / square frames</option><option value="assets/candidate-expanded-4x5.png?v=1">4:5 Safe — सामान्य vertical frame</option><option value="assets/candidate.jpg?v=20261014">Original फोटो</option></select>
       </label>
       <label class="auto-crop-toggle"><input id="autoCrop" type="checkbox" checked><span><b>Smart Auto Crop</b><small>हर नए design / frame पर photo को safe तरीके से adjust करें</small></span></label>
-      <p class="note" id="autoCropStatus">✓ Dynamic Auto Fit चालू है — photo stretch नहीं होगी और सिर, हाथ व कंधे सुरक्षित रहेंगे।</p>
+      <p class="note" id="autoCropStatus">✓ Dynamic frame-fill चालू है — photo stretch नहीं होगी; जरूरत पर soft photo background से frame पूरा भरेगा।</p>
     </section>
     <div class="quick-grid" aria-label="Quick poster actions">
       <button class="quick-action primary" id="rand" type="button"><span class="qa-icon">🎲</span><span>Random<br>Poster</span></button>
@@ -724,18 +724,40 @@ function cover(img,x,y,w,h,vy=0.18){
   const dw=img.width*s, dh=img.height*s;
   c.drawImage(img, x+(w-dw)/2, y+(h-dh)*(dh>h?vy:0.5), dw, dh);
 }
+function drawCoverSafe(ctx,img,x,y,w,h,alignX=.5,alignY=.5){
+  const sw=img.naturalWidth||img.width, sh=img.naturalHeight||img.height;
+  if(!sw||!sh||!w||!h) return;
+  const scale=Math.max(w/sw,h/sh), dw=sw*scale, dh=sh*scale;
+  ctx.drawImage(img,x+(w-dw)*alignX,y+(h-dh)*alignY,dw,dh);
+}
+function drawPhotoBackdrop(ctx,img,x,y,w,h){
+  // Full-frame blurred photograph removes blank bands while the sharp foreground stays uncropped.
+  const bleed=Math.max(8,Math.min(w,h)*.09), blur=Math.max(9,Math.min(w,h)*.055);
+  ctx.save();
+  ctx.filter=`blur(${blur}px) saturate(.78) brightness(.92)`;
+  ctx.globalAlpha=.76;
+  drawCoverSafe(ctx,img,x-bleed,y-bleed,w+bleed*2,h+bleed*2,.5,.36);
+  ctx.filter='none';
+  const veil=ctx.createLinearGradient(x,y,x+w,y+h);
+  veil.addColorStop(0,'rgba(255,255,255,.10)');veil.addColorStop(.52,'rgba(255,255,255,.035)');veil.addColorStop(1,'rgba(9,28,36,.12)');
+  ctx.globalAlpha=1;ctx.fillStyle=veil;ctx.fillRect(x,y,w,h);ctx.restore();
+}
 function containPhoto(ctx,img,x,y,w,h,pad=.028){
-  // Smart Auto Crop fills a matching frame only when the crop is tiny background-only edge trim.
-  // Larger mismatches remain contain-fit: head, hands and shoulders can never be sacrificed.
+  // Audited frame-fill policy:
+  // 1) a matching expanded asset is selected for each aperture;
+  // 2) small, background-only trims may fill the aperture;
+  // 3) every larger mismatch receives a blurred photo backdrop + full uncropped foreground.
   const safeW=w*(1-pad*2), safeH=h*(1-pad*2), sx=x+w*pad, sy=y+h*pad;
   const sw=img.naturalWidth||img.width, sh=img.naturalHeight||img.height;
-  if(!sw||!sh){ return; }
-  if(S.autoCrop){
-    const scale=Math.max(safeW/sw,safeH/sh), dw=sw*scale, dh=sh*scale;
-    const cutX=Math.max(0,(dw-safeW)/dw), cutY=Math.max(0,(dh-safeH)/dh);
-    // 3.5% maximum per dimension is a safety cap. This only removes outer background, never the portrait.
-    if(cutX<=.035 && cutY<=.035){ ctx.drawImage(img,sx+(safeW-dw)/2,sy+(safeH-dh)/2,dw,dh); return; }
+  if(!sw||!sh) return;
+  const scale=Math.max(safeW/sw,safeH/sh), dw=sw*scale, dh=sh*scale;
+  const cutX=Math.max(0,(dw-safeW)/dw), cutY=Math.max(0,(dh-safeH)/dh);
+  if(S.autoCrop && cutX<=.035 && cutY<=.12){
+    // Anchor vertical trims to the lower shirt area; face, head, hands and shoulders remain untouched.
+    ctx.drawImage(img,sx+(safeW-dw)/2,sy,dw,dh); return;
   }
+  // No risky crop: still make the entire frame look intentionally filled, rather than leaving grey/white bands.
+  drawPhotoBackdrop(ctx,img,sx,sy,safeW,safeH);
   drawAspectSafe(ctx,img,sx,sy,safeW,safeH);
 }
 function drawAspectSafe(ctx,source,x,y,w,h){
@@ -750,14 +772,14 @@ function archPath(x,y,w,h){
   c.lineTo(x+w,y+h); c.closePath();
 }
 function photoArch(img,x,y,w,h,border,bw){
-  img=photoForFrame('portrait',img);
+  img=photoForFrame('portrait',img,w/h);
   const pad=frameGutter(w,h);c.save();archPath(x,y,w,h);c.clip();
   const g=c.createLinearGradient(x,y,x+w,y+h);g.addColorStop(0,'#f8f8fb');g.addColorStop(1,'#e8edf2');c.fillStyle=g;c.fillRect(x,y,w,h);
   if(pad){archPath(x+pad,y+pad,w-pad*2,h-pad*2);c.clip();containPhoto(c,img,x+pad,y+pad,w-pad*2,h-pad*2,.02);}else containPhoto(c,img,x,y,w,h,.028);c.restore();
   if(border){c.save();archPath(x,y,w,h);c.lineWidth=bw;c.strokeStyle=border;c.stroke();c.restore();}
 }
 function photoOvalFade(img,cx,cy,rx,ry){
-  img=photoForFrame('oval',img);
+  img=photoForFrame('oval',img,(rx*2)/(ry*2));
   const off=document.createElement('canvas');off.width=Math.ceil(rx*2);off.height=Math.ceil(ry*2);const o=off.getContext('2d'),pad=frameGutter(off.width,off.height);
   o.save();o.beginPath();o.ellipse(rx,ry,rx*.995,ry*.995,0,0,TAU);o.clip();const g=o.createLinearGradient(0,0,off.width,off.height);g.addColorStop(0,'#f8f8fb');g.addColorStop(1,'#e7edf1');o.fillStyle=g;o.fillRect(0,0,off.width,off.height);
   if(pad){o.beginPath();o.ellipse(rx,ry,Math.max(2,rx-pad),Math.max(2,ry-pad),0,0,TAU);o.clip();containPhoto(o,img,pad,pad,off.width-pad*2,off.height-pad*2,.02);}else containPhoto(o,img,0,0,off.width,off.height,.028);o.restore();c.drawImage(off,cx-rx,cy-ry);
@@ -1350,15 +1372,24 @@ function layoutOverlay(W,H){
 /* ---------- dispatch ---------- */
 let photo = new Image();
 let photoMode='auto', photoIsCustom=false;
-const autoPortraitPhoto=new Image(), autoSquarePhoto=new Image();
+const autoPortraitPhoto=new Image(), autoFourFivePhoto=new Image(), autoSquarePhoto=new Image();
 autoPortraitPhoto.src='assets/candidate-expanded-9x16.png?v=1';
+autoFourFivePhoto.src='assets/candidate-expanded-4x5.png?v=1';
 autoSquarePhoto.src='assets/candidate-expanded-square.png?v=1';
+[autoPortraitPhoto,autoFourFivePhoto,autoSquarePhoto].forEach(im=>im.onload=()=>{ if(photoMode==='auto') draw(); });
 photo.src=autoPortraitPhoto.src; c.imageSmoothingQuality='high';
-function photoForFrame(shape, fallback){
-  // Auto Fit never crops the person. It picks the expanded portrait matching the frame geometry.
+function photoForFrame(shape, fallback, frameRatio=0){
+  // Choose the closest expanded asset for every aperture. This runs on every redraw/new design/frame.
   if(photoMode!=='auto') return fallback;
+  const choices=[
+    {img:autoPortraitPhoto,ratio:9/16},
+    {img:autoFourFivePhoto,ratio:4/5},
+    {img:autoSquarePhoto,ratio:1}
+  ];
   if(shape==='circle'||shape==='square') return autoSquarePhoto.complete&&autoSquarePhoto.naturalWidth?autoSquarePhoto:fallback;
-  return autoPortraitPhoto.complete&&autoPortraitPhoto.naturalWidth?autoPortraitPhoto:fallback;
+  const want=frameRatio||9/16;
+  choices.sort((a,b)=>Math.abs(Math.log(want/a.ratio))-Math.abs(Math.log(want/b.ratio)));
+  return choices[0].img.complete&&choices[0].img.naturalWidth?choices[0].img:fallback;
 }
 
 function draw(){
@@ -1504,7 +1535,7 @@ function bind(){
     thumb.src=autoPortraitPhoto.src; draw();
   };
   const cropBox=document.getElementById('autoCrop'), cropStatus=document.getElementById('autoCropStatus');
-  if(cropBox){ cropBox.checked=S.autoCrop; cropBox.addEventListener('change',()=>{ S.autoCrop=cropBox.checked; if(cropStatus) cropStatus.textContent=S.autoCrop?'✓ Dynamic Auto Crop चालू है — हर नए design/frame में सुरक्षित fitting होगी।':'Safe contain mode — कोई crop नहीं, पूरी फ़ोटो दिखाई जाएगी।'; draw(); }); }
+  if(cropBox){ cropBox.checked=S.autoCrop; cropBox.addEventListener('change',()=>{ S.autoCrop=cropBox.checked; if(cropStatus) cropStatus.textContent=S.autoCrop?'✓ Dynamic frame-fill चालू है — हर नए design/frame में safe fitting होगी।':'Safe contain mode — कोई crop नहीं, पूरी फ़ोटो दिखाई जाएगी।'; draw(); }); }
   document.getElementById('preparedPhoto').addEventListener('change',e=>{
     if(e.target.value==='auto') usePhoto(autoPortraitPhoto.src,'auto');
     else usePhoto(e.target.value,'manual');
