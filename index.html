@@ -88,7 +88,14 @@
   .photo-choice.active{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc);background:#3c324f; color:#fff2bd;}
   .photo-choice:focus-visible{outline:2px solid #fff;outline-offset:1px;}
   .photo-select-fallback{margin-top:7px!important;}
-  @media(max-width:380px){.photo-choice img{height:62px}.photo-choice{font-size:9px}}
+  .frame-fit-heading{font-size:11px;color:#d9d3ea;margin:10px 0 6px;font-weight:600;}
+  .frame-fit-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;}
+  .fit-choice{min-width:0;padding:7px 3px 6px;border:1px solid #ffffff25;border-radius:9px;background:#12101db0;color:#ded9eb;cursor:pointer;font:600 10px/1.15 inherit;}
+  .fit-choice b,.fit-choice small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .fit-choice b{font-size:10px;color:#f7f3ff;}.fit-choice small{margin-top:3px;font-size:9px;color:#bdb6ce;font-weight:500;}
+  .fit-choice.active{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc);background:#3c324f;}.fit-choice.active b{color:#fff0ae;}
+  .fit-mode-status{font-size:10.5px;line-height:1.35;color:#cfc9df;margin-top:6px;min-height:28px;}
+  @media(max-width:380px){.photo-choice img{height:62px}.photo-choice{font-size:9px}.fit-choice{font-size:9px}}
   .auto-crop-toggle{display:flex;align-items:center;gap:9px;margin-top:9px;padding:8px 9px;border:1px solid #ffffff20;border-radius:9px;background:#14112066;cursor:pointer;}
   .auto-crop-toggle input{width:17px;height:17px;accent-color:var(--acc);flex:none;}
   .auto-crop-toggle span{display:grid;gap:1px;color:#fff0bd;font-size:12px;line-height:1.2;}
@@ -162,6 +169,13 @@
           <img src="assets/candidate.jpg?v=20261014" alt="Original candidate photo"><span>Original</span>
         </button>
       </div>
+      <div class="frame-fit-heading">फ्रेम में फोटो कैसे लगाएं</div>
+      <div class="frame-fit-controls" role="group" aria-label="Photo frame fitting controls">
+        <button class="fit-choice active" type="button" data-fit="auto"><b>✦ Auto</b><small>Safe smart fill</small></button>
+        <button class="fit-choice" type="button" data-fit="fit"><b>↔ Fit</b><small>पूरी फोटो</small></button>
+        <button class="fit-choice" type="button" data-fit="cover"><b>⛶ Fill + Crop</b><small>पूरा frame भरें</small></button>
+      </div>
+      <div class="fit-mode-status" id="fitModeStatus">Auto: frame ratio के अनुसार photo safe तरीके से fit होगी।</div>
       <label class="f photo-select-fallback"><span>या सूची से चुनें</span>
         <select id="preparedPhoto"><option value="auto">Auto Fit — frame के हिसाब से फोटो</option><option value="assets/candidate-expanded-9x16.png?v=1">Portrait Safe — लंबे / oval frames</option><option value="assets/candidate-expanded-square.png?v=1">Square Safe — circle / square frames</option><option value="assets/candidate-expanded-4x5.png?v=1">4:5 Safe — सामान्य vertical frame</option><option value="assets/candidate.jpg?v=20261014">Original फोटो</option></select>
       </label>
@@ -388,7 +402,7 @@ const S = {
   p5:'समान न्याय एवं भ्रष्टाचार मुक्त पंचायत', p6:'हर परिवार के लिए सम्मान एवं सहयोग',
   dateDay:'24', dateMonth:'अक्टूबर 2026', dateWeekday:'शनिवार',
   polling:'मतदान केंद्र : राजकीय विद्यालय, नादाना भाटान',
-  hiName:'Modak', hiBody:'MuktaXB', engFont:'Poppins', showBadge:true, autoCrop:true, badgeStyle:0, decoV:0, layoutV:7, photoF:17, nameS:0, elemV:0,
+  hiName:'Modak', hiBody:'MuktaXB', engFont:'Poppins', showBadge:true, autoCrop:true, photoFit:'auto', badgeStyle:0, decoV:0, layoutV:7, photoF:17, nameS:0, elemV:0,
 };
 
 const SIZES = {
@@ -775,11 +789,16 @@ function containPhoto(ctx,img,x,y,w,h,pad=.028){
   if(!sw||!sh) return;
   const scale=Math.max(safeW/sw,safeH/sh), dw=sw*scale, dh=sh*scale;
   const cutX=Math.max(0,(dw-safeW)/dw), cutY=Math.max(0,(dh-safeH)/dh);
-  if(S.autoCrop && cutX<=.035 && cutY<=.12){
-    // Anchor vertical trims to the lower shirt area; face, head, hands and shoulders remain untouched.
+  const mode=S.photoFit||'auto';
+  if(mode==='cover'){
+    // User-requested full-fill mode. Top anchor protects face/hair; lower shirt is trimmed first when needed.
     ctx.drawImage(img,sx+(safeW-dw)/2,sy,dw,dh); return;
   }
-  // No risky crop: still make the entire frame look intentionally filled, rather than leaving grey/white bands.
+  if(mode==='auto' && S.autoCrop && cutX<=.035 && cutY<=.12){
+    // Smart trim is strictly capped to background-only edge space.
+    ctx.drawImage(img,sx+(safeW-dw)/2,sy,dw,dh); return;
+  }
+  // Full Fit / large Auto mismatch: no crop. A blurred photo backdrop fills remaining aperture space.
   drawPhotoBackdrop(ctx,img,sx,sy,safeW,safeH);
   drawAspectSafe(ctx,img,sx,sy,safeW,safeH);
 }
@@ -1551,7 +1570,10 @@ function bind(){
   const thumb=document.getElementById('photoThumb');
   const preparedSelect=document.getElementById('preparedPhoto');
   const syncPhotoChoice=value=>document.querySelectorAll('.photo-choice').forEach(btn=>btn.classList.toggle('active',btn.dataset.photo===value));
-  thumb.src=photo.src; syncPhotoChoice('auto');
+  const fitStatus=document.getElementById('fitModeStatus');
+  const FIT_STATUS={auto:'Auto: frame ratio के अनुसार photo safe तरीके से fit होगी।',fit:'Fit: पूरी photo दिखेगी, बिना crop के soft background frame भर देगा।',cover:'Fill + Crop: photo पूरा frame भरेगी; ऊपर से safe crop लागू होगा।'};
+  const setPhotoFit=mode=>{ S.photoFit=mode; document.querySelectorAll('.fit-choice').forEach(btn=>btn.classList.toggle('active',btn.dataset.fit===mode)); if(fitStatus) fitStatus.textContent=FIT_STATUS[mode]||FIT_STATUS.auto; draw(); };
+  thumb.src=photo.src; syncPhotoChoice('auto'); setPhotoFit(S.photoFit||'auto');
   const usePhoto=(src,mode='manual',choiceValue='')=>{ const im=new Image(); im.onload=()=>{ photo=im; photoMode=mode; photoIsCustom=mode==='custom'; thumb.src=im.src; syncPhotoChoice(choiceValue); draw(); }; im.src=src; };
   const applyPreparedPhoto=value=>{
     if(preparedSelect) preparedSelect.value=value;
@@ -1567,6 +1589,7 @@ function bind(){
   if(cropBox){ cropBox.checked=S.autoCrop; cropBox.addEventListener('change',()=>{ S.autoCrop=cropBox.checked; if(cropStatus) cropStatus.textContent=S.autoCrop?'✓ चुनी हुई photo बनी रहेगी और हर नए design/frame में safe fitting होगी।':'Safe contain mode — कोई crop नहीं, पूरी फ़ोटो दिखाई जाएगी।'; draw(); }); }
   preparedSelect.addEventListener('change',e=>applyPreparedPhoto(e.target.value));
   document.querySelectorAll('.photo-choice').forEach(btn=>btn.addEventListener('click',()=>applyPreparedPhoto(btn.dataset.photo)));
+  document.querySelectorAll('.fit-choice').forEach(btn=>btn.addEventListener('click',()=>setPhotoFit(btn.dataset.fit)));
   document.getElementById('uploadBtn').addEventListener('click',()=>document.getElementById('photoFile').click());
   document.getElementById('photoFile').addEventListener('change',e=>{
     const f=e.target.files[0]; if(!f) return;
