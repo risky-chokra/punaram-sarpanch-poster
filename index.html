@@ -286,9 +286,9 @@
       <div class="spacer"></div><button class="btn ghost" id="driveCloseBtn" type="button" aria-label="बंद करें">✕</button>
     </div>
     <div class="drive-config">
-      <label class="f"><span>Google OAuth Web Client ID <small>(.apps.googleusercontent.com)</small></span><input type="text" id="driveClientId" autocomplete="off" placeholder="1234567890-abc.apps.googleusercontent.com"></label>
-      <label class="f"><span>Google API Key <small>(Picker API के लिए)</small></span><input type="text" id="driveApiKey" autocomplete="off" placeholder="AIza…"></label>
-      <label class="f"><span>Google Cloud Project Number <small>(Picker App ID; digits only)</small></span><input type="text" id="driveAppId" inputmode="numeric" autocomplete="off" placeholder="123456789012"></label>
+      <label class="f"><span>Google OAuth Web Client ID <small>(.apps.googleusercontent.com)</small></span><input type="text" id="driveClientId" autocomplete="off" value="775364168773-0q3kdu6bboh7l9qt6qhjkoa16ipqth9i.apps.googleusercontent.com" placeholder="1234567890-abc.apps.googleusercontent.com"></label>
+      <label class="f"><span>Google API Key <small>(Picker API के लिए)</small></span><input type="text" id="driveApiKey" autocomplete="off" value="AIzaSyCLp3FLCzT-gyDCsnvAMbeJKrTDvVuy4VA" placeholder="AIza…"></label>
+      <label class="f"><span>Google Cloud Project Number <small>(Picker App ID; digits only)</small></span><input type="text" id="driveAppId" inputmode="numeric" autocomplete="off" value="775364168773" placeholder="123456789012"></label>
       <label class="f"><span>Google Drive folder link या folder ID paste करें</span><input type="text" id="driveFolderLink" autocomplete="off" value="https://drive.google.com/drive/folders/1yTMrsJenZfGLvwuZeGcb6KkBQcTxtdxn" placeholder="https://drive.google.com/drive/folders/…"></label>
       <div class="row2">
         <label class="f"><span>या सीधा background pack</span><select id="driveBgCollection">
@@ -1541,7 +1541,14 @@ const DRIVE_COLLECTIONS={
 };
 let driveAccessToken='',driveTokenExpiresAt=0,driveTokenClient=null,driveLibsPromise=null;
 const DRIVE_CLIENT_KEY='spm_drive_oauth_client_id',DRIVE_API_KEY='spm_drive_picker_api_key',DRIVE_APP_ID_KEY='spm_drive_picker_app_id',DRIVE_FOLDER_KEY='spm_drive_folder_link';
-if(LS){ driveClientId.value=LS.getItem(DRIVE_CLIENT_KEY)||''; driveApiKey.value=LS.getItem(DRIVE_API_KEY)||''; driveAppId.value=LS.getItem(DRIVE_APP_ID_KEY)||''; driveFolderLink.value=LS.getItem(DRIVE_FOLDER_KEY)||driveFolderLink.value; }
+if(LS){
+  const savedClient=LS.getItem(DRIVE_CLIENT_KEY)||'';
+  const retiredClient='775364168773-tkku1nl93of2t75gv147ukhni0vi256b.apps.googleusercontent.com';
+  driveClientId.value=(!savedClient||savedClient===retiredClient)?driveClientId.value:savedClient;
+  driveApiKey.value=LS.getItem(DRIVE_API_KEY)||driveApiKey.value;
+  driveAppId.value=LS.getItem(DRIVE_APP_ID_KEY)||driveAppId.value;
+  driveFolderLink.value=LS.getItem(DRIVE_FOLDER_KEY)||driveFolderLink.value;
+}
 const setDriveStatus=t=>{ driveStatus.textContent=t; };
 function loadScriptOnce(id,url){
   if(document.getElementById(id)) return new Promise((resolve,reject)=>{ const e=document.getElementById(id); if(e.dataset.loaded==='1') resolve(); else { e.addEventListener('load',()=>resolve(),{once:true}); e.addEventListener('error',()=>reject(new Error('Google library load failed')),{once:true}); } });
@@ -1561,7 +1568,7 @@ function loadDrivePickerLibraries(){
 function openDriveModal(){
   driveModal.classList.remove('hidden');
   setDriveStatus('Google OAuth / Picker library लोड हो रही है…');
-  loadDrivePickerLibraries().then(()=>{driveConnect.disabled=false;setDriveStatus('तैयार। Client ID, API key और Project Number भरें, फिर “OAuth से खोलें” दबाएँ।');})
+  loadDrivePickerLibraries().then(()=>{driveConnect.disabled=false;setDriveStatus('तैयार। “OAuth से browse करें” दबाएँ; Google sign-in/consent आवश्यक है।');})
     .catch(e=>{driveConnect.disabled=false;setDriveStatus('Google library लोड नहीं हुई; internet या content blocker जाँचें।');});
 }
 driveBtn.addEventListener('click',openDriveModal);
