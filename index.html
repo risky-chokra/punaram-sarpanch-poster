@@ -202,8 +202,8 @@
 
     <h2>साइज़</h2>
     <div class="sizes">
-      <button class="sz on" data-s="s916">WhatsApp Status — Best<small>1080 × 1920 · 9:16</small></button>
-      <button class="sz" data-s="p1080">PNG 1080 × 1720<small>150 DPI · Poster</small></button>
+      <button class="sz" data-s="s916">WhatsApp Status — Best<small>1080 × 1920 · 9:16</small></button>
+      <button class="sz on" data-s="p1080">PNG 1080 × 1720<small>150 DPI · Default Poster</small></button>
       <button class="sz" data-s="p23">पोस्टर 2:3<small>1200×1800 · Alternative</small></button>
       <button class="sz" data-s="a4">A4 प्रिंट 300dpi<small>2480×3508</small></button>
       <button class="sz" data-s="sq">Square 1:1<small>1080×1080</small></button>
@@ -211,8 +211,8 @@
       <button class="sz" data-s="b21">फ्लेक्स बैनर 2:1<small>1800×900</small></button>
     </div>
     <div class="row2" style="margin-top:9px">
-      <label class="f"><span>PNG Export DPI</span><select id="exportDpi"><option value="72">72 DPI — Web</option><option value="96">96 DPI — Screen</option><option value="150">150 DPI — Standard</option><option value="300" selected>300 DPI — Print (Recommended)</option><option value="600">600 DPI — High Print</option></select></label>
-      <div class="note" id="dpiStatus" style="align-self:end;margin:0 0 7px">PNG export: 300 DPI metadata</div>
+      <label class="f"><span>PNG Export DPI</span><select id="exportDpi"><option value="72">72 DPI — Web</option><option value="96">96 DPI — Screen</option><option value="150" selected>150 DPI — Default Poster</option><option value="300">300 DPI — Print</option><option value="600">600 DPI — High Print</option></select></label>
+      <div class="note" id="dpiStatus" style="align-self:end;margin:0 0 7px">PNG export: 1080×1720px · 150 DPI metadata</div>
     </div>
     <div class="note" id="safetyStatus" role="status">✓ Text safety check तैयार है।</div>
     <div class="row2" style="margin-top:7px"><div class="note" id="exportStatus" role="status" style="margin:0;align-self:center">Export ready</div><button class="btn ghost" id="resetDraft" type="button">Draft Reset</button></div>
@@ -393,7 +393,7 @@
 <script>
 "use strict";
 const S = {
-  template:'t1', size:'s916', exportDpi:300, palIdx:0, patIdx:0, bgIdx:-1, bgOpacity:100,
+  template:'t1', size:'p1080', exportDpi:150, palIdx:0, patIdx:0, bgIdx:-1, bgOpacity:100,
   village:'नादाना भाटान',
   nameLine1:'पुनाराम', nameLine2:'विराह्यस',
   postBadge:'सरपंच प्रत्याशी',
