@@ -1230,22 +1230,22 @@ function drawT3P(W,H,img){
   if(S.showBadge) dateBadge(X(950),Y(235),F(165),F(195));
   // No oversized decorative arch behind the selected photo frame: exactly one photo frame remains visible.
   photoArch(img, X(350), Y(260), F(500), Y(790), G.gold, F(10)); pframe(X(350),Y(260),F(500),Y(790),'arch');
-  rr(X(150),Y(1075),F(900),F(118),F(18)); c.fillStyle=G.cream; c.fill();
-  c.lineWidth=F(4); c.strokeStyle=G.gold; rr(X(150),Y(1075),F(900),F(118),F(18)); c.stroke();
+  rr(X(150),Y(965),F(900),F(118),F(18)); c.fillStyle=G.cream; c.fill();
+  c.lineWidth=F(4); c.strokeStyle=G.gold; rr(X(150),Y(965),F(900),F(118),F(18)); c.stroke();
   const nf=fitFont(`${S.nameLine1} ${S.nameLine2}`, F(76), F(40), F(860), S.hiName, F(84));
   c.font=`${nf}px ${S.hiName}`; c.textAlign='center';
   c.lineWidth=F(8); c.strokeStyle=G.gold; c.lineJoin='round';
-  c.strokeText(`${S.nameLine1} ${S.nameLine2}`, X(600), Y(1163));
-  c.fillStyle=G.dark; c.fillText(`${S.nameLine1} ${S.nameLine2}`, X(600), Y(1163));
-  textPill(S.postBadge,X(600),Y(1247),{base:F(32),min:F(16),maxW:F(700),padX:F(45),padY:F(12),fill:G.orange,text:'#ffffff',fam:S.hiBody});
+  c.strokeText(`${S.nameLine1} ${S.nameLine2}`, X(600), Y(1053));
+  c.fillStyle=G.dark; c.fillText(`${S.nameLine1} ${S.nameLine2}`, X(600), Y(1053));
+  textPill(S.postBadge,X(600),Y(1137),{base:F(32),min:F(16),maxW:F(700),padX:F(45),padY:F(12),fill:G.orange,text:'#ffffff',fam:S.hiBody});
   const sm=fitFont(S.sloganMain, F(46), F(26), F(1040), S.hiBody);
-  txt(S.sloganMain, X(600), Y(1345), `${sm}px ${S.hiBody}`, G.gold, 'center');
-  txt(S.sloganSub, X(600), Y(1408), `${F(32)}px MuktaB`, '#ffffff', 'center',F(1040),F(20));
-  rr(X(90),Y(1430),F(1020),F(240),F(16)); c.fillStyle='#ffffff'; c.fill();
-  txt('— प्रमुख संकल्प —', X(600), Y(1472), `${F(28)}px ${S.hiBody}`, G.orange, 'center');
+  txt(S.sloganMain, X(600), Y(1235), `${sm}px ${S.hiBody}`, G.gold, 'center');
+  txt(S.sloganSub, X(600), Y(1298), `${F(32)}px MuktaB`, '#ffffff', 'center',F(1040),F(20));
+  rr(X(90),Y(1320),F(1020),F(240),F(16)); c.fillStyle='#ffffff'; c.fill();
+  txt('— प्रमुख संकल्प —', X(600), Y(1362), `${F(28)}px ${S.hiBody}`, G.orange, 'center');
   for(let i=0;i<6;i++){
     const col=i%2, row=Math.floor(i/2);
-    const x=X(140)+col*F(500), y=Y(1520)+row*F(52);
+    const x=X(140)+col*F(500), y=Y(1410)+row*F(52);
     const ikc=ELEM_IMGS[ICONK[i%6]];
     if(ikc&&ikc.complete&&ikc.naturalWidth){ c.fillStyle='#ffffff'; c.beginPath(); c.arc(x,y-F(8),F(16),0,TAU); c.fill();
       drawAspectSafe(c,ikc,x-F(11),y-F(19),F(22),F(22)); }
@@ -1255,12 +1255,12 @@ function drawT3P(W,H,img){
     const point=wrapFit(t,F(420),F(24),F(15),'MuktaB',2);
     point.lines.forEach((ln,j)=>txt(ln,x+F(30),y-F(12)+j*F(23),`${point.s}px MuktaB`,'#22301f','left',F(420),F(15)));
   }
-  textPill(S.ctaBottom,X(600),Y(1702),{base:F(28),min:F(16),maxW:F(900),padX:F(28),padY:F(10),fill:G.orange,text:'#ffffff',fam:S.hiBody});
-  txt(S.contact, X(600), Y(1744), `${fitFont(S.contact,F(22),F(15),F(1050),'MuktaB')}px MuktaB`, '#ffffff', 'center',F(1060),F(15));
-  txt(S.requester, X(600), Y(1775), `${fitFont(S.requester,F(18),F(13),F(1050),'MuktaB')}px MuktaB`, G.gold, 'center',F(1060),F(13));
-  c.fillStyle=G.orange; c.fillRect(X(20),Y(1794),F(380),F(6));
-  c.fillStyle='#ffffff'; c.fillRect(X(400),Y(1794),F(380),F(6));
-  c.fillStyle='#1a8a3c'; c.fillRect(X(780),Y(1794),F(400),F(6));
+  textPill(S.ctaBottom,X(600),Y(1592),{base:F(28),min:F(16),maxW:F(900),padX:F(28),padY:F(10),fill:G.orange,text:'#ffffff',fam:S.hiBody});
+  txt(S.contact, X(600), Y(1634), `${fitFont(S.contact,F(22),F(15),F(1050),'MuktaB')}px MuktaB`, '#ffffff', 'center',F(1060),F(15));
+  txt(S.requester, X(600), Y(1665), `${fitFont(S.requester,F(18),F(13),F(1050),'MuktaB')}px MuktaB`, G.gold, 'center',F(1060),F(13));
+  c.fillStyle=G.orange; c.fillRect(X(20),Y(1738),F(380),F(6));
+  c.fillStyle='#ffffff'; c.fillRect(X(400),Y(1738),F(380),F(6));
+  c.fillStyle='#1a8a3c'; c.fillRect(X(780),Y(1738),F(400),F(6));
 }
 
 /* ============ SQUARE 1:1 ============ */
@@ -1342,18 +1342,18 @@ function drawT3S(img){
   txt('ग्राम पंचायत : '+S.village, 70, 142, `22px MuktaB`, '#1f7a4d','left',900,13);
   if(S.showBadge) dateBadge(860,170,140,142);
   photoArch(img, 315, 210, 450, 520, G.gold, 8); pframe(315,210,450,520,'arch');
-  rr(120,755,840,90,14); c.fillStyle=G.cream; c.fill();
-  c.lineWidth=3; c.strokeStyle=G.gold; rr(120,755,840,90,14); c.stroke();
+  rr(120,700,840,90,14); c.fillStyle=G.cream; c.fill();
+  c.lineWidth=3; c.strokeStyle=G.gold; rr(120,700,840,90,14); c.stroke();
   const nf=fitFont(`${S.nameLine1} ${S.nameLine2}`, 56, 30, 800, S.hiName, 70);
   c.font=`${nf}px ${S.hiName}`; c.textAlign='center';
   c.lineWidth=6; c.strokeStyle=G.gold; c.lineJoin='round';
-  c.strokeText(`${S.nameLine1} ${S.nameLine2}`, 540, 818);
-  c.fillStyle=G.dark; c.fillText(`${S.nameLine1} ${S.nameLine2}`, 540, 818);
-  textPill(S.postBadge,540,892,{base:24,min:14,maxW:500,padX:28,padY:10,fill:G.orange,text:'#fff',fam:S.hiBody});
+  c.strokeText(`${S.nameLine1} ${S.nameLine2}`, 540, 763);
+  c.fillStyle=G.dark; c.fillText(`${S.nameLine1} ${S.nameLine2}`, 540, 763);
+  textPill(S.postBadge,540,837,{base:24,min:14,maxW:500,padX:28,padY:10,fill:G.orange,text:'#fff',fam:S.hiBody});
   const sm=fitFont(S.sloganMain, 34, 20, 980, S.hiBody);
-  txt(S.sloganMain, 540, 962, `${sm}px ${S.hiBody}`, G.gold, 'center');
-  txt(S.sloganSub, 540, 1000, `21px MuktaB`, '#fff', 'center', 940,12);
-  textPill(`${S.ctaBottom}  ·  ${S.contact}`,540,1042,{base:21,min:12,maxW:840,padX:22,padY:9,fill:G.orange,text:'#fff',fam:S.hiBody});
+  txt(S.sloganMain, 540, 907, `${sm}px ${S.hiBody}`, G.gold, 'center');
+  txt(S.sloganSub, 540, 945, `21px MuktaB`, '#fff', 'center', 940,12);
+  textPill(`${S.ctaBottom}  ·  ${S.contact}`,540,987,{base:21,min:12,maxW:840,padX:22,padY:9,fill:G.orange,text:'#fff',fam:S.hiBody});
 }
 
 /* ============ LANDSCAPE 16:9 ============ */
@@ -1430,14 +1430,14 @@ function drawT3L(img){
   txt('ग्राम पंचायत : '+S.village, 78, 144, `23px MuktaB`, '#1f7a4d','left',1000,14);
   if(S.showBadge) dateBadge(1620,168,128,138);
   photoArch(img, 520, 150, 470, 680, G.gold, 8); pframe(520,150,470,680,'arch');
-  rr(80,840,760,95,14); c.fillStyle=G.cream; c.fill();
-  c.lineWidth=3; c.strokeStyle=G.gold; rr(80,840,760,95,14); c.stroke();
+  rr(80,785,760,95,14); c.fillStyle=G.cream; c.fill();
+  c.lineWidth=3; c.strokeStyle=G.gold; rr(80,785,760,95,14); c.stroke();
   const nf=fitFont(`${S.nameLine1} ${S.nameLine2}`, 60, 32, 720, S.hiName, 70);
   c.font=`${nf}px ${S.hiName}`; c.textAlign='center';
   c.lineWidth=6; c.strokeStyle=G.gold; c.lineJoin='round';
-  c.strokeText(`${S.nameLine1} ${S.nameLine2}`, 460, 906);
-  c.fillStyle=G.dark; c.fillText(`${S.nameLine1} ${S.nameLine2}`, 460, 906);
-  textPill(S.postBadge,460,979,{base:24,min:14,maxW:520,padX:32,padY:8,fill:G.orange,text:'#fff',fam:S.hiBody});
+  c.strokeText(`${S.nameLine1} ${S.nameLine2}`, 460, 851);
+  c.fillStyle=G.dark; c.fillText(`${S.nameLine1} ${S.nameLine2}`, 460, 851);
+  textPill(S.postBadge,460,924,{base:24,min:14,maxW:520,padX:32,padY:8,fill:G.orange,text:'#fff',fam:S.hiBody});
   const sm=fitFont(S.sloganMain, 36, 20, 620, S.hiBody);
   txt(S.sloganMain, 1500, 470, `${sm}px ${S.hiBody}`, G.gold, 'center');
   const uw=wrapFit(S.sloganSub,620,22,14,'MuktaB',2);
