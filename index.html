@@ -233,7 +233,10 @@
       <button class="btn ghost" id="uploadBtn">फ़ोटो बदलें</button>
       <input type="file" id="photoFile" accept="image/*" class="hidden">
     </div>
-    <p class="note">✓ Smart photo fit चालू है — सिर, हाथ और कंधे crop नहीं होंगे।</p>
+    <label class="f" style="margin-top:8px"><span>तैयार सेफ फ़ोटो</span>
+      <select id="preparedPhoto"><option value="assets/candidate-expanded-4x5.png?v=1">4:5 — सभी vertical frames के लिए</option><option value="assets/candidate-expanded-square.png?v=1">Square — circle / oval frames के लिए</option><option value="assets/candidate.jpg?v=20261014">Original फोटो</option></select>
+    </label>
+    <p class="note">✓ दोनों expanded फोटो app में जोड़ी गई हैं। Smart fit से सिर, हाथ और कंधे crop नहीं होंगे।</p>
     <label class="f" style="margin-top:8px"><span>मतदान बैज</span>
       <select id="badgeOpt"><option value="1">दिखाएं (auto-size)</option><option value="0">छिपाएं</option></select>
     </label>
@@ -1321,7 +1324,7 @@ function layoutOverlay(W,H){
 
 /* ---------- dispatch ---------- */
 let photo = new Image();
-photo.src='assets/candidate.jpg?v=20261014'; c.imageSmoothingQuality='high';
+photo.src='assets/candidate-expanded-4x5.png?v=1'; c.imageSmoothingQuality='high';
 
 function draw(){
   const W=cv.width, H=cv.height;
@@ -1457,11 +1460,13 @@ function bind(){
   });
   const thumb=document.getElementById('photoThumb');
   thumb.src=photo.src;
+  const usePhoto=(src)=>{ const im=new Image(); im.onload=()=>{ photo=im; thumb.src=im.src; draw(); }; im.src=src; };
+  document.getElementById('preparedPhoto').addEventListener('change',e=>usePhoto(e.target.value));
   document.getElementById('uploadBtn').addEventListener('click',()=>document.getElementById('photoFile').click());
   document.getElementById('photoFile').addEventListener('change',e=>{
     const f=e.target.files[0]; if(!f) return;
     const r=new FileReader();
-    r.onload=()=>{ const im=new Image(); im.onload=()=>{ photo=im; thumb.src=im.src; draw(); }; im.src=r.result; };
+    r.onload=()=>usePhoto(r.result);
     r.readAsDataURL(f);
   });
   document.getElementById('export').addEventListener('click',()=>{
