@@ -1002,11 +1002,11 @@ function drawT1P(W,H,img){
   const cs=fitFont(S.cta, F(34), F(22), F(1000), S.hiBody);
   txt(S.cta, X(600), Y(1510), `${cs}px ${S.hiBody}`, '#ffffff', 'center');
   c.fillStyle=P.dark; c.fillRect(0,Y(1620),W,H-Y(1620));
-  // Footer uses three separated rows: date, contact, requester. Keep a fixed clear gap before the bottom rule.
-  rr(X(390),Y(1630),F(420),F(56),F(28)); c.fillStyle=P.gold; c.fill();
-  txt(`${S.dateDay} ${S.dateMonth}`, X(600), Y(1668), `${F(30)}px ${S.hiBody}`, P.dark, 'center', F(640),F(18));
-  txt(S.contact, X(600), Y(1724), `${fitFont(S.contact, F(28), F(18), F(1120), S.hiBody)}px ${S.hiBody}`, '#ffffff', 'center');
-  txt(S.requester, X(600), Y(1764), `${F(23)}px MuktaB`, P.gold, 'center', F(1100),F(14));
+  // Footer uses deliberately separated rows. These fixed gaps prevent Devanagari glyphs from touching.
+  rr(X(390),Y(1628),F(420),F(46),F(23)); c.fillStyle=P.gold; c.fill();
+  txt(`${S.dateDay} ${S.dateMonth}`, X(600), Y(1660), `${F(26)}px ${S.hiBody}`, P.dark, 'center', F(640),F(16));
+  txt(S.contact, X(600), Y(1720), `${fitFont(S.contact, F(24), F(16), F(1120), S.hiBody)}px ${S.hiBody}`, '#ffffff', 'center');
+  txt(S.requester, X(600), Y(1765), `${F(18)}px MuktaB`, P.gold, 'center', F(1100),F(12));
   c.fillStyle=P.mag; c.fillRect(X(60),Y(1792),F(520),F(5));
   c.fillStyle=P.gold; c.fillRect(X(600),Y(1792),F(540),F(5));
 }
