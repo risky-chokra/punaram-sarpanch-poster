@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+<title id="title">Sports and playfield</title><desc id="desc">Text-free sports and playfield icon in outline style; Rajasthan/Marwar palette. Transparent background where no badge is used.</desc>
+<defs></defs>
+<g fill="none" stroke="#702B36" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"><circle cx="256" cy="256" r="137"/><path d="M170 145L211 182L199 232L149 257L112 228"/><path d="M342 144L302 183L314 230L365 257L401 226"/><path d="M211 182L256 164L302 183M199 232L220 290L256 315L292 290L314 230"/><path d="M220 290L198 352L153 379M292 290L314 352L359 379M256 315V401"/></g><g fill="#D99A36" stroke="#702B36" stroke-width="8" stroke-linejoin="round"><path d="M230 199L256 187L282 199L288 228L268 247H244L224 228Z"/></g>
+</svg>

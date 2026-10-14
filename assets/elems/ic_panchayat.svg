@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+<title id="title">Panchayat building</title><desc id="desc">Text-free panchayat building icon in outline style; Rajasthan/Marwar palette. Transparent background where no badge is used.</desc>
+<defs></defs>
+<g fill="none" stroke="#702B36" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"><path d="M103 202L256 104L409 202Z"/><path d="M117 220L395 220"/><path d="M99 403L413 403"/><rect x="143" y="228" width="34" height="151" rx="9"/><path d="M136 239L184 239"/><path d="M136 367L184 367"/><rect x="211" y="228" width="34" height="151" rx="9"/><path d="M204 239L252 239"/><path d="M204 367L252 367"/><rect x="279" y="228" width="34" height="151" rx="9"/><path d="M272 239L320 239"/><path d="M272 367L320 367"/><rect x="347" y="228" width="34" height="151" rx="9"/><path d="M340 239L388 239"/><path d="M340 367L388 367"/><path d="M124 218L124 402"/><path d="M388 218L388 402"/></g><g fill="#D99A36" stroke="#702B36" stroke-width="8" stroke-linejoin="round"><path d="M139 188L256 119L373 188Z"/></g>
+</svg>

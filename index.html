@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="gf.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>🗳️</text></svg>">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>सरपंच चुनाव पोस्टर मेकर</title>
+<style>
+  :root{
+    --bg:#141220; --panel:#1e1b2e; --panel2:#262238; --line:#37324e;
+    --txt:#efeaff; --mut:#9d94c0; --acc:#f6c445; --acc2:#d6246e;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    background:var(--bg); color:var(--txt);
+    font-family:'Noto Sans Devanagari', 'Mukta', system-ui, sans-serif;
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  header{
+    display:flex; align-items:center; gap:14px; padding:10px 18px;
+    background:linear-gradient(90deg,#241436,#3a1f4d 55%,#5b1244);
+    border-bottom:1px solid var(--line); flex:0 0 auto;
+  }
+  header .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:grid;place-items:center;font-weight:800;color:#241436;}
+  header h1{font-size:19px; font-weight:700; letter-spacing:.3px;}
+  header .sub{color:var(--mut); font-size:12px; margin-top:1px;}
+  header .spacer{flex:1;}
+  .btn{
+    border:0; cursor:pointer; border-radius:10px; padding:10px 16px;
+    font:600 14px/1 inherit; color:#241436; background:var(--acc);
+    box-shadow:0 2px 0 #00000055;
+  }
+  .btn.ghost{background:transparent; color:var(--txt); border:1px solid var(--line);}
+  .btn:active{transform:translateY(1px);}
+  main{flex:1; display:flex; min-height:0;}
+  #panel{
+    width:400px; flex:0 0 400px; overflow-y:auto; background:var(--panel);
+    border-right:1px solid var(--line); padding:14px 16px 40px;
+  }
+  #panel h2{
+    font-size:12px; letter-spacing:1.2px; color:var(--mut); text-transform:uppercase;
+    margin:18px 0 8px; display:flex; align-items:center; gap:8px;
+  }
+  #panel h2::after{content:""; flex:1; height:1px; background:var(--line);}
+  .tabs{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;}
+  .tab{
+    border:1px solid var(--line); background:var(--panel2); color:var(--txt);
+    border-radius:12px; padding:9px 6px; cursor:pointer; text-align:center;
+    font:600 12px/1.3 inherit; transition:.15s;
+  }
+  .tab .sw{height:26px; border-radius:8px; margin-bottom:6px;}
+  .tab.on{border-color:var(--acc); box-shadow:0 0 0 1px var(--acc);}
+  .sw1{background:linear-gradient(135deg,#3a1f4d 55%,#d6246e 55% 75%,#f6c445 75%);}
+  .sw2{background:linear-gradient(135deg,#f58220 33%,#fff 33% 66%,#1a8a3c 66%);}
+  .sw3{background:linear-gradient(135deg,#0f3d31 60%,#e8b64c 60% 80%,#f5821f 80%);}
+  .sizes{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  .sz{
+    border:1px solid var(--line); background:var(--panel2); color:var(--txt);
+    border-radius:10px; padding:7px 6px; cursor:pointer; text-align:center;
+    font:600 11.5px/1.35 inherit;
+  }
+  .sz small{display:block; color:var(--mut); font-weight:500;}
+  .sz.on{border-color:var(--acc); box-shadow:0 0 0 1px var(--acc);}
+  label.f{display:block; margin:9px 0;}
+  label.f > span{display:block; font-size:12.5px; color:var(--mut); margin-bottom:4px;}
+  label.f input[type=text], label.f textarea, label.f select{
+    width:100%; background:var(--panel2); color:var(--txt); border:1px solid var(--line);
+    border-radius:9px; padding:8px 10px; font:500 14px/1.5 inherit; outline:none;
+  }
+  label.f input:focus, label.f textarea:focus, label.f select:focus{border-color:var(--acc);}
+  label.f textarea{resize:vertical; min-height:52px;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  .hidden{display:none !important;}
+  .photo-row{display:flex; gap:8px; align-items:center;}
+  .photo-row img{width:52px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line);}
+  .note{font-size:11.5px;color:var(--mut);margin-top:6px;line-height:1.5;}
+  .bg-actions{display:grid;grid-template-columns:1.2fr .8fr;gap:8px;margin:4px 0 8px;}
+  .bg-preview{display:flex;align-items:center;gap:10px;padding:8px;margin:6px 0 8px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);min-height:76px;}
+  .bg-preview img{width:70px;height:58px;object-fit:cover;border-radius:7px;border:1px solid #ffffff33;background:#fff;flex:none;}
+  .bg-preview .bg-state{font-size:12px;line-height:1.45;color:var(--txt);overflow-wrap:anywhere;}
+  .bg-preview .bg-state small{display:block;color:var(--mut);font-size:10.5px;margin-top:2px;}
+  #bgOpacity{width:100%;accent-color:var(--acc);cursor:pointer;}
+  .drive-overlay{position:fixed;inset:0;z-index:60;background:#090711d9;display:grid;place-items:center;padding:14px;}
+  .drive-modal{width:min(760px,96vw);max-height:90vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:0 24px 80px #000b;padding:16px;}
+  .drive-modal-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;}
+  .drive-modal-head strong{font-size:16px;color:var(--txt);}
+  .drive-modal-head p{font-size:11.5px;line-height:1.5;color:var(--mut);margin-top:4px;}
+  .drive-modal-head .spacer{flex:1;}
+  .drive-config{padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);}
+  .drive-config .row2{align-items:end;}
+  .drive-config input[type=text],.drive-config select{width:100%;background:#171524;color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:9px 10px;font:500 13px/1.4 inherit;outline:none;}
+  .drive-config input:focus,.drive-config select:focus{border-color:var(--acc);}
+  .drive-hint{font-size:11px;line-height:1.5;color:var(--mut);margin-top:8px;}
+  #driveStatus{font-size:12px;line-height:1.5;margin-top:8px;color:#f6c445;min-height:19px;}
+  @media(max-width:600px){.drive-overlay{padding:7px}.drive-modal{width:100%;max-height:94vh;padding:12px}.drive-config .row2{grid-template-columns:1fr}}
+  #stage{
+    flex:1; display:grid; place-items:center; padding:18px; min-width:0;
+    background:
+      radial-gradient(1200px 500px at 50% -10%, #2b2440 0%, transparent 60%),
+      var(--bg);
+    overflow:auto;
+  }
+  #poster{
+    max-width:100%; max-height:calc(100vh - 90px); width:auto; height:auto;
+    border-radius:6px; box-shadow:0 18px 60px #000a, 0 0 0 1px #ffffff22;
+    background:#fff;
+  }
+  #loadmsg{position:fixed; inset:0; display:grid; place-items:center; background:#141220ee; z-index:9; font-size:18px;}
+  @media (max-width:900px){
+    main{flex-direction:column; overflow:auto;}
+    #panel{width:100%; flex:0 0 auto; order:2;}
+    #stage{order:1; flex:0 0 auto;}
+    body{overflow:auto;}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">पो</div>
+  <div>
+    <h1>सरपंच चुनाव पोस्टर मेकर</h1>
+    <div class="sub">ग्राम पंचायत नादाना भाटान · मतदान 24 अक्टूबर 2026</div>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn" id="rand" style="background:linear-gradient(90deg,#e8b64c,#d9913a);color:#241309;font-weight:800">🎲 Random Poster बनाओ</button>
+  <button class="btn" id="export">⬇ PNG डाउनलोड करें</button>
+</header>
+
+<main>
+  <aside id="panel">
+    <h2>पोस्टर स्टाइल</h2>
+    <div class="tabs">
+      <button class="tab on" data-t="t1"><div class="sw sw1"></div>रॉयल पर्पल<br><small>सुझाव पोस्टर</small></button>
+      <button class="tab" data-t="t2"><div class="sw sw2"></div>त्रिरंगा व्हाइट<br><small>वोट अपील</small></button>
+      <button class="tab" data-t="t3"><div class="sw sw3"></div>टील गोल्ड आर्च<br><small>संकल्प पोस्टर</small></button>
+    </div>
+
+    <h2>साइज़</h2>
+    <div class="sizes">
+      <button class="sz on" data-s="p23">पोस्टर 2:3<small>1200×1800</small></button>
+      <button class="sz" data-s="s916">Status/Story 9:16<small>1080×1920</small></button>
+      <button class="sz" data-s="a4">A4 प्रिंट 300dpi<small>2480×3508</small></button>
+      <button class="sz" data-s="sq">Square 1:1<small>1080×1080</small></button>
+      <button class="sz" data-s="l169">Landscape 16:9<small>1920×1080</small></button>
+      <button class="sz" data-s="b21">फ्लेक्स बैनर 2:1<small>1800×900</small></button>
+    </div>
+
+    <h2>डिज़ाइन थीम</h2>
+    <div class="row2">
+      <label class="f"><span>रंग थीम</span><select id="palTheme"></select></label>
+      <label class="f"><span>डिज़ाइन पैटर्न <b id="bgNum">#0</b>/999</span><button class="btn ghost" id="bgBtn" type="button">🖼 अगला पैटर्न</button></label>
+    </div>
+    <div class="row2">
+      <button class="btn ghost" id="shuffle">🎲 अगला डिज़ाइन</button>
+      <div class="note" id="dnum" style="align-self:center"></div>
+    </div>
+
+    <h2>पोस्टर बैकग्राउंड</h2>
+    <div class="bg-actions" style="grid-template-columns:1fr 1.15fr .8fr">
+      <button class="btn" id="addBgBtn" type="button">⬆ अपलोड</button>
+      <button class="btn ghost" id="driveBgBtn" type="button">☁ Drive से चुनें</button>
+      <button class="btn ghost" id="clearBgBtn" type="button">↺ थीम</button>
+    </div>
+    <input type="file" id="bgFile" accept="image/*" class="hidden">
+    <label class="f"><span>बैकग्राउंड चुनें</span><select id="bgSel"><option value="-1">थीम रंग (बिना इमेज)</option></select></label>
+    <div class="bg-preview hidden" id="bgPreviewWrap">
+      <img id="bgPreview" alt="चुना हुआ बैकग्राउंड">
+      <div class="bg-state"><span id="bgStatus">इमेज पोस्टर पर लागू है</span><small>Preview और PNG डाउनलोड दोनों इसी इमेज का उपयोग करेंगे।</small></div>
+    </div>
+    <label class="f"><span>इमेज की तीव्रता <b id="bgOpacityVal">100%</b></span><input type="range" id="bgOpacity" min="20" max="100" step="5" value="100"></label>
+    <div class="note">इमेज चुनते या अपलोड करते ही पोस्टर लाइव अपडेट होगा। चुनी हुई इमेज इसी browser में सहेजी जाती है।</div>
+
+    <h2>मुख्य जानकारी</h2>
+    <label class="f"><span>ग्राम पंचायत</span><input type="text" id="village"></label>
+    <div class="row2">
+      <label class="f"><span>नाम (पंक्ति 1) 🔒</span><input type="text" id="nameLine1" disabled></label>
+      <label class="f"><span>नाम (पंक्ति 2) 🔒</span><input type="text" id="nameLine2" disabled></label>
+    <div class="note">🔒 यह ऐप केवल <b>पुनाराम विराह्यस</b> के पोस्टर हेतु है — नाम लॉक्ड है।</div>
+    </div>
+    <label class="f"><span>पद बैज</span><input type="text" id="postBadge"></label>
+    <label class="f" data-only="t3"><span>शीर्षक</span><input type="text" id="electionTitle"></label>
+    <label class="f"><span>संपर्क पंक्ति</span><input type="text" id="contact"></label>
+    <label class="f"><span>निवेदक</span><input type="text" id="requester"></label>
+
+    <h2>नारा / संदेश</h2>
+    <label class="f"><span>नारा प्रीसेट चुनें</span>
+      <select id="nare"><option value="">— अपनी पसंद का नारा चुनें —</option></select>
+    </label>
+    <label class="f" data-only="t1"><span>मुख्य संदेश (पीला बबल)</span><textarea id="headline"></textarea></label>
+    <label class="f" data-only="t1"><span>उप-पंक्ति</span><textarea id="subhead"></textarea></label>
+    <label class="f" data-only="t1"><span>प्रश्न 1</span><input type="text" id="q1"></label>
+    <label class="f" data-only="t1"><span>प्रश्न 1 (उदाहरण)</span><input type="text" id="q1sub"></label>
+    <label class="f" data-only="t1"><span>प्रश्न 2</span><input type="text" id="q2"></label>
+    <label class="f" data-only="t1"><span>आह्वान पंक्ति</span><input type="text" id="cta"></label>
+    <label class="f" data-only="t2"><span>नारा ऊपर</span><input type="text" id="sloganTop"></label>
+    <label class="f" data-only="t2"><span>नारा ऊपर 2</span><input type="text" id="sloganTop2"></label>
+    <label class="f" data-only="t2"><span>नारा नीचे</span><input type="text" id="sloganBottom"></label>
+    <label class="f" data-only="t2"><span>विशेषताएँ</span><input type="text" id="qualities"></label>
+    <label class="f" data-only="t2"><span>वोट पंक्ति 1</span><input type="text" id="voteLine1"></label>
+    <label class="f" data-only="t2"><span>वोट पंक्ति 2</span><input type="text" id="voteLine2"></label>
+    <label class="f" data-only="t3"><span>मुख्य नारा</span><textarea id="sloganMain"></textarea></label>
+    <label class="f" data-only="t3"><span>उप नारा</span><input type="text" id="sloganSub"></label>
+    <label class="f" data-only="t3"><span>नीचे आह्वान</span><input type="text" id="ctaBottom"></label>
+
+    <h2 data-only="t3">प्रमुख संकल्प (6)</h2>
+    <label class="f" data-only="t3"><span>संकल्प 1</span><input type="text" id="p1"></label>
+    <label class="f" data-only="t3"><span>संकल्प 2</span><input type="text" id="p2"></label>
+    <label class="f" data-only="t3"><span>संकल्प 3</span><input type="text" id="p3"></label>
+    <label class="f" data-only="t3"><span>संकल्प 4</span><input type="text" id="p4"></label>
+    <label class="f" data-only="t3"><span>संकल्प 5</span><input type="text" id="p5"></label>
+    <label class="f" data-only="t3"><span>संकल्प 6</span><input type="text" id="p6"></label>
+
+    <h2>मतदान विवरण</h2>
+    <div class="row2">
+      <label class="f"><span>दिन (अंक)</span><input type="text" id="dateDay"></label>
+      <label class="f"><span>माह / वर्ष</span><input type="text" id="dateMonth"></label>
+    </div>
+    <div class="row2">
+      <label class="f" data-only="t2,t3"><span>वार</span><input type="text" id="dateWeekday"></label>
+      <label class="f" data-only="t2,t3"><span>मतदान केंद्र</span><input type="text" id="polling"></label>
+    </div>
+
+    <h2>फ़ोटो व फ़ॉन्ट</h2>
+    <div class="photo-row">
+      <img id="photoThumb" alt="">
+      <button class="btn ghost" id="uploadBtn">फ़ोटो बदलें</button>
+      <input type="file" id="photoFile" accept="image/*" class="hidden">
+    </div>
+    <label class="f" style="margin-top:8px"><span>मतदान बैज</span>
+      <select id="badgeOpt"><option value="1">दिखाएं (auto-size)</option><option value="0">छिपाएं</option></select>
+    </label>
+    <label class="f"><span>बैज स्टाइल <b id="bsNum">#0</b>/179</span>
+      <button class="btn ghost" id="bsBtn" type="button">🎨 बैज बदलें (180 types)</button>
+    </label>
+    <label class="f"><span>डिज़ाइन वैरिएंट <b id="dvNum">#0</b>/2</span>
+      <button class="btn ghost" id="dvBtn" type="button">🎨 डिज़ाइन बदलें</button>
+    </label>
+    <label class="f"><span>फोटो फ्रेम <b id="pfNum">#0</b>/5</span>
+      <button class="btn ghost" id="pfBtn" type="button">🖼 फ्रेम बदलें</button>
+    </label>
+    <label class="f"><span>नेम स्टाइल <b id="nsNum">#0</b>/3</span>
+      <button class="btn ghost" id="nsBtn" type="button">✍️ नेम बदलें</button>
+    </label>
+    <label class="f"><span>राजस्थानी एलिमेंट्स <b id="evNum">#0</b>/3</span>
+      <button class="btn ghost" id="evBtn" type="button"> एलिमेंट बदलें</button>
+    </label>
+    <label class="f"><span>वर्तनी जाँच <b id="spellStat">बंद</b></span>
+      <button class="btn ghost" id="spellBtn" type="button">📖 जाँच चालू करें</button>
+    </label>
+    <div class="row2">
+      <button class="btn ghost" id="fHiName">अ (नाम): Modak</button>
+      <button class="btn ghost" id="fHiBody">अ (टेक्स्ट): MuktaXB</button>
+    </div>
+    <button class="btn ghost" id="fEng" style="margin-top:8px">A (English): Poppins</button>
+    <div class="note">Text Unicode में ही रहता है — चुना हुआ font उसे glyphs में ढालता है। Sab 171 fonts (9 offline TTF + 162 bundled) app ke saath hi aate hain — bina internet ke bhi. Live preview dekhkar chunein.</div>
+    <div id="fontDlg" class="hidden" style="position:fixed;inset:0;z-index:40;background:#000000aa;display:grid;place-items:center">
+      <div style="width:min(560px,94vw);max-height:84vh;background:var(--panel);border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;overflow:hidden">
+        <div style="padding:12px;border-bottom:1px solid var(--line)">
+          <div class="row2" style="margin-bottom:8px">
+            <button class="btn ghost dlgTab" data-tab="hiName">हिंदी (नाम)</button>
+            <button class="btn ghost dlgTab" data-tab="hiBody">हिंदी (टेक्स्ट)</button>
+          </div>
+          <div class="row2">
+            <button class="btn ghost dlgTab" data-tab="eng">English</button>
+            <button class="btn ghost" id="dlgClose">✕ बंद करें</button>
+          </div>
+          <input type="text" id="dlgSearch" placeholder="फ़ॉन्ट खोजें… (search)" style="width:100%;margin-top:8px;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:8px;outline:none">
+        </div>
+        <div id="dlgList" style="overflow:auto;padding:10px"></div>
+        <button class="btn ghost" id="dlgMore" style="margin:8px">और फ़ॉन्ट दिखाएं ↓</button>
+      </div>
+    </div>
+    <p class="note">टेक्स्ट बदलते ही पोस्टर अपडेट होगा। PNG चुनी हुई साइज़ में डाउनलोड होता है — प्रिंट और WhatsApp दोनों के लिए।</p>
+  </aside>
+
+  <section id="stage">
+    <canvas id="poster" width="1200" height="1800"></canvas>
+  </section>
+</main>
+<div id="driveBgModal" class="drive-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="driveModalTitle">
+  <div class="drive-modal">
+    <div class="drive-modal-head">
+      <div><strong id="driveModalTitle">☁ Google Drive से बैकग्राउंड चुनें</strong><p>OAuth से Drive के चुने हुए folder में जाएँ; image चुनते ही वह पोस्टर पर लागू होगी।</p></div>
+      <div class="spacer"></div><button class="btn ghost" id="driveCloseBtn" type="button" aria-label="बंद करें">✕</button>
+    </div>
+    <div class="drive-config">
+      <label class="f"><span>Google OAuth Web Client ID <small>(.apps.googleusercontent.com)</small></span><input type="text" id="driveClientId" autocomplete="off" placeholder="1234567890-abc.apps.googleusercontent.com"></label>
+      <label class="f"><span>Google API Key <small>(Picker API के लिए)</small></span><input type="text" id="driveApiKey" autocomplete="off" placeholder="AIza…"></label>
+      <div class="row2">
+        <label class="f"><span>Drive background folder</span><select id="driveBgCollection">
+          <option value="fresh">Fresh Backgrounds · 1,100</option>
+          <option value="tricolor">Tricolor Backgrounds · 1,000</option>
+          <option value="pack1080">1080 Backgrounds · 360</option>
+        </select></label>
+        <button class="btn" id="driveConnectBtn" type="button" disabled>🔐 OAuth से खोलें</button>
+      </div>
+      <div id="driveStatus" role="status">Drive Picker तैयार हो रहा है…</div>
+      <p class="drive-hint">एक बार Google Cloud में Drive API और Google Picker API चालू करें; Web OAuth origin <b>https://risky-chokra.github.io</b> रखें और OAuth consent screen में अपना account test user बनाएं। ऐप केवल चुनी image पढ़ने के लिए <code>drive.file</code> scope लेगा। Client ID/API key public identifiers हैं—client secret या access token यहाँ न डालें। API key को केवल इस site origin और Google Picker/Drive API तक restrict करें।</p>
+    </div>
+  </div>
+</div>
+<div id="loadmsg">फ़ॉन्ट लोड हो रहे हैं…</div>
+
+<script>
+"use strict";
+const S = {
+  template:'t1', size:'p23', palIdx:0, patIdx:0, bgIdx:-1, bgOpacity:100,
+  village:'नादाना भाटान',
+  nameLine1:'पुनाराम', nameLine2:'विराह्यस',
+  postBadge:'सरपंच प्रत्याशी',
+  electionTitle:'ग्राम पंचायत चुनाव — 2026',
+  contact:'सुझाव व संपर्क सूत्र : 8107697680, 9079329088',
+  requester:'निवेदक : टीम पुनाराम विराह्यस',
+  headline:'आपका सुझाव हमारे लिए सबसे महत्वपूर्ण है!',
+  subhead:'कृपया इन दो बिंदुओं पर अपने विचार या सुझाव हमारे साथ अवश्य साझा करें:',
+  q1:'आपके वार्ड/मोहल्ले में सबसे बड़ी समस्या क्या है?',
+  q1sub:'(जैसे—सड़क, पानी, सफाई, या रोशनी)',
+  q2:'पंचायत के विकास के लिए आपका क्या मुख्य सुझाव है?',
+  cta:'आइए, मिलकर अपने नादाना भाटान को एक आदर्श पंचायत बनाएं।',
+  sloganTop:'आपकी पंचायत',
+  sloganTop2:'आपकी आवाज़ –',
+  sloganBottom:'हर पल आपके साथ!',
+  qualities:'शिक्षित | कर्मठ | ईमानदार | समर्पित युवा',
+  voteLine1:'सोच-समझकर वोट दें',
+  voteLine2:'पुनाराम विराह्यस को विजयी बनाएं',
+  sloganMain:'पंचायत की नई सुबह, पुनाराम की सौगात!',
+  sloganSub:'वादे नहीं, काम करेंगे — यही हमारी पहचान!',
+  ctaBottom:'वोट दें — विकास चुनें!',
+  p1:'मजबूत एवं पारदर्शी शासन व्यवस्था', p2:'स्वच्छ एवं सुंदर ग्राम पंचायत',
+  p3:'सुरक्षा, शांति एवं सुरक्षित वातावरण', p4:'पक्की सड़कें एवं बेहतर बुनियादी सुविधाएँ',
+  p5:'समान न्याय एवं भ्रष्टाचार मुक्त पंचायत', p6:'हर परिवार के लिए सम्मान एवं सहयोग',
+  dateDay:'24', dateMonth:'अक्टूबर 2026', dateWeekday:'शनिवार',
+  polling:'मतदान केंद्र : राजकीय विद्यालय, नादाना भाटान',
+  hiName:'Modak', hiBody:'MuktaXB', engFont:'Poppins', showBadge:true, badgeStyle:0, decoV:0, photoF:0, nameS:0, elemV:0,
+};
+
+const SIZES = {
+  p23:{w:1200,h:1800}, s916:{w:1080,h:1920}, a4:{w:2480,h:3508},
+  sq:{w:1080,h:1080}, l169:{w:1920,h:1080}, b21:{w:1800,h:900},
+};
+const ORIENT = { p23:'P', s916:'P', a4:'P', sq:'S', l169:'L', b21:'B' };
+
+/* रंग थीम्स — roles: bg(dark), deep(footer), primary, accent, light, light2, ink, card1, card2, sec1, sec2 */
+const PALETTES = [
+ {n:'पर्पल गोल्ड', bg:'#3a1f4d', deep:'#2e1640', primary:'#d6246e', accent:'#f6c445', light:'#f7f0dd', light2:'#f2f4f7', ink:'#3a1f4d', card1:'#f9dee8', card2:'#e9def2', sec1:'#f58220', sec2:'#1a8a3c'},
+ {n:'त्रिरंगा क्लासिक', bg:'#16336e', deep:'#10264f', primary:'#16336e', accent:'#f2b21a', light:'#fdf6e3', light2:'#f2f4f7', ink:'#16336e', card1:'#ffe8d1', card2:'#dff0e2', sec1:'#f58220', sec2:'#1a8a3c'},
+ {n:'मरून गोल्ड', bg:'#5a0e1c', deep:'#400913', primary:'#c2183a', accent:'#f3c14b', light:'#faf1e0', light2:'#fbf6ee', ink:'#4a0d18', card1:'#f8dcd8', card2:'#f3e3d3', sec1:'#e07b28', sec2:'#2e7d4f'},
+ {n:'रॉयल ब्लू', bg:'#0d2a66', deep:'#081d49', primary:'#1e56c8', accent:'#ffc93c', light:'#f2f6ff', light2:'#f2f5fb', ink:'#0d2a66', card1:'#dbe7ff', card2:'#e6e0f7', sec1:'#ff8f1f', sec2:'#12a15a'},
+ {n:'एमरल्ड गोल्ड', bg:'#0e3b2e', deep:'#092a20', primary:'#178a54', accent:'#e8b64c', light:'#f4f1e2', light2:'#f1f6f0', ink:'#0e3b2e', card1:'#d9efe0', card2:'#e7ecd9', sec1:'#ef8f1f', sec2:'#1f8a8a'},
+ {n:'टील ऑरेंज', bg:'#0f3d44', deep:'#0a2c32', primary:'#128a96', accent:'#ffb03a', light:'#f2f7f5', light2:'#eef6f7', ink:'#0f3d44', card1:'#d8eef0', card2:'#ffe9cf', sec1:'#f5821f', sec2:'#2e9e5b'},
+ {n:'गुलाबी बैंगनी', bg:'#4a1259', deep:'#340c40', primary:'#e0368c', accent:'#ffd166', light:'#fdf0f6', light2:'#f8f2fa', ink:'#4a1259', card1:'#ffdcec', card2:'#e8dcf6', sec1:'#ff7a45', sec2:'#23a06b'},
+ {n:'केसरिया हरा', bg:'#7a3c00', deep:'#5a2c00', primary:'#e07000', accent:'#ffd44d', light:'#fff6e0', light2:'#fbf5e8', ink:'#6b3400', card1:'#ffe7c2', card2:'#e2f0d9', sec1:'#f58220', sec2:'#1a8a3c'},
+ {n:'स्लेट गोल्ड', bg:'#232a33', deep:'#171d24', primary:'#3d70c9', accent:'#d9a93f', light:'#f5f1e6', light2:'#f0f2f5', ink:'#232a33', card1:'#dbe4f2', card2:'#e5e7ea', sec1:'#e0862a', sec2:'#2f9e63'},
+ {n:'वाइन पीच', bg:'#58152c', deep:'#3f0f1f', primary:'#a1184c', accent:'#f6b93b', light:'#fdf1e7', light2:'#faf3ef', ink:'#58152c', card1:'#fadbe0', card2:'#f6e6d8', sec1:'#ef8354', sec2:'#2a9d8f'},
+ {n:'लैवेंडर रॉयल', bg:'#b9add6', deep:'#443a68', primary:'#6b5fa8', accent:'#d9a93f', light:'#f5f0e6', light2:'#f2f0f7', ink:'#3f3668', card1:'#efe9f7', card2:'#e6e0f2', sec1:'#f58220', sec2:'#1a8a3c'},
+ {n:'डेज़र्ट टॉप', bg:'#d6c4b2', deep:'#5e3f30', primary:'#7a4a35', accent:'#d9a43a', light:'#f7f0e3', light2:'#f4efe8', ink:'#5a3a2c', card1:'#f3e9dc', card2:'#efe4d4', sec1:'#e07b28', sec2:'#2e7d4f'},
+ {n:'चॉकबोर्ड हरित', bg:'#1d3a2a', deep:'#142b1f', primary:'#2e6b46', accent:'#f2d15c', light:'#f3efe2', light2:'#eef2ea', ink:'#1d3a2a', card1:'#e2efe2', card2:'#e9f0e2', sec1:'#ef8f1f', sec2:'#1f8a8a'},
+ {n:'मिडनाइट नीयन', bg:'#101826', deep:'#0a101c', primary:'#2563c9', accent:'#39c0f0', light:'#eef4fb', light2:'#e8eef6', ink:'#101826', card1:'#dce8f7', card2:'#e2ecf4', sec1:'#ff8f1f', sec2:'#12a15a'},
+ {n:'फ़िरोज़ा मरून', bg:'#073f44', deep:'#052e32', primary:'#0e7c86', accent:'#f4a261', light:'#f1f8f6', light2:'#eef7f7', ink:'#073f44', card1:'#d5ecec', card2:'#fbe3d5', sec1:'#e76f51', sec2:'#2a9d8f'},
+ {n:'नेवी लाल', bg:'#101c3d', deep:'#0a132b', primary:'#d0342c', accent:'#f5c04e', light:'#f7f2e7', light2:'#f1f3f8', ink:'#101c3d', card1:'#f9dcd8', card2:'#dde4f5', sec1:'#f0842c', sec2:'#1c8a4f'},
+ {n:'जैतूनी केसर', bg:'#3d4419', deep:'#2c3111', primary:'#a4b52c', accent:'#ffb703', light:'#f7f3e2', light2:'#f5f6ea', ink:'#3d4419', card1:'#eef0cf', card2:'#ffe9c4', sec1:'#fb8500', sec2:'#2b9348'},
+ {n:'चॉकलेट गोल्ड', bg:'#3e2723', deep:'#2a1a17', primary:'#c46a2b', accent:'#ffd54f', light:'#f6efe4', light2:'#f4efe9', ink:'#3e2723', card1:'#f3ddc8', card2:'#ece4da', sec1:'#ef6c00', sec2:'#388e3c'},
+];
+const BG_COUNT=1000;
+const BGIMGS = window.BGIMGS || (window.BGIMGS = []);
+const GF_HI = ["Poppins", "Noto Sans", "Rajdhani", "Mukta", "Hind", "Teko", "Baloo 2", "Kalam", "Noto Sans Devanagari", "Khand", "Martel", "Yantramanav", "Eczar", "Biryani", "Amita", "Palanquin Dark", "Pragati Narrow", "Rozha One", "Palanquin", "Khula", "Martel Sans", "Sarala", "Akshar", "Yatra One", "Tiro Devanagari Hindi", "Glegoo", "Karma", "Halant", "Kripa", "Laila", "Amiko", "Anek Devanagari", "Inknut Antiqua", "Noto Serif Devanagari", "Cambay", "Gotu", "Sarpanch", "Jaldi", "Vesper Libre", "Kadwa", "Bakbak One", "Alkatra", "Arya", "Modak", "Sumana", "Kurale", "IBM Plex Sans Devanagari", "Sura", "Tiro Devanagari Sanskrit", "Asar", "Tillana", "Sahitya", "Dekko", "Tiro Devanagari Marathi", "Ranga", "Rhodium Libre", "Annapurna SIL", "Gajraj One", "Playpen Sans Deva", "Jaini Purva", "Jaini", "Matangi"];
+const EN_FONTS = ["Roboto", "Open Sans", "Google Sans", "Inter", "Montserrat", "Poppins", "Lato", "Noto Sans JP", "Arimo", "Roboto Condensed", "Roboto Mono", "Oswald", "Noto Sans", "DM Sans", "Raleway", "Playfair Display", "Nunito", "Nunito Sans", "Roboto Slab", "Rubik", "Manrope", "Ubuntu", "Outfit", "Kanit", "Merriweather", "Plus Jakarta Sans", "Work Sans", "Lora", "Quicksand", "Bebas Neue", "Figtree", "Archivo Black", "Noto Sans KR", "PT Sans", "JetBrains Mono", "Noto Sans TC", "Archivo", "Mulish", "Barlow", "Source Sans 3", "IBM Plex Sans", "Jost", "Prompt", "Inconsolata", "Fira Sans", "Saira", "Black Ops One", "Space Grotesk", "Libre Baskerville", "Noto Serif", "Bricolage Grotesque", "Karla", "Cormorant Garamond", "Titillium Web", "Share Tech", "Smooch Sans", "Heebo", "PT Serif", "IBM Plex Mono", "Josefin Sans", "Barlow Condensed", "Source Code Pro", "Inter Tight", "Noto Sans SC", "Dancing Script", "Libre Franklin", "Anton", "Instrument Serif", "Fraunces", "EB Garamond", "Noto Serif JP", "Public Sans", "Fjalla One", "Sora", "Cairo", "Rajdhani", "Changa One", "Geist", "Cabin", "Urbanist", "Lobster Two", "Bitter", "Schibsted Grotesk", "Assistant", "Mukta", "Lexend", "Merriweather Sans", "Caveat", "DM Serif Display", "Hind Siliguri", "Dosis", "Roboto Flex", "Alfa Slab One", "Nanum Gothic", "Source Serif 4", "Fredoka", "Red Hat Display", "Instrument Sans", "Exo 2", "Noto Sans Khmer"];
+const GEN_THEMES=(()=>{ const out=[]; let k=0;
+  for(let h=0; h<360; h+=24){ for(let v=0; v<10; v++){ k++;
+    const s1=58+(v%5)*8, l1=52+((v>>2)%3)*6;
+    const hs=(x)=>`hsl(${(h+x)%360}, ${s1}%, ${l1}%)`;
+    out.push({ n:`नया थीम ${k}`, bg:`hsl(${h}, 42%, ${14+(v%3)*4}%)`, deep:`hsl(${h}, 48%, ${10+(v%3)*3}%)`,
+      primary:hs(0), accent:`hsl(${(h+42)%360}, 82%, ${60+(v%4)*4}%)`, light:'#f7f0dd', light2:`hsl(${h}, 26%, 95%)`,
+      ink:`hsl(${h}, 45%, 20%)`, card1:`hsl(${h}, 46%, 90%)`, card2:`hsl(${(h+300)%360}, 38%, 89%)`,
+      sec1:`hsl(${(h+140)%360}, 62%, 50%)`, sec2:`hsl(${(h+90)%360}, 55%, 45%)` });
+  } }
+  return out; })();
+PALETTES.push(...GEN_THEMES);
+const famVal = r => r.includes(' ')?'"'+r+'"':r;
+let NAME_FONTS = ['Modak','Khand','Shrikhand','Rozha','Tillana','MuktaXB','MuktaB','NotoB','Kalam','RajdhaniB','HalantB','PalanquinB','HindB','SahityaB','MartelH','MartelB','MartelSansB','AmitaR','AmitaB','TiroHindi','TekoV','Baloo2V','AnekV','Farsan','Rakkas','YatraOne','Dekko','NotoBlk','NotoXBd','NotoSB','NotoMd','KhandMd','KhandSB','TillanaB'].concat(GF_HI.map(famVal));
+let BODY_FONTS = NAME_FONTS.slice();
+const curPal = () => PALETTES[S.palIdx] || PALETTES[0];
+function palT1(){ const p=curPal(); return {bg:p.bg, mag:p.primary, gold:p.accent, cream:p.light, ink:p.ink, pink:p.card1, lav:p.card2, dark:p.deep}; }
+function palT2(){ const p=curPal(); return {bg:p.light2, navy:p.primary, saf:p.sec1, grn:p.sec2, gold:p.accent}; }
+function palT3(){ const p=curPal(); return {bg:p.bg, gold:p.accent, cream:p.light, orange:p.sec1, dark:p.deep}; }
+function designNumber(){
+  const L=['t1','t2','t3'].indexOf(S.template);
+  const nf=Math.max(0,NAME_FONTS.indexOf(S.hiName)), bf=Math.max(0,BODY_FONTS.indexOf(S.hiBody)), ef=Math.max(0,EN_FONTS.indexOf(S.engFont));
+  return ((((L*PALETTES.length + S.palIdx)*BG_COUNT + S.patIdx)*NAME_FONTS.length + nf)*BODY_FONTS.length + bf)*EN_FONTS.length + ef + 1;
+}
+const dp=(W,H,col)=>drawPattern(S.patIdx,W,H,col);
+function bgImg(W,H,tint){ if(S.bgIdx<0||!BGIMGS[S.bgIdx]||!BGIMGS[S.bgIdx].naturalWidth) return; const im=BGIMGS[S.bgIdx]; const a=Math.max(0,Math.min(1,(Number(S.bgOpacity)||100)/100)); c.save(); c.globalAlpha=a; cover(im,0,0,W,H); c.globalAlpha=0.22; c.fillStyle=tint; c.fillRect(0,0,W,H); c.restore(); }
+const TOTAL_DESIGNS = 3*3*6*6*4*4*PALETTES.length*BG_COUNT*180*NAME_FONTS.length*BODY_FONTS.length;
+const ELEM_IMGS={}; const ICONK=['ic_panchayat','ic_women','ic_streetlight','ic_school','ic_senior','ic_sports'];
+[['corner_fans','assets/elems/corner_fans.svg'],['floral_corners','assets/elems/floral_corners.svg'],['sun_corners','assets/elems/sun_corners.svg'],
+ ['bead_line','assets/elems/bead_line.svg'],['diamond_chain','assets/elems/diamond_chain.svg'],['double_wave','assets/elems/double_wave.svg'],
+ ['minimal_bars','assets/elems/minimal_bars.svg'],['bandhani','assets/elems/bandhani.svg'],['lotus','assets/elems/lotus.svg'],
+ ['ic_panchayat','assets/elems/ic_panchayat.svg'],['ic_senior','assets/elems/ic_senior.svg'],['ic_streetlight','assets/elems/ic_streetlight.svg'],
+ ['ic_school','assets/elems/ic_school.svg'],['ic_women','assets/elems/ic_women.svg'],['ic_sports','assets/elems/ic_sports.svg'],
+ ['mandala_teal','assets/elems/mandala_teal.svg'],['mandala_navy','assets/elems/mandala_navy.svg'],['mandala_peacock','assets/elems/mandala_peacock.svg'],
+ ['agr_teal','assets/elems/agr_teal.svg'],['agr_marigold','assets/elems/agr_marigold.svg'],['agr_indigo','assets/elems/agr_indigo.svg'],
+ ['tex_navy','assets/elems/tex_navy.svg'],['tex_teal','assets/elems/tex_teal.svg']]
+ .forEach(([k,u])=>{ const im=new Image(); im.src=u; ELEM_IMGS[k]=im; });
+function elemOverlay(W,H){ const v=S.elemV|0; if(!v) return;
+  const set=[null,['corner_fans','bead_line'],['floral_corners','diamond_chain'],['sun_corners','double_wave'],
+   ['mandala_teal','bead_line','agr_teal'],['mandala_navy','diamond_chain','agr_marigold'],['mandala_peacock','double_wave','agr_indigo'],
+   ['mandala_teal','bead_line',null,'tex_navy'],['floral_corners','diamond_chain',null,'tex_teal'],['sun_corners','double_wave',null,'tex_navy']][v]; if(!set) return;
+  c.save(); c.globalAlpha=0.85;
+  if(set[3]){ const tx=ELEM_IMGS[set[3]]; if(tx&&tx.complete&&tx.naturalWidth){ c.save(); c.globalAlpha=0.13; c.drawImage(tx,0,0,W,H); c.restore(); } }
+  const ci=ELEM_IMGS[set[0]]; if(ci&&ci.complete&&ci.naturalWidth){ const s=Math.min(W,H)*0.24;
+    c.drawImage(ci,0,0,s,s); c.save(); c.translate(W,0); c.scale(-1,1); c.drawImage(ci,0,0,s,s); c.restore(); }
+  const di=ELEM_IMGS[set[1]]; if(di&&di.complete&&di.naturalWidth){ const dw=W*0.55, dh=Math.max(20,dw*0.05);
+    c.drawImage(di,(W-dw)/2,H-dh*1.6,dw,dh); }
+  if(set[2]){ const ic=ELEM_IMGS[set[2]]; if(ic&&ic.complete&&ic.naturalWidth){ const s2=Math.min(W,H)*0.07;
+    c.drawImage(ic,W-s2*1.25,H-s2*1.45,s2,s2); } }
+  c.restore(); }
+function pframe(x,y,w,h,shape){ const f=S.photoF|0; if(!f) return;
+  const P=(sc)=>{ sc=sc||1; const W2=w*sc, H2=(shape==='oval')? h*sc : h, X2=x+(w-W2)/2, Y2=(shape==='oval')? y+(h-H2)/2 : y;
+    c.beginPath();
+    if(shape==='arch'){ const r=W2/2; c.moveTo(X2,Y2+H2); c.lineTo(X2,Y2+r); c.arc(X2+r,Y2+r,r,Math.PI,0); c.lineTo(X2+W2,Y2+H2); c.closePath(); }
+    else if(shape==='oval'){ if(c.ellipse) c.ellipse(X2+W2/2,Y2+H2/2,W2/2,H2/2,0,0,TAU); else c.arc(X2+W2/2,Y2+H2/2,(W2+H2)/4,0,TAU); }
+    else c.rect(X2,Y2,W2,H2); };
+  const band=(col,lw,dash,blur)=>{ c.save(); P(1); c.clip(); P(1);
+    c.strokeStyle=col; c.lineWidth=lw; c.lineJoin='round';
+    if(dash&&c.setLineDash) c.setLineDash(dash);
+    if(blur){ c.shadowColor=col; c.shadowBlur=blur; }
+    c.stroke(); c.restore(); };
+  c.save();
+  if(f===1){ band('#ffffff',Math.max(6,w*0.055)); band('#e8b64c',Math.max(3,w*0.022)); }
+  else if(f===2){ const bh=Math.max(3,h*0.012);
+    c.save(); P(1); c.clip();
+    ['#f58220','#ffffff','#1a8a3c'].forEach((col,i)=>{ c.fillStyle=col; c.fillRect(x,y+h-(3-i)*bh,w,bh); });
+    c.restore(); band('#ffffff',Math.max(4,w*0.03)); }
+  else if(f===3){ band('#ffffff',Math.max(4,w*0.03),[w*0.06,w*0.045]); }
+  else if(f===4){ band('#e8b64c',Math.max(7,w*0.06)); }
+  else if(f===5){ band('#e8b64c',Math.max(4,w*0.03),null,w*0.07); }
+  c.restore(); }
+function ndraw(tstr,x,y,size,fam,col,align){ const ns=S.nameS|0; c.font=`${size}px ${fam}`; c.textAlign=align||'left'; c.textBaseline='alphabetic';
+  if(ns===3){ const w2=c.measureText(tstr).width; const px= align==='center'? x-w2/2 : x;
+    c.fillStyle='rgba(0,0,0,0.28)'; rr(px-size*0.18,y-size*0.98,w2+size*0.36,size*1.3,size*0.22); c.fill(); }
+  if(ns===1){ c.lineWidth=Math.max(2,size*0.09); c.strokeStyle='#e8b64c'; c.lineJoin='round'; c.strokeText(tstr,x,y); }
+  if(ns===2){ c.save(); c.shadowColor='rgba(0,0,0,.5)'; c.shadowBlur=size*0.18; c.shadowOffsetY=size*0.07;
+    c.fillStyle=col; c.fillText(tstr,x,y); c.restore(); return; }
+  c.fillStyle=col; c.fillText(tstr,x,y); }
+function mulb(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function drawPattern(k,W,H,accent){
+  if(!k) return;
+  const t=k%25, v=(k/25)|0;
+  const dens=1+(v%5)*0.3, rot=((v>>2)%4)*(Math.PI/24), al=0.10+((v>>4)%3)*0.05, sc=(0.8+((v>>6)%5)*0.22)/dens;
+  c.save();
+  if(c.translate&&c.rotate){ c.translate(W/2,H/2); c.rotate(rot); c.translate(-W/2,-H/2); }
+  const ell=(x,y,rx,ry,ro)=>{ if(c.ellipse) c.ellipse(x,y,rx,ry,ro,0,TAU); else { c.beginPath(); c.arc(x,y,(rx+ry)/2,0,TAU); } };
+  c.globalAlpha=al; c.fillStyle=accent; c.strokeStyle=accent;
+  const LW=Math.max(1.4,W/900); c.lineWidth=LW;
+  const M=Math.max(W,H)*1.4, g0=Math.max(46,W/22)*sc;
+  if(t===1){ for(let x=0;x<W;x+=g0)for(let y=0;y<H;y+=g0){ c.beginPath(); c.arc(x,y,LW*1.6,0,TAU); c.fill(); } }
+  else if(t===2){ for(let r=g0;r<M;r+=g0){ c.beginPath(); c.arc(W/2,H/2,r,0,TAU); c.stroke(); } }
+  else if(t===3){ c.lineWidth=LW*2; c.strokeRect(W*0.016,H*0.011,W*0.968,H*0.978); c.lineWidth=LW; c.strokeRect(W*0.032,H*0.022,W*0.936,H*0.956); }
+  else if(t===4){ for(let x=-H;x<W+H;x+=g0){ c.beginPath(); c.moveTo(x,0); c.lineTo(x-H,H); c.stroke(); } }
+  else if(t===5){ for(let x=0;x<W;x+=g0){ c.beginPath(); c.moveTo(x,0); c.lineTo(x,H); c.stroke(); } }
+  else if(t===6){ for(let y=0;y<H;y+=g0){ c.beginPath(); c.moveTo(0,y); c.lineTo(W,y); c.stroke(); } }
+  else if(t===7){ for(let x=0;x<W;x+=g0){ c.beginPath(); c.moveTo(x,0); c.lineTo(x,H); c.stroke(); } for(let y=0;y<H;y+=g0){ c.beginPath(); c.moveTo(0,y); c.lineTo(W,y); c.stroke(); } }
+  else if(t===8){ for(let x=0;x<W+g0;x+=g0)for(let y=0;y<H+g0;y+=g0){ c.beginPath(); c.moveTo(x,y-g0*0.4); c.lineTo(x+g0*0.4,y); c.lineTo(x,y+g0*0.4); c.lineTo(x-g0*0.4,y); c.closePath(); c.fill(); } }
+  else if(t===9){ for(let x=0;x<W+g0;x+=g0)for(let y=0;y<H+g0;y+=g0){ c.beginPath(); c.moveTo(x,y-g0*0.4); c.lineTo(x+g0*0.4,y+g0*0.35); c.lineTo(x-g0*0.4,y+g0*0.35); c.closePath(); c.stroke(); } }
+  else if(t===10){ for(let y=0;y<H;y+=g0){ c.beginPath(); let up=1; for(let x=0;x<=W;x+=g0/2){ up=!up; c.lineTo(x,y+(up?-g0*0.22:g0*0.22)); } c.stroke(); } }
+  else if(t===11){ for(let y=0;y<H;y+=g0){ c.beginPath(); for(let x=0;x<=W;x+=8){ c.lineTo(x,y+Math.sin(x/g0*3)*g0*0.25); } c.stroke(); } }
+  else if(t===12){ for(let x=0;x<W;x+=g0)for(let y=0;y<H;y+=g0){ c.beginPath(); c.moveTo(x-g0*0.25,y); c.lineTo(x+g0*0.25,y); c.moveTo(x,y-g0*0.25); c.lineTo(x,y+g0*0.25); c.stroke(); } }
+  else if(t===13){ for(let x=0;x<W;x+=g0)for(let y=0;y<H;y+=g0){ c.fillRect(x-LW,y-g0*0.3,LW*2,g0*0.6); c.fillRect(x-g0*0.3,y-LW,g0*0.6,LW*2); } }
+  else if(t===14){ for(let x=0;x<W+g0;x+=g0)for(let y=0;y<H+g0;y+=g0){ c.beginPath(); c.moveTo(x,y-g0*0.42); c.lineTo(x+g0*0.42,y); c.lineTo(x,y+g0*0.42); c.lineTo(x-g0*0.42,y); c.closePath(); c.stroke(); } }
+  else if(t===15){ for(let x=0;x<W+g0;x+=g0)for(let y=0;y<H+g0;y+=g0){ c.beginPath(); for(let i=0;i<6;i++){ const a=i/6*TAU; const px=x+Math.cos(a)*g0*0.4, py=y+Math.sin(a)*g0*0.4; if(i) c.lineTo(px,py); else c.moveTo(px,py); } c.closePath(); c.stroke(); } }
+  else if(t===16){ for(let r=g0;r<M*1.2;r+=g0){ c.beginPath(); c.arc(0,0,r,0,Math.PI/2); c.stroke(); } }
+  else if(t===17){ for(let a=0;a<TAU;a+=0.22){ c.beginPath(); c.moveTo(W/2+Math.cos(a)*g0,H/2+Math.sin(a)*g0); c.lineTo(W/2+Math.cos(a)*M,H/2+Math.sin(a)*M); c.stroke(); } }
+  else if(t===18){ let i=0; for(let x=0;x<W;x+=g0,i++){ let j=0; for(let y=0;y<H;y+=g0,j++){ if((i+j)%2) c.fillRect(x,y,g0,g0); } } }
+  else if(t===19){ for(let y=0;y<H;y+=g0)for(let x=0;x<W;x+=g0){ c.beginPath(); c.moveTo(x,y); c.lineTo(x+g0*0.5,y); c.stroke(); } }
+  else if(t===20){ for(let x=0;x<W;x+=g0)for(let y=0;y<H;y+=g0){ c.beginPath(); c.arc(x,y,g0*0.32,0,TAU); c.stroke(); } }
+  else if(t===21){ for(let x=0;x<W+g0;x+=g0)for(let y=0;y<H+g0;y+=g0){ c.beginPath(); ell(x,y,g0*0.42,g0*0.16,Math.PI/4); c.stroke(); } }
+  else if(t===22){ for(let y=0;y<H;y+=g0){ c.beginPath(); for(let x=0;x<=W+g0;x+=g0){ c.lineTo(x-g0*0.25,y+g0*0.25); c.lineTo(x,y); c.lineTo(x+g0*0.25,y+g0*0.25); } c.stroke(); } }
+  else if(t===23){ const rnd=mulb(k*7919+13); const n=Math.round(260/dens); for(let i=0;i<n;i++){ c.beginPath(); c.arc(rnd()*W,rnd()*H,LW*(0.8+rnd()*2.2),0,TAU); c.fill(); } }
+  else if(t===24){ for(let x=-H;x<W+H;x+=g0){ c.beginPath(); c.moveTo(x,0); c.lineTo(x-H,H); c.stroke(); c.beginPath(); c.moveTo(x-H,0); c.lineTo(x,H); c.stroke(); } }
+  c.restore();
+}
+const NARE = [
+"आपकी पंचायत, आपकी आवाज़ — पुनाराम है आपके साथ!","वोट विकास को, वोट विश्वास को!",
+"पंचायत की नई सुबह, पुनाराम की सौगात!","वादे नहीं, काम करेंगे — यही हमारी पहचान!",
+"युवा नेता, नई सोच, पंचायत की तरक्की पक्की!","एक वोट शिक्षा के नाम, एक वोट विकास के नाम!",
+"पुनाराम आएगा, पंचायत की किस्मत बदलेगा!","पंचायत का विकास, जनता का विश्वास!",
+"ईमानदार चेहरा, ईमानदार नीयत!","पंचायत का मालिक नहीं, सेवक हूँ मैं!",
+"कर्मठ युवा, पंचायत का गौरव!","सही वोट, सही नेता!",
+"पंचायत में विकास का सूरज उगेगा!","पुनाराम विराह्यस, पंचायत का अपना!",
+"सोच-समझकर वोट दें, विश्वास को वोट दें!","आपका भरोसा, मेरी ताकत!",
+"पंचायत को पिछड़ने नहीं देंगे!","पानी, सड़क, बिजली — पंचायत का सपना पूरा होगा!",
+"बातें नहीं, काम बोलेंगे!","स्वच्छ और सुंदर — हमारी पंचायत!",
+"पुनाराम आए, विकास लाए!","हर घर पानी, हर दिल सुकून!",
+"पंचायत नहीं रुकेगी, नहीं झुकेगी!","जनता के साथ चलने वाला नेता!",
+"पंचायत का दर्द, पुनाराम जाने!","वोट आपका, काम हमारा!",
+"नादाना भाटान की शान!","आपका एक वोट, पंचायत की तकदीर!",
+"विकास का वादा नहीं, विकास का इरादा!","नया सवेरा, नई राह — पुनाराम के साथ!",
+"पंचायत की धड़कन, जनता की ताकत!","सेवा ही धर्म, विकास ही कर्म!",
+"पुनाराम का हाथ, पंचायत के विकास के साथ!","एक वोट से बदलेगा पंचायत का कल!",
+"विश्वास की जीत, विकास की जीत!","पंचायत का सम्मान, पुनाराम के नाम!",
+"तरक्की का बटन दबेगा, पंचायत आगे बढ़ेगी!","सपना वो नहीं जो नींद में आए, सपना वो नहीं जो पंचायत को सोने न दे!",
+"मिट्टी से जुड़ा, दिल से जुड़ा!","पंचायत की चौपाल से विकास की पहल!",
+"हर घर दस्तक, हर दिल में भरोसा!","पानी-सड़क-बिजली — तीन पक्के वादे!",
+"शिक्षित, सुंदर, स्वस्थ — हमारी पंचायत!","चुनाव नहीं, यह तो विकास का अवसर है!",
+"जन-जन की भावना, पुनाराम की प्रेरणा!","पंचायत का विकास मेरा अभियान!",
+"वोट की कीमत, पंचायत की किस्मत!","पुनाराम विराह्यस — नाम ही काफी!",
+"पंचायत की राहों में प्रगति की रोशनी!","एकता, सेवा, विकास — यही हमारा संकल्प!"
+];
+const QUAL_POOL=['शिक्षित | कर्मठ | ईमानदार | समर्पित | अनुभवी','ईमानदार | कर्मठ | सेवाभावी | युवा','शिक्षा | विकास | विश्वास | सेवा','कर्मठ | निष्ठावान | जनसेवक | भाई','जनता का सेवक, विकास का पक्षधर','युवा | जागरूक | कर्मठ | ईमानदार','पंचायत का बेटा, जनता का सेवक','अनुभवी | सुलझा हुआ | भरोसेमंद','सेवा | समर्पण | संकल्प','शिक्षित युवा, विकसित पंचायत','जन-जन की आवाज़, विकास का प्रयास','सच्चा साथी, पक्का वादा'];
+const SUB_POOL=['कृपया इन दो बिंदुओं पर अपने विचार या सुझाव हमारे साथ अवश्य साझा करें:','आपकी राय ही पंचायत की तरक्की की नीव है — सुझाव अवश्य दें:','पंचायत के विकास हेतु आपके सुझाव आमंत्रित हैं:','दो मिनट निकालिए, पंचायत के भविष्य को संवारिए:','आपके विचार ही हमारी कार्ययोजना की आधारशिला हैं:','जन-सहभागिता से बनेगी आदर्श पंचायत — राय ज़रूर दें:','हर सुझाव कीमती है — खुलकर साझा करें:','पंचायत आपकी, निर्णय आपका — सुझाव दीजिए:'];
+NARE.push('विकास की उड़ान, पुनाराम के नाम','पंचायत की हर साँस, विकास की आस','नया सवेरा, नया विकास',
+ 'जन-जन का विश्वास, पुनाराम के साथ','पंचायत का मान, पुनाराम महान','एक संकल्प, एक लक्ष्य — विकसित पंचायत','मजबूत पंचायत, सुखी परिवार',
+ 'हर घर खुशहाल, पंचायत निराली','विकास का साथी, जनता का भाई','सपना नहीं, संकल्प — विकास!','पंचायत की धड़कन, जनता की आवाज़',
+ 'विश्वास की जीत, विकास की राह','सेवा, सच्चाई और समर्पण','नई पंचायत, बड़ा सपना','सोच नई, नीयत साफ — पंचायत प्रगति की ओर!',
+ 'जनसेवा ही जनार्दन सेवा','पंचायत का विकास, हमारा अभिमान','हर वोट विकास का, हर वोट विश्वास का','नई सोच, नई राह, विकसित पंचायत');
+QUAL_POOL.push('सेवाभावी | कर्मठ | प्रामाणिक','विनम्र | परिश्रमी | विकासप्रेमी','कर्मठ | पारदर्शी | जनहितैषी','सेवाभाव से समर्पित, कार्य से परिचित');
+SUB_POOL.push('आपके सुझाव ही पंचायत की सच्ची ताक़त हैं — अवश्य साझा करें:','एक सुझाव दीजिए, पंचायत को नई दिशा दीजिए:','आपके विचार ही प्रगति की कुंजी हैं — अवश्य बताएं:','हर राय अमूल्य है — पंचायत के हित में साझा करें:');
+const V1_POOL=['सोच-समझकर वोट दें','मन से वोट करें','एक वोट की ताकत','वोट आपका, भाग्य पंचायत का','मतदान अवश्य करें','शांति से वोट करें'];
+const V2_POOL=['पुनाराम विराह्यस को विजयी बनाएं','विकास को वोट दें','ईमानदारी को वोट दें','पंचायत के भविष्य को वोट दें','नई सोच को वोट दें','अपने भरोसे को वोट दें'];
+const POINTS_POOL=['मजबूत एवं पारदर्शी शासन व्यवस्था','स्वच्छ एवं सुंदर ग्राम पंचायत','सुरक्षा, शांति एवं सुरक्षित वातावरण','पक्की सड़कें एवं बेहतर बुनियादी सुविधाएँ','समान न्याय एवं भ्रष्टाचार मुक्त पंचायत','हर परिवार के लिए सम्मान एवं सहयोग','हर घर नल से शुद्ध पेयजल','गली-नाली एवं पक्की सड़कें','शिक्षा व डिजिटल साक्षरता','युवाओं हेतु खेल व प्रशिक्षण','गौशाला एवं पशु स्वास्थ्य सेवा','वृद्धा-विधवा पेंशन में सहायता','वृक्षारोपण एवं हरित पंचायत','स्वास्थ्य शिविर व चेकअप'];
+POINTS_POOL.push('स्मार्ट पंचायत — डिजिटल सेवाएँ घर तक','खेलकूद मैदान एवं युवा उत्सव','वार्ड-वार समयबद्ध विकास कार्य','महिलाओं हेतु स्वयं सहायता व प्रशिक्षण','कृषि, पशुपालन एवं जल प्रबंधन','सभी वार्डों में समान ध्यान एवं कार्य');
+POINTS_POOL.push('हर घर नियमित पेयजल व्यवस्था','पक्की सड़कें एवं नालियाँ','जलभराव के स्थायी समाधान का प्रयास','स्ट्रीट लाइट की पूर्ण व्यवस्था','जल संरक्षण हेतु अमृत सरोवर निर्माण','पशु स्वास्थ्य व गर्भाधान कैंपों का प्रयास','सरकारी विद्यालयों में बेहतर इंफ्रास्ट्रक्चर','खेल मैदान विकास का प्रयास','उप स्वास्थ्य केंद्र में दवाइयाँ व मुफ़्त जाँच शिविर','कचरा प्रबंधन व स्वच्छता अभियान','सार्वजनिक स्थानों पर सामुदायिक शौचालय','पात्र नागरिकों तक योजनाओं का लाभ','भ्रष्टाचार मुक्त पारदर्शी प्रशासन','पंचायत मुख्यालय पर ई-मित्र कियोस्क का प्रयास','नियमित ग्राम सभाओं का आयोजन','बिजली समस्या के स्थायी समाधान का प्रयास');
+const CTA_POOL=['इसलिए सोच-समझकर मतदान करें!','आइए, मिलकर अपने नादाना भाटान को एक आदर्श पंचायत बनाएं!','चलिए, पंचायत को विकास के पथ पर ले चलें!','साथ चलें, पंचायत बदलें!','एक संकल्प, एक दिशा — विकसित पंचायत!','पंचायत की तरक्की में आपका साथ जरूरी है!','मिलकर बनेगा सपना साकार!','आइए, मिलजुलकर पंचायत को नई ऊँचाइयों तक पहुँचाएं!','एक वोट से शुरू होगी प्रगति की नई गाथा!'];
+V2_POOL.push('प्रगति को वोट दें','अनुभव और ऊर्जा को वोट दें');
+NARE.push('समृद्ध पंचायत, सम्मानित जन!','सेवा का संकल्प, प्रगति का पथ!','भरोसे का दूसरा नाम — पुनाराम विराह्यस!','पारदर्शिता की राह, समृद्धि की चाह!','हर वार्ड का ध्यान, हर घर की पहचान!','इरादे नेक, परिणाम अनेक!','नादाना भाटान की शान, पुनाराम विराह्यस महान!','सच्चाई का साथ, प्रगति की बात!');
+NARE.push('नोट से नहीं, सोच से वोट दें!','जागरूक नागरिक, मज़बूत पंचायत!','डराकर या बहलाकर जो वोट मांगे, उसे सिरे से नकारें!','समझदारी से चुनें, ईमानदारी से वोट दें!','महिलाओं ने ठाना है, सबसे पहले वोट डालने जाना है!','अपनी शक्ति को पहचानें, मतदान की कीमत जानें!','जातिवाद का नारा छोड़ो, लोकतंत्र से नाता जोड़ो!','एक भी वोटर छूटा, संकल्प हमारा टूटा!','निष्पक्ष होकर मतदान करें, बेहतर कल का निर्माण करें!','अपनी पंचायत को सशक्त बनाएं, सोच-समझकर मुहर लगाएं!','ना ऊंच-नीच की बात, ना जातिवाद का नारा — विकास ही लक्ष्य हमारा!','वक्त आ गया है नया इतिहास बनाने का, पंचायत की कमान सच्चे इंसान को सौंपने का!','हौसले बुलंद हैं, नीयत में सच्चाई है; आपकी सेवा की, हमने कसम खाई है!','ना पैसों का घमंड, ना झूठी शान; पंचायत का हर नागरिक, हमारी जान!','परिवर्तन की बयार है, जनता इस बार तैयार है!','अंधेरे को मिटाकर उजाला लाएंगे, पंचायत में नया सवेरा लाएंगे!','जीत हमारी नहीं, आपके विश्वास की होगी!','वादे नहीं, हम काम करके दिखाएंगे; पंचायत की सूरत बदल कर दिखाएंगे!','जनता का सेवक हूँ, सेवक ही रहूँगा; आपके हक़ के लिए हमेशा लड़ूँगा!','झूठ की राजनीति का अंत होगा, अब पंचायत में सच्चा विकास होगा!','आपकी दुआ और आशीर्वाद ही हमारी असली ताकत है!','पंचायत की सरकार, इस बार ईमानदार!','आपका विश्वास, हमारा प्रयास!','सेवा ही संकल्प है!','नया विज़न, नई डिजिटल पंचायत!','पंचायत की तरक्की, हमारी प्राथमिकता!','इस बार युवाओं की बारी, पंचायत सुधारने की तैयारी!','राजनीति नहीं, जनसेवा करने आए हैं!','भ्रष्टाचार मुक्त पंचायत, हमारा संकल्प!','जो कहेगा, वो करके दिखाएगा!','मिलकर लिखेंगे पंचायत के विकास की नई कहानी!','इस बार मुहर सिर्फ काम पर!');
+NARE.push('विकास का वादा, पंचायत की उन्नति का इरादा!','बातें कम, काम ज़्यादा — विकास हमारा वादा!','भ्रष्टाचार से मुक्ति, प्रगति की युक्ति!','हर घर तक न्याय, हर वार्ड में खुशहाली!','खोखले वादे नहीं, ज़मीनी विकास करेंगे!','पंचायत को आदर्श बनाएँगे, आत्मनिर्भर क्षेत्र सजाएँगे!','नेता नहीं बेटा चुनें, सुख-दुख का साथी चुनें!','न जात पर, न पात पर — विकास की बात पर!','आधी आबादी को पूरा सम्मान, महिला सशक्तिकरण हमारी पहचान!','युवाओं का जोश, बुज़ुर्गों का आशीर्वाद — बदलेगा हमारा समाज!','सुख में साथ, दुख में हाथ — हमेशा आपके पास!','हर घर से नाता, हर दिल से रिश्ता!','सच्चाई और ईमानदारी, यही हमारी ज़िम्मेदारी!','नया चेहरा, नई उमंग — चलिए चलें युवाओं के संग!','छोड़कर सारे काम, पहले चलें करें मतदान!','लालच और नशे से दूर, सोच-समझकर वोट करें!','लोकतंत्र का यह त्योहार, सही प्रत्याशी चुनकर करें स्वीकार!');
+
+const FONT_FILES = [
+  ['Modak','fonts/Modak.ttf'], ['Khand','fonts/Khand-Bold.ttf'],
+  ['MuktaXB','fonts/Mukta-ExtraBold.ttf'], ['MuktaB','fonts/Mukta-Bold.ttf'], ['Kalam','fonts/Kalam-Bold.ttf'],
+  ['Tillana','fonts/Tillana-ExtraBold.ttf'], ['Shrikhand','fonts/Shrikhand-Regular.ttf'],
+  ['Rozha','fonts/RozhaOne-Regular.ttf'], ['NotoB','fonts/NotoSansDevanagari-Bold.ttf'],
+  ['RajdhaniB','fonts/drive/Rajdhani-Bold.ttf'], ['HalantB','fonts/drive/Halant-Bold.ttf'],
+  ['PalanquinB','fonts/drive/Palanquin-Bold.ttf'], ['HindB','fonts/drive/Hind-Bold.ttf'],
+  ['SahityaB','fonts/drive/Sahitya-Bold.ttf'], ['MartelH','fonts/drive/Martel-Heavy.ttf'],
+  ['MartelB','fonts/drive/Martel-Bold.ttf'], ['MartelSansB','fonts/drive/MartelSans-Bold.ttf'],
+  ['AmitaR','fonts/drive/Amita-Regular.ttf'], ['AmitaB','fonts/drive/Amita-Bold.ttf'],
+  ['TiroHindi','fonts/drive/TiroDevanagariHindi-Regular.ttf'], ['TekoV','fonts/drive/Teko-Variable.ttf'],
+  ['Baloo2V','fonts/drive/Baloo2-Variable.ttf'], ['AnekV','fonts/drive/AnekDevanagari-Variable.ttf'],
+  ['Farsan','fonts/drive/Farsan-Regular.ttf'], ['Rakkas','fonts/drive/Rakkas-Regular.ttf'],
+  ['YatraOne','fonts/drive/YatraOne-Regular.ttf'], ['Dekko','fonts/drive/Dekko-Regular.ttf'],
+  ['NotoBlk','fonts/drive/NotoSansDevanagari-Black.ttf'], ['NotoXBd','fonts/drive/NotoSansDevanagari-ExtraBold.ttf'],
+  ['NotoSB','fonts/drive/NotoSansDevanagari-SemiBold.ttf'], ['NotoMd','fonts/drive/NotoSansDevanagari-Medium.ttf'],
+  ['KhandMd','fonts/drive/Khand-Medium.ttf'], ['KhandSB','fonts/drive/Khand-SemiBold.ttf'],
+  ['TillanaB','fonts/drive/Tillana-Bold.ttf'],
+];
+const FONT_URL=Object.fromEntries(FONT_FILES); const FONT_DONE={};
+async function loadFontFam(fam){ if(FONT_DONE[fam]||!FONT_URL[fam]) return; FONT_DONE[fam]=1;
+  try{ const f=new FontFace(fam,`url("${FONT_URL[fam]}")`); await f.load(); document.fonts.add(f); }
+  catch(e){ console.warn('font fail',fam,e); } }
+async function loadFonts(){ for(const core of ['Modak','Khand','MuktaXB','MuktaB','NotoB','NotoBlk']) await loadFontFam(core); }
+
+const cv = document.getElementById('poster');
+const c = cv.getContext('2d');
+const TAU = Math.PI*2;
+
+/* ---------- helpers ---------- */
+function rr(x,y,w,h,r){
+  c.beginPath();
+  c.moveTo(x+r,y); c.lineTo(x+w-r,y); c.arcTo(x+w,y,x+w,y+r,r);
+  c.lineTo(x+w,y+h-r); c.arcTo(x+w,y+h,x+w-r,y+h,r);
+  c.lineTo(x+r,y+h); c.arcTo(x,y+h,x,y+h-r,r);
+  c.lineTo(x,y+r); c.arcTo(x,y,x+r,y,r); c.closePath();
+}
+function txt(str,x,y,font,color,align='left',maxW=0,minPx=0){
+  c.textBaseline='alphabetic'; c.fillStyle=color;
+  const s0=String(str);
+  const norm=(px,fam)=>{ c.font=`${px}px ${fam}`; const m=c.measureText(s0||'अ');
+    const b=(m.actualBoundingBoxAscent||0)+(m.actualBoundingBoxAscent? m.actualBoundingBoxDescent:0);
+    if(b>0){ const per=b/px; if(per>1.45) px=Math.max(minPx||8, Math.floor(px*1.45/per)); } return px; };
+  let f=String(font);
+  const mm0=f.match(/^([\d.]+)px\s+([\s\S]+)$/);
+  if(mm0){ let px=+mm0[1]; const fam=mm0[2];
+    if(maxW){ c.font=`${px}px ${fam}`; while(px>(minPx||0) && c.measureText(s0).width>maxW){ px-=2; c.font=`${px}px ${fam}`; } }
+    px=norm(px,fam); f=`${px}px ${fam}`; }
+  const s=s0;
+  const dev=/[\u0900-\u097F]/.test(s);
+  const m=f.match(/^([\d.]+)px\s+([\s\S]+)$/);
+  if(m && S.engFont){
+    if(!dev){ const ep=norm(+m[1],S.engFont); c.font=`${ep}px ${S.engFont}`; c.textAlign=align; c.fillText(s,x,y); return; }
+    if(/[A-Za-z0-9]/.test(s)){
+      const hf=m[2], ef=S.engFont;
+      const hpx=norm(+m[1],hf), epx=norm(+m[1],ef);
+      const runs=[]; let cur='', curDev=true;
+      for(const ch of s){ const d=/[\u0900-\u097F]/.test(ch);
+        if(cur===''){cur=ch;curDev=d;continue;}
+        if(d===curDev) cur+=ch; else { runs.push([cur,curDev]); cur=ch; curDev=d; } }
+      if(cur!=='') runs.push([cur,curDev]);
+      const widths=runs.map(([t,d])=>{ c.font=`${d?hpx:epx}px ${d?hf:ef}`; return c.measureText(t).width; });
+      const tot=widths.reduce((a,b)=>a+b,0);
+      let sx = align==='center'? x-tot/2 : (align==='right'? x-tot : x);
+      c.textAlign='left';
+      runs.forEach(([t,d],i)=>{ c.font=`${d?hpx:epx}px ${d?hf:ef}`; c.fillText(t,sx,y); sx+=widths[i]; });
+      return;
+    }
+  }
+  c.font=f; c.textAlign=align; c.fillText(s,x,y);
+}
+function wrapLines(str,maxW,font){
+  if(font) c.font=font;
+  const words=String(str).split(/\s+/).filter(Boolean); const out=[]; let cur='';
+  for(const w of words){ const t=cur?cur+' '+w:w;
+    if(c.measureText(t).width>maxW && cur){ out.push(cur); cur=w; } else cur=t; }
+  if(cur) out.push(cur); return out;
+}
+function wrapFit(str,maxW,base,min,fam,maxLines){
+  let s=base, lines=wrapLines(str,maxW,`${s}px ${fam}`);
+  while(s>min && lines.length>maxLines){ s-=2; lines=wrapLines(str,maxW,`${s}px ${fam}`); }
+  return {s,lines};
+}
+function cover(img,x,y,w,h,vy=0.18){
+  const s=Math.max(w/img.width,h/img.height);
+  const dw=img.width*s, dh=img.height*s;
+  c.drawImage(img, x+(w-dw)/2, y+(h-dh)*(dh>h?vy:0.5), dw, dh);
+}
+function archPath(x,y,w,h){
+  const r=w/2;
+  c.beginPath(); c.moveTo(x,y+h); c.lineTo(x,y+r); c.arc(x+r,y+r,r,Math.PI,0);
+  c.lineTo(x+w,y+h); c.closePath();
+}
+function photoArch(img,x,y,w,h,border,bw){
+  c.save(); archPath(x,y,w,h); c.clip();
+  c.fillStyle='#d9d9e0'; c.fillRect(x,y,w,h); cover(img,x,y,w,h); c.restore();
+  if(border){ c.save(); archPath(x,y,w,h); c.lineWidth=bw; c.strokeStyle=border; c.stroke(); c.restore(); }
+}
+function photoOvalFade(img,cx,cy,rx,ry){
+  const off=document.createElement('canvas'); off.width=rx*2; off.height=ry*2;
+  const o=off.getContext('2d');
+  const s=Math.max(off.width/img.width, off.height/img.height);
+  const dw=img.width*s, dh=img.height*s;
+  o.drawImage(img,(off.width-dw)/2,(off.height-dh)*(dh>off.height?0.18:0.5),dw,dh);
+  o.globalCompositeOperation='destination-in';
+  o.translate(rx,ry); o.scale(1,ry/rx);
+  const g=o.createRadialGradient(0,0,rx*0.3,0,0,rx);
+  g.addColorStop(0,'rgba(0,0,0,1)'); g.addColorStop(0.72,'rgba(0,0,0,0.95)'); g.addColorStop(1,'rgba(0,0,0,0)');
+  o.fillStyle=g; o.beginPath(); o.arc(0,0,rx,0,TAU); o.fill();
+  c.drawImage(off,cx-rx,cy-ry);
+}
+function chatIcon(x,y,s,color){
+  c.save(); c.strokeStyle=color; c.lineWidth=Math.max(2,s*0.08); c.lineJoin='round';
+  rr(x,y,s,s*0.7,s*0.18); c.stroke();
+  c.beginPath(); c.moveTo(x+s*0.16,y+s*0.7); c.lineTo(x+s*0.06,y+s*0.98); c.lineTo(x+s*0.42,y+s*0.7); c.stroke();
+  c.fillStyle=color;
+  for(let i=0;i<3;i++){ c.beginPath(); c.arc(x+s*0.28+i*s*0.22,y+s*0.35,s*0.055,0,TAU); c.fill(); }
+  c.restore();
+}
+function dotGrid(x,y,cols,rows,gap,color,r){
+  c.fillStyle=color;
+  for(let i=0;i<cols;i++)for(let j=0;j<rows;j++){ c.beginPath(); c.arc(x+i*gap,y+j*gap,r,0,TAU); c.fill(); }
+}
+function dateBadge(cx,cy,r,rMax){
+  rMax=rMax||r*1.08;
+  c.save();
+  c.font='100px MuktaXB'; const wm=c.measureText(String(S.dateMonth)).width/100;
+  r=Math.min(rMax, Math.max(r, wm/1.5));
+  const st=Math.abs(S.badgeStyle|0)%180;
+  const shape=st%6, sch=(st/6|0)%5, ringv=(st/30|0)%3, bar=(st/90|0)%2;
+  const SC=[{bg:'#f6efdc',edge:'#c9a24a',ring:'#1f6a3d',pill:'#d9a93f',pillTx:'#3c2a05',day:'#1f6a3d',mon:'#b3272d',wd:'#1f6a3d'},
+   {bg:'#fff6e8',edge:'#c9a24a',ring:'#b3272d',pill:'#b3272d',pillTx:'#ffffff',day:'#b3272d',mon:'#1f6a3d',wd:'#b3272d'},
+   {bg:'#f4f1ff',edge:'#e8b64c',ring:'#24408e',pill:'#24408e',pillTx:'#ffffff',day:'#24408e',mon:'#d9913a',wd:'#24408e'},
+   {bg:'#fbeee3',edge:'#e8b64c',ring:'#7a1f3d',pill:'#d9a93f',pillTx:'#3c2a05',day:'#7a1f3d',mon:'#7a1f3d',wd:'#7a1f3d'},
+   {bg:'#eef7f2',edge:'#d9913a',ring:'#0f6b5c',pill:'#d9913a',pillTx:'#241309',day:'#0f6b5c',mon:'#b3272d',wd:'#0f6b5c'}][sch];
+  const poly=(n,f)=>{ c.beginPath(); for(let i=0;i<n;i++){ const a=-Math.PI/2+i/n*TAU; const q=f(i); const px=cx+Math.cos(a)*q, py=cy+Math.sin(a)*q; if(i) c.lineTo(px,py); else c.moveTo(px,py);} c.closePath(); };
+  if(shape===0){ c.lineWidth=Math.max(1.5,r*0.012); c.strokeStyle=SC.edge;
+    c.beginPath(); c.arc(cx,cy,r*1.07,0,TAU); c.stroke();
+    c.fillStyle=SC.bg; c.beginPath(); c.arc(cx,cy,r,0,TAU); c.fill(); }
+  else if(shape===1){ c.fillStyle=SC.edge; poly(56,i=>i%2? r*1.0:r*1.12); c.fill();
+    c.fillStyle=SC.bg; c.beginPath(); c.arc(cx,cy,r*0.96,0,TAU); c.fill(); }
+  else if(shape===2){ rr(cx-r*1.05,cy-r*1.05,r*2.1,r*2.1,r*0.16); c.fillStyle=SC.bg; c.fill();
+    c.lineWidth=r*0.06; c.strokeStyle=SC.edge; rr(cx-r*1.05,cy-r*1.05,r*2.1,r*2.1,r*0.16); c.stroke(); }
+  else if(shape===3){ c.fillStyle=SC.ring;
+    for(let i=0;i<12;i++){ const a=i/12*TAU; c.beginPath(); c.arc(cx+Math.cos(a)*r*0.92,cy+Math.sin(a)*r*0.92,r*0.20,0,TAU); c.fill(); }
+    c.fillStyle=SC.bg; c.beginPath(); c.arc(cx,cy,r*0.94,0,TAU); c.fill(); }
+  else if(shape===4){ c.fillStyle=SC.edge; poly(6,()=>r*1.1); c.fill();
+    c.fillStyle=SC.bg; poly(6,()=>r*0.97); c.fill(); }
+  else { c.fillStyle=SC.edge; poly(96,i=>i%2? r*0.96:r*1.12); c.fill();
+    c.fillStyle=SC.bg; c.beginPath(); c.arc(cx,cy,r*0.93,0,TAU); c.fill(); }
+  // inner ring (3 variants), kept inside content safe-zone
+  c.strokeStyle=SC.ring;
+  if(shape===2){ const ir=(off,lw,dash)=>{ c.lineWidth=lw; if(c.setLineDash) c.setLineDash(dash||[]); rr(cx-r*off,cy-r*off,r*2*off,r*2*off,r*0.12); c.stroke(); if(c.setLineDash) c.setLineDash([]); };
+    if(ringv===0) ir(0.90,r*0.05); else if(ringv===1) ir(0.90,r*0.045,[r*0.14,r*0.09]); else { ir(0.92,r*0.03); ir(0.85,r*0.03); } }
+  else { const ir=(rad,lw,dash)=>{ c.lineWidth=lw; if(c.setLineDash) c.setLineDash(dash||[]); c.beginPath(); c.arc(cx,cy,rad,0,TAU); c.stroke(); if(c.setLineDash) c.setLineDash([]); };
+    if(ringv===0) ir(r*0.88,r*0.05); else if(ringv===1) ir(r*0.88,r*0.045,[r*0.14,r*0.09]); else { ir(r*0.90,r*0.03); ir(r*0.84,r*0.03); } }
+  // content — all inside 0.80r safe zone
+  const pillW=(bar&&shape===2)? r*1.5 : r*0.92;
+  const pillH=r*0.26, pillY=cy-r*0.72;
+  rr(cx-pillW/2,pillY,pillW,pillH,pillH/2); c.fillStyle=SC.pill; c.fill();
+  { const ps=fitFont('मतदान दिवस', Math.round(r*0.15), Math.round(r*0.09), pillW*0.86, S.hiBody);
+    c.font=`${ps}px ${S.hiBody}`; c.textAlign='center'; c.textBaseline='middle';
+    c.fillStyle=SC.pillTx; c.fillText('मतदान दिवस',cx,pillY+pillH/2+r*0.012); c.textBaseline='alphabetic'; }
+  { const px=Math.round(r*0.46); c.save(); c.font=`${px}px NotoBlk`; c.textAlign='center'; c.textBaseline='alphabetic';
+    c.fillStyle=SC.day; c.fillText(String(S.dateDay),cx,cy+r*0.07); c.restore(); }
+  txt(S.dateMonth,cx,cy+r*0.36,`${Math.round(r*0.21)}px MuktaXB`,SC.mon,'center',r*1.5,Math.round(r*0.12));
+  const ww=r*0.60;
+  rr(cx-ww/2,cy+r*0.47,ww,r*0.22,r*0.11); c.fillStyle=SC.wd; c.fill();
+  txt(S.dateWeekday,cx,cy+r*0.625,`${Math.round(r*0.14)}px MuktaB`,'#ffffff','center',ww*0.9,Math.round(r*0.10));
+  c.restore();
+}
+function fitFont(text, base, min, maxW, fam, maxH=0){
+  let s=base; c.font=`${s}px ${fam}`;
+  while(s>min && c.measureText(text).width>maxW){ s-=2; c.font=`${s}px ${fam}`; }
+  const m=c.measureText(text||'अ'); const b=(m.actualBoundingBoxAscent||0)+(m.actualBoundingBoxDescent||0);
+  if(b>0){ const per=b/s; if(per>1.45) s=Math.max(min,Math.floor(s*1.45/per));
+    if(maxH) s=Math.max(min,Math.min(s,Math.floor(maxH/per))); c.font=`${s}px ${fam}`; }
+  return s;
+}
+
+/* ============ PORTRAIT (2:3 / 9:16 / A4) ============ */
+function drawT1P(W,H,img){
+  const X=v=>v*W/1200, Y=v=>v*H/1800, F=v=>v*W/1200;
+  const P=palT1();
+  c.fillStyle=P.bg; c.fillRect(0,0,W,H);
+  dp(W,H,P.gold);
+  bgImg(W,H,P.bg);
+  elemOverlay(W,H);
+  c.fillStyle=P.mag; c.beginPath(); c.arc(X(1005),Y(300),F(335),0,TAU); c.fill();
+  c.lineWidth=F(4); c.strokeStyle='#ffffff'; c.beginPath(); c.arc(X(1005),Y(300),F(300),0,TAU); c.stroke();
+  c.strokeStyle=P.gold; c.beginPath(); c.arc(X(1005),Y(300),F(278),0,TAU); c.stroke();
+  { const dv=S.decoV|0;
+  if(dv===0) dotGrid(X(545),Y(150),8,6,F(27),P.gold,F(3.2));
+  else if(dv===1){ c.strokeStyle=P.gold; c.globalAlpha=.5; c.lineWidth=F(3);
+    for(let i=0;i<3;i++){ c.beginPath(); c.arc(X(585),Y(230),F(60+i*45),0,TAU); c.stroke(); } c.globalAlpha=1; }
+  else { c.fillStyle=P.gold; c.globalAlpha=.5;
+    for(let i=0;i<8;i++){ const a=i/8*TAU; c.beginPath();
+      if(c.ellipse) c.ellipse(X(585)+Math.cos(a)*F(120),Y(230)+Math.sin(a)*F(120),F(34),F(14),a,0,TAU); else c.arc(X(585)+Math.cos(a)*F(120),Y(230)+Math.sin(a)*F(120),F(24),0,TAU); c.fill(); } c.globalAlpha=1; } }
+  txt('ग्राम पंचायत : '+S.village, X(60), Y(92), `${F(34)}px ${S.hiBody}`, '#ffffff','left',X(680),F(20));
+  rr(X(60),Y(122),F(470),F(66),F(33)); c.fillStyle=P.mag; c.fill();
+  txt(S.postBadge, X(295), Y(165), `${F(30)}px ${S.hiBody}`, '#ffffff', 'center', F(430),F(16));
+  const nzs=Math.min(fitFont(S.nameLine1, F(148), F(60), F(600), S.hiName, F(122)), fitFont(S.nameLine2, F(148), F(60), F(600), S.hiName, F(122)));
+  ndraw(S.nameLine1, X(58), Y(355), nzs, S.hiName, '#ffffff');
+  ndraw(S.nameLine2, X(58), Y(512), nzs, S.hiName, P.gold);
+  rr(X(60),Y(548),F(250),F(12),F(6)); c.fillStyle=P.mag; c.fill();
+  rr(X(330),Y(548),F(230),F(12),F(6)); c.fillStyle=P.gold; c.fill();
+  chatIcon(X(70),Y(585),F(120),P.gold);
+  photoArch(img, X(690), Y(150), F(450), Y(560), P.gold, F(8)); pframe(X(690),Y(150),F(450),Y(560),'arch');
+  rr(X(60),Y(720),F(1080),F(200),F(26)); c.fillStyle=P.gold; c.fill();
+  c.lineWidth=F(6); c.strokeStyle='#ffffff'; rr(X(60),Y(720),F(1080),F(200),F(26)); c.stroke();
+  c.beginPath(); c.moveTo(X(120),Y(916)); c.lineTo(X(152),Y(986)); c.lineTo(X(235),Y(916)); c.closePath();
+  c.fillStyle=P.gold; c.fill();
+  const hw=wrapFit(S.headline, F(960), F(46), F(26), S.hiBody, 2);
+  hw.lines.forEach((ln,i)=> txt(ln,X(600),Y(795)+i*F(64),`${hw.s}px ${S.hiBody}`,P.ink,'center'));
+  c.beginPath(); c.moveTo(0,Y(1046)); c.lineTo(X(150),Y(988)); c.lineTo(W,Y(988));
+  c.lineTo(W,Y(1620)); c.lineTo(0,Y(1620)); c.closePath(); c.fillStyle=P.cream; c.fill();
+  c.beginPath(); c.moveTo(0,Y(1008)); c.lineTo(X(150),Y(950)); c.lineTo(X(150),Y(988)); c.lineTo(0,Y(1046));
+  c.closePath(); c.fillStyle=P.mag; c.fill();
+  const sw=wrapFit(S.subhead,F(1060),F(30),F(18),'MuktaB',2);
+  sw.lines.forEach((ln,i)=> txt(ln,X(600),Y(1042)+i*F(40),`${sw.s}px MuktaB`,P.ink,'center'));
+  rr(X(60),Y(1096),F(1080),F(178),F(16)); c.fillStyle=P.pink; c.fill();
+  rr(X(60),Y(1096),F(16),F(178),F(8)); c.fillStyle=P.mag; c.fill();
+  chatIcon(X(96),Y(1152),F(72),P.mag);
+  txt(S.q1, X(200), Y(1170), `${fitFont(S.q1, F(36), F(22), F(920), S.hiBody)}px ${S.hiBody}`, P.ink);
+  txt(S.q1sub, X(200), Y(1226), `${F(30)}px MuktaB`, P.ink,'left',F(920),F(18));
+  rr(X(60),Y(1302),F(1080),F(118),F(16)); c.fillStyle=P.lav; c.fill();
+  rr(X(60),Y(1302),F(16),F(118),F(8)); c.fillStyle='#4a2a5e'; c.fill();
+  chatIcon(X(96),Y(1330),F(72),'#4a2a5e');
+  txt(S.q2, X(200), Y(1374), `${fitFont(S.q2, F(36), F(22), F(920), S.hiBody)}px ${S.hiBody}`, P.ink);
+  rr(X(60),Y(1448),F(1080),F(100),F(14)); c.fillStyle=P.dark; c.fill();
+  const cs=fitFont(S.cta, F(34), F(22), F(1000), S.hiBody);
+  txt(S.cta, X(600), Y(1510), `${cs}px ${S.hiBody}`, '#ffffff', 'center');
+  c.fillStyle=P.dark; c.fillRect(0,Y(1620),W,H-Y(1620));
+  rr(X(390),Y(1642),F(420),F(64),F(32)); c.fillStyle=P.gold; c.fill();
+  txt(`${S.dateDay} ${S.dateMonth}`, X(600), Y(1685), `${F(34)}px ${S.hiBody}`, P.dark, 'center', F(640),F(20));
+  txt(S.contact, X(600), Y(1748), `${fitFont(S.contact, F(32), F(20), F(1120), S.hiBody)}px ${S.hiBody}`, '#ffffff', 'center');
+  txt(S.requester, X(600), Y(1784), `${F(26)}px MuktaB`, P.gold, 'center', F(1100),F(16));
+  c.fillStyle=P.mag; c.fillRect(X(60),Y(1792),F(520),F(5));
+  c.fillStyle=P.gold; c.fillRect(X(600),Y(1792),F(540),F(5));
+}
+
+function drawT2P(W,H,img){
+  const X=v=>v*W/1200, Y=v=>v*H/1800, F=v=>v*W/1200;
+  const Wd=palT2();
+  c.fillStyle=Wd.bg; c.fillRect(0,0,W,H);
+  dp(W,H,Wd.navy);
+  bgImg(W,H,Wd.bg);
+  elemOverlay(W,H);
+  c.fillStyle=Wd.navy; c.fillRect(0,0,W,Y(100));
+  txt('ग्राम पंचायत : '+S.village, X(600), Y(64), `${F(40)}px ${S.hiBody}`, '#ffffff', 'center', X(1120),F(24));
+  c.fillStyle=Wd.saf; c.beginPath(); c.moveTo(0,Y(100)); c.lineTo(X(360),Y(100)); c.lineTo(0,Y(500)); c.closePath(); c.fill();
+  c.fillStyle=Wd.grn; c.beginPath(); c.moveTo(X(360),Y(100)); c.lineTo(X(445),Y(100)); c.lineTo(0,Y(585)); c.lineTo(0,Y(500)); c.closePath(); c.fill();
+  c.fillStyle=Wd.navy; c.beginPath(); c.moveTo(X(445),Y(100)); c.lineTo(X(480),Y(100)); c.lineTo(0,Y(620)); c.lineTo(0,Y(585)); c.closePath(); c.fill();
+  { const dv=S.decoV|0;
+  if(dv===1){ c.fillStyle=Wd.saf; c.beginPath(); c.moveTo(W,Y(100)); c.lineTo(W-F(180),Y(100)); c.lineTo(W,Y(320)); c.closePath(); c.fill(); }
+  else if(dv===2){ c.strokeStyle=Wd.gold; c.globalAlpha=.5; c.lineWidth=F(3);
+    for(let i=0;i<4;i++){ c.beginPath(); c.moveTo(W-F(40)-i*F(26),Y(120)); c.lineTo(W-F(40)-i*F(26),Y(430)); c.stroke(); } c.globalAlpha=1; } }
+  txt(S.sloganTop, X(606), Y(205), `${F(34)}px ${S.hiBody}`, Wd.navy, 'center', X(372),F(20));
+  txt(S.sloganTop2, X(606), Y(262), `${F(34)}px ${S.hiBody}`, Wd.navy, 'center', X(372),F(20));
+  txt(`${S.nameLine1} ${S.nameLine2}`, X(606), Y(326), `${F(34)}px ${S.hiBody}`, Wd.grn, 'center', X(372),F(20));
+  txt(S.sloganBottom, X(606), Y(384), `${F(34)}px ${S.hiBody}`, Wd.navy, 'center', X(372),F(20));
+  c.fillStyle=Wd.saf; c.fillRect(X(445),Y(408),F(320),F(6));
+  c.fillStyle=Wd.grn; c.fillRect(X(465),Y(420),F(280),F(6));
+  c.fillStyle=Wd.navy; c.fillRect(X(485),Y(432),F(240),F(6));
+  if(S.showBadge) dateBadge(X(1000),Y(290),F(158),F(170));
+  photoOvalFade(img, X(320), Y(900), F(275), Y(445)); pframe(X(320)-F(275),Y(900)-F(445),F(550),F(890),'oval');
+  c.fillStyle=Wd.navy;
+  c.beginPath(); c.moveTo(X(585),Y(555)); c.lineTo(X(1155),Y(555)); c.lineTo(X(1125),Y(635)); c.lineTo(X(555),Y(635)); c.closePath(); c.fill();
+  txt(S.postBadge, X(860), Y(607), `${F(36)}px ${S.hiBody}`, '#ffffff', 'center', X(560),F(22));
+  txt('ग्राम पंचायत चुनाव 2026', X(860), Y(692), `${F(30)}px ${S.hiBody}`, Wd.navy, 'center', X(560),F(20));
+  const nzs=Math.min(fitFont(S.nameLine1, F(128), F(56), F(580), S.hiName, F(110)), fitFont(S.nameLine2, F(128), F(56), F(580), S.hiName, F(110)));
+  ndraw(S.nameLine1, X(860), Y(820), nzs, S.hiName, Wd.navy, 'center');
+  ndraw(S.nameLine2, X(860), Y(962), nzs, S.hiName, Wd.grn, 'center');
+  const qw=wrapFit(S.qualities,F(560),F(32),F(20),'MuktaB',2);
+  qw.lines.forEach((ln,i)=> txt(ln, X(860), Y(1064)+i*F(46), `${qw.s}px MuktaB`, Wd.navy, 'center', X(620),F(20)));
+  c.save(); c.shadowColor='rgba(0,0,0,.4)'; c.shadowBlur=F(18); c.shadowOffsetY=F(8);
+  rr(X(70),Y(1400),F(1060),F(190),F(24)); c.fillStyle=Wd.navy; c.fill(); c.restore();
+  c.lineWidth=F(5); c.strokeStyle=Wd.gold; c.beginPath(); c.arc(X(190),Y(1495),F(78),0,TAU); c.stroke();
+  c.strokeStyle='#ffffff'; c.lineWidth=F(5);
+  rr(X(150),Y(1492),F(80),F(42),F(6)); c.stroke();
+  c.fillStyle='#ffffff'; c.fillRect(X(176),Y(1489),F(28),F(7));
+  c.fillRect(X(179),Y(1458),F(22),F(28));
+  txt(S.voteLine1, X(300), Y(1478), `${F(34)}px ${S.hiBody}`, '#ffffff','left',X(820),F(22));
+  txt(S.voteLine2, X(300), Y(1546), `${F(44)}px ${S.hiBody}`, Wd.gold);
+  [[Wd.saf,0],['#ffffff',38],[Wd.grn,76]].forEach(([col,dx])=>{
+    c.fillStyle=col; c.beginPath();
+    c.moveTo(X(1000+dx),Y(1420)); c.lineTo(X(1026+dx),Y(1420)); c.lineTo(X(986+dx),Y(1580)); c.lineTo(X(960+dx),Y(1580));
+    c.closePath(); c.fill();
+  });
+  txt(S.contact, X(600), Y(1678), `${fitFont(S.contact, F(40), F(24), F(1120), S.hiBody)}px ${S.hiBody}`, Wd.navy, 'center');
+  txt(S.requester, X(600), Y(1734), `${F(30)}px MuktaB`, Wd.grn, 'center', X(1000),F(18));
+}
+
+function drawT3P(W,H,img){
+  const X=v=>v*W/1200, Y=v=>v*H/1800, F=v=>v*W/1200;
+  const G=palT3();
+  c.fillStyle=G.bg; c.fillRect(0,0,W,H);
+  dp(W,H,G.gold);
+  bgImg(W,H,G.bg);
+  elemOverlay(W,H);
+  c.save(); c.strokeStyle='rgba(232,182,76,0.14)'; c.lineWidth=F(2);
+  for(let r=260;r<=1000;r+=150){ c.beginPath(); c.arc(X(600),Y(640),F(r),0,TAU); c.stroke(); }
+  for(let a=0;a<16;a++){ const an=a/16*TAU;
+    c.beginPath(); c.moveTo(X(600)+Math.cos(an)*F(260),Y(640)+Math.sin(an)*F(260));
+    c.lineTo(X(600)+Math.cos(an)*F(1000),Y(640)+Math.sin(an)*F(1000)); c.stroke(); }
+  c.restore();
+  { const dv=S.decoV|0;
+  if(dv===0){ c.strokeStyle=G.gold; c.lineWidth=F(3); c.strokeRect(X(20),Y(20),W-X(40),H-Y(40));
+    c.strokeStyle='rgba(232,182,76,.6)'; c.lineWidth=F(2); c.strokeRect(X(40),Y(40),W-X(80),H-Y(80)); }
+  else if(dv===1){ c.strokeStyle=G.gold; c.lineWidth=F(10);
+    const L=F(90);
+    [[X(24),Y(24),1,1],[W-X(24),Y(24),-1,1],[X(24),H-Y(24),1,-1],[W-X(24),H-Y(24),-1,-1]].forEach(([x,y,sx,sy])=>{
+      c.beginPath(); c.moveTo(x+sx*L,y); c.lineTo(x,y); c.lineTo(x,y+sy*L); c.stroke(); }); }
+  else { c.strokeStyle=G.gold; c.lineWidth=F(6); c.strokeRect(X(24),Y(24),W-X(48),H-Y(48));
+    c.fillStyle=G.gold; c.globalAlpha=.5;
+    for(let x=X(60);x<W-X(60);x+=F(60)){ c.beginPath(); c.arc(x,Y(44),F(3),0,TAU); c.fill(); c.beginPath(); c.arc(x,H-Y(44),F(3),0,TAU); c.fill(); }
+    c.globalAlpha=1; } }
+  c.save(); c.shadowColor='rgba(232,182,76,.55)'; c.shadowBlur=F(22);
+  rr(X(70),Y(80),F(660),F(160),F(18)); c.fillStyle=G.cream; c.fill(); c.restore();
+  c.lineWidth=F(4); c.strokeStyle=G.gold; rr(X(70),Y(80),F(660),F(160),F(18)); c.stroke();
+  txt(S.electionTitle, X(100), Y(152), `${F(42)}px ${S.hiBody}`, G.dark);
+  txt('ग्राम पंचायत : '+S.village, X(100), Y(208), `${F(30)}px MuktaB`, '#1f7a4d');
+  if(S.showBadge) dateBadge(X(950),Y(235),F(165),F(195));
+  c.save(); c.strokeStyle='rgba(232,182,76,.35)'; c.lineWidth=F(22);
+  archPath(X(342),Y(252),F(516),Y(806)); c.stroke(); c.restore();
+  photoArch(img, X(350), Y(260), F(500), Y(790), G.gold, F(10)); pframe(X(350),Y(260),F(500),Y(790),'arch');
+  rr(X(150),Y(1075),F(900),F(118),F(18)); c.fillStyle=G.cream; c.fill();
+  c.lineWidth=F(4); c.strokeStyle=G.gold; rr(X(150),Y(1075),F(900),F(118),F(18)); c.stroke();
+  const nf=fitFont(`${S.nameLine1} ${S.nameLine2}`, F(76), F(40), F(860), S.hiName, F(84));
+  c.font=`${nf}px ${S.hiName}`; c.textAlign='center';
+  c.lineWidth=F(8); c.strokeStyle=G.gold; c.lineJoin='round';
+  c.strokeText(`${S.nameLine1} ${S.nameLine2}`, X(600), Y(1163));
+  c.fillStyle=G.dark; c.fillText(`${S.nameLine1} ${S.nameLine2}`, X(600), Y(1163));
+  c.font=`${F(32)}px ${S.hiBody}`;
+  const pw=c.measureText(S.postBadge).width+F(90);
+  rr(X(600)-pw/2,Y(1215),pw,F(64),F(32)); c.fillStyle=G.orange; c.fill();
+  txt(S.postBadge, X(600), Y(1257), `${F(32)}px ${S.hiBody}`, '#ffffff', 'center');
+  const sm=fitFont(S.sloganMain, F(46), F(26), F(1040), S.hiBody);
+  txt(S.sloganMain, X(600), Y(1345), `${sm}px ${S.hiBody}`, G.gold, 'center');
+  txt(S.sloganSub, X(600), Y(1408), `${F(32)}px MuktaB`, '#ffffff', 'center');
+  rr(X(90),Y(1430),F(1020),F(240),F(16)); c.fillStyle='#ffffff'; c.fill();
+  txt('— प्रमुख संकल्प —', X(600), Y(1472), `${F(28)}px ${S.hiBody}`, G.orange, 'center');
+  for(let i=0;i<6;i++){
+    const col=i%2, row=Math.floor(i/2);
+    const x=X(140)+col*F(500), y=Y(1520)+row*F(52);
+    const ikc=ELEM_IMGS[ICONK[i%6]];
+    if(ikc&&ikc.complete&&ikc.naturalWidth){ c.fillStyle='#ffffff'; c.beginPath(); c.arc(x,y-F(8),F(16),0,TAU); c.fill();
+      c.drawImage(ikc, x-F(11), y-F(19), F(22), F(22)); }
+    else { c.fillStyle=G.orange; c.beginPath(); c.arc(x,y-F(8),F(16),0,TAU); c.fill(); }
+    txt(String(i+1), x, y-F(2), `${F(20)}px MuktaXB`, '#ffffff', 'center');
+    const t=String([S.p1,S.p2,S.p3,S.p4,S.p5,S.p6][i]);
+    const ln=wrapLines(t,F(420))[0]||'';
+    txt(ln, x+F(30), y, `${F(26)}px MuktaB`, '#22301f');
+  }
+  rr(X(150),Y(1678),F(900),F(80),F(40)); c.fillStyle=G.orange; c.fill();
+  txt(S.ctaBottom, X(600), Y(1712), `${F(32)}px ${S.hiBody}`, '#ffffff', 'center');
+  txt(S.contact, X(600), Y(1746), `${F(25)}px MuktaB`, '#ffffff', 'center');
+  txt(S.requester, X(600), Y(1782), `${F(24)}px MuktaB`, G.gold, 'center');
+  c.fillStyle=G.orange; c.fillRect(X(20),Y(1794),F(380),F(6));
+  c.fillStyle='#ffffff'; c.fillRect(X(400),Y(1794),F(380),F(6));
+  c.fillStyle='#1a8a3c'; c.fillRect(X(780),Y(1794),F(400),F(6));
+}
+
+/* ============ SQUARE 1:1 ============ */
+function drawT1S(img){
+  const P=palT1();
+  c.fillStyle=P.bg; c.fillRect(0,0,1080,1080);
+  dp(1080,1080,P.gold);
+  bgImg(1080,1080,P.bg);
+  c.fillStyle=P.mag; c.beginPath(); c.arc(930,150,300,0,TAU); c.fill();
+  c.lineWidth=3; c.strokeStyle='#fff'; c.beginPath(); c.arc(930,150,268,0,TAU); c.stroke();
+  dotGrid(480,120,6,4,24,P.gold,3);
+  txt('ग्राम पंचायत : '+S.village, 50, 78, `28px ${S.hiBody}`, '#fff','left',560,16);
+  rr(50,100,430,56,28); c.fillStyle=P.mag; c.fill();
+  txt(S.postBadge, 265, 137, `25px ${S.hiBody}`, '#fff', 'center', 400,13);
+  const nzs=Math.min(fitFont(S.nameLine1, 105, 48, 540, S.hiName, 90), fitFont(S.nameLine2, 105, 48, 540, S.hiName, 90));
+  txt(S.nameLine1, 48, 300, `${nzs}px ${S.hiName}`, '#fff');
+  txt(S.nameLine2, 48, 415, `${nzs}px ${S.hiName}`, P.gold);
+  rr(50,445,200,10,5); c.fillStyle=P.mag; c.fill();
+  rr(270,445,180,10,5); c.fillStyle=P.gold; c.fill();
+  photoArch(img, 620, 150, 400, 470, P.gold, 7); pframe(620,150,400,470,'arch');
+  rr(50,650,980,160,22); c.fillStyle=P.gold; c.fill();
+  c.lineWidth=5; c.strokeStyle='#fff'; rr(50,650,980,160,22); c.stroke();
+  const hw=wrapFit(S.headline, 900, 34, 20, S.hiBody, 2);
+  hw.lines.forEach((ln,i)=> txt(ln,540,715+i*48,`${hw.s}px ${S.hiBody}`,P.ink,'center'));
+  c.fillStyle=P.cream; c.fillRect(0,830,1080,250);
+  chatIcon(60,856,52,P.mag);
+  const q1s=fitFont(S.q1, 26, 16, 880, S.hiBody);
+  txt(S.q1, 130, 893, `${q1s}px ${S.hiBody}`, P.ink);
+  chatIcon(60,916,52,'#4a2a5e');
+  const q2s=fitFont(S.q2, 26, 16, 880, S.hiBody);
+  txt(S.q2, 130, 953, `${q2s}px ${S.hiBody}`, P.ink);
+  c.fillStyle=P.dark; c.fillRect(0,980,1080,100);
+  rr(300,992,480,46,23); c.fillStyle=P.gold; c.fill();
+  txt(`${S.dateDay} ${S.dateMonth}`, 540, 1024, `25px ${S.hiBody}`, P.dark, 'center', 480,14);
+  txt(S.contact, 540, 1066, `${fitFont(S.contact, 21, 12, 1000, S.hiBody)}px ${S.hiBody}`, '#fff', 'center');
+}
+function drawT2S(img){
+  const Wd=palT2();
+  c.fillStyle=Wd.bg; c.fillRect(0,0,1080,1080);
+  dp(1080,1080,Wd.navy);
+  bgImg(1080,1080,Wd.bg);
+  c.fillStyle=Wd.navy; c.fillRect(0,0,1080,76);
+  txt('ग्राम पंचायत : '+S.village, 540, 50, `30px ${S.hiBody}`, '#fff', 'center', 900,18);
+  c.fillStyle=Wd.saf; c.beginPath(); c.moveTo(0,76); c.lineTo(280,76); c.lineTo(0,420); c.closePath(); c.fill();
+  c.fillStyle=Wd.grn; c.beginPath(); c.moveTo(280,76); c.lineTo(345,76); c.lineTo(0,485); c.lineTo(0,420); c.closePath(); c.fill();
+  c.fillStyle=Wd.navy; c.beginPath(); c.moveTo(345,76); c.lineTo(375,76); c.lineTo(0,515); c.lineTo(0,485); c.closePath(); c.fill();
+  txt(S.sloganTop, 610, 150, `24px ${S.hiBody}`, Wd.navy, 'center', 288,13);
+  txt(S.sloganTop2, 610, 192, `24px ${S.hiBody}`, Wd.navy, 'center', 288,13);
+  txt(`${S.nameLine1} ${S.nameLine2}`, 610, 238, `24px ${S.hiBody}`, Wd.grn, 'center', 288,13);
+  txt(S.sloganBottom, 610, 282, `24px ${S.hiBody}`, Wd.navy, 'center', 288,13);
+  c.fillStyle=Wd.saf; c.fillRect(460,300,300,5);
+  c.fillStyle=Wd.grn; c.fillRect(480,311,260,5);
+  c.fillStyle=Wd.navy; c.fillRect(500,322,220,5);
+  if(S.showBadge) dateBadge(912,215,122,126);
+  photoOvalFade(img, 280, 620, 230, 300); pframe(50,320,460,600,'oval');
+  c.fillStyle=Wd.navy;
+  c.beginPath(); c.moveTo(560,455); c.lineTo(1030,455); c.lineTo(1005,515); c.lineTo(535,515); c.closePath(); c.fill();
+  txt(S.postBadge, 785, 496, `26px ${S.hiBody}`, '#fff', 'center', 420,14);
+  const nzs=Math.min(fitFont(S.nameLine1, 92, 40, 470, S.hiName, 78), fitFont(S.nameLine2, 92, 40, 470, S.hiName, 78));
+  txt(S.nameLine1, 790, 620, `${nzs}px ${S.hiName}`, Wd.navy, 'center');
+  txt(S.nameLine2, 790, 720, `${nzs}px ${S.hiName}`, Wd.grn, 'center');
+  const qw=wrapFit(S.qualities,520,22,14,'MuktaB',2);
+  qw.lines.forEach((ln,i)=> txt(ln, 790, 775+i*34, `${qw.s}px MuktaB`, Wd.navy, 'center', 560,14));
+  c.save(); c.shadowColor='rgba(0,0,0,.35)'; c.shadowBlur=12; c.shadowOffsetY=6;
+  rr(60,870,960,130,20); c.fillStyle=Wd.navy; c.fill(); c.restore();
+  c.lineWidth=4; c.strokeStyle=Wd.gold; c.beginPath(); c.arc(145,935,55,0,TAU); c.stroke();
+  c.strokeStyle='#fff'; c.lineWidth=4; rr(118,933,54,30,5); c.stroke();
+  c.fillStyle='#fff'; c.fillRect(136,931,18,5); c.fillRect(138,910,14,19);
+  txt(S.voteLine1, 230, 920, `24px ${S.hiBody}`, '#fff','left',700,14);
+  const v2=fitFont(S.voteLine2, 32, 18, 700, S.hiBody);
+  txt(S.voteLine2, 230, 968, `${v2}px ${S.hiBody}`, Wd.gold);
+  txt(S.contact, 540, 1040, `${fitFont(S.contact, 28, 16, 1000, S.hiBody)}px ${S.hiBody}`, Wd.navy, 'center');
+  txt(S.requester, 540, 1072, `20px MuktaB`, Wd.grn, 'center', 900,12);
+}
+function drawT3S(img){
+  const G=palT3();
+  c.fillStyle=G.bg; c.fillRect(0,0,1080,1080);
+  dp(1080,1080,G.gold);
+  bgImg(1080,1080,G.bg);
+  c.strokeStyle=G.gold; c.lineWidth=3; c.strokeRect(16,16,1048,1048);
+  c.save(); c.shadowColor='rgba(232,182,76,.5)'; c.shadowBlur=16;
+  rr(45,45,560,120,14); c.fillStyle=G.cream; c.fill(); c.restore();
+  c.lineWidth=3; c.strokeStyle=G.gold; rr(45,45,560,120,14); c.stroke();
+  txt(S.electionTitle, 70, 100, `30px ${S.hiBody}`, G.dark,'left',900,18);
+  txt('ग्राम पंचायत : '+S.village, 70, 142, `22px MuktaB`, '#1f7a4d','left',900,13);
+  if(S.showBadge) dateBadge(860,170,140,142);
+  photoArch(img, 315, 210, 450, 520, G.gold, 8); pframe(315,210,450,520,'arch');
+  rr(120,755,840,90,14); c.fillStyle=G.cream; c.fill();
+  c.lineWidth=3; c.strokeStyle=G.gold; rr(120,755,840,90,14); c.stroke();
+  const nf=fitFont(`${S.nameLine1} ${S.nameLine2}`, 56, 30, 800, S.hiName, 70);
+  c.font=`${nf}px ${S.hiName}`; c.textAlign='center';
+  c.lineWidth=6; c.strokeStyle=G.gold; c.lineJoin='round';
+  c.strokeText(`${S.nameLine1} ${S.nameLine2}`, 540, 818);
+  c.fillStyle=G.dark; c.fillText(`${S.nameLine1} ${S.nameLine2}`, 540, 818);
+  c.font=`24px ${S.hiBody}`;
+  const pw=c.measureText(S.postBadge).width+70;
+  rr(540-pw/2,868,pw,48,24); c.fillStyle=G.orange; c.fill();
+  txt(S.postBadge, 540, 900, `24px ${S.hiBody}`, '#fff', 'center', 500,14);
+  const sm=fitFont(S.sloganMain, 34, 20, 980, S.hiBody);
+  txt(S.sloganMain, 540, 962, `${sm}px ${S.hiBody}`, G.gold, 'center');
+  txt(S.sloganSub, 540, 1000, `21px MuktaB`, '#fff', 'center', 940,12);
+  rr(120,1016,840,52,26); c.fillStyle=G.orange; c.fill();
+  txt(`${S.ctaBottom}  ·  ${S.contact}`, 540, 1049, `${fitFont(`${S.ctaBottom}  ·  ${S.contact}`, 19, 11, 820, S.hiBody)}px ${S.hiBody}`, '#fff', 'center');
+}
+
+/* ============ LANDSCAPE 16:9 ============ */
+function drawT1L(img){
+  const P=palT1();
+  c.fillStyle=P.bg; c.fillRect(0,0,1920,1080);
+  dp(1920,1080,P.gold);
+  bgImg(1920,1080,P.bg);
+  c.fillStyle=P.mag; c.beginPath(); c.arc(1660,240,380,0,TAU); c.fill();
+  c.lineWidth=4; c.strokeStyle='#fff'; c.beginPath(); c.arc(1660,240,340,0,TAU); c.stroke();
+  dotGrid(980,120,7,4,26,P.gold,3);
+  txt('ग्राम पंचायत : '+S.village, 60, 80, `30px ${S.hiBody}`, '#fff','left',640,18);
+  rr(60,105,470,60,30); c.fillStyle=P.mag; c.fill();
+  txt(S.postBadge, 295, 144, `27px ${S.hiBody}`, '#fff', 'center', 460,15);
+  const nzs=Math.min(fitFont(S.nameLine1, 120, 56, 1120, S.hiName, 101), fitFont(S.nameLine2, 120, 56, 1120, S.hiName, 101));
+  txt(S.nameLine1, 58, 320, `${nzs}px ${S.hiName}`, '#fff');
+  txt(S.nameLine2, 58, 450, `${nzs}px ${S.hiName}`, P.gold);
+  rr(60,482,220,10,5); c.fillStyle=P.mag; c.fill();
+  rr(300,482,200,10,5); c.fillStyle=P.gold; c.fill();
+  rr(60,560,920,170,22); c.fillStyle=P.gold; c.fill();
+  c.lineWidth=5; c.strokeStyle='#fff'; rr(60,560,920,170,22); c.stroke();
+  const hw=wrapFit(S.headline, 840, 36, 20, S.hiBody, 2);
+  hw.lines.forEach((ln,i)=> txt(ln,520,625+i*52,`${hw.s}px ${S.hiBody}`,P.ink,'center'));
+  rr(60,760,920,70,12); c.fillStyle=P.dark; c.fill();
+  const cs=fitFont(S.cta, 27, 16, 880, S.hiBody);
+  txt(S.cta, 520, 805, `${cs}px ${S.hiBody}`, '#fff', 'center');
+  photoArch(img, 1250, 140, 520, 700, P.gold, 8); pframe(1250,140,520,700,'arch');
+  c.fillStyle=P.dark; c.fillRect(0,960,1920,120);
+  rr(60,985,420,60,30); c.fillStyle=P.gold; c.fill();
+  txt(`${S.dateDay} ${S.dateMonth}`, 270, 1025, `28px ${S.hiBody}`, P.dark, 'center', 480,16);
+  txt(S.contact, 520, 1027, `${fitFont(S.contact, 27, 16, 1280, S.hiBody)}px ${S.hiBody}`, '#fff');
+  txt(S.requester, 1860, 1027, `22px MuktaB`, P.gold, 'right', 560,12);
+}
+function drawT2L(img){
+  const Wd=palT2();
+  c.fillStyle=Wd.bg; c.fillRect(0,0,1920,1080);
+  dp(1920,1080,Wd.navy);
+  bgImg(1920,1080,Wd.bg);
+  c.fillStyle=Wd.navy; c.fillRect(0,0,1920,88);
+  txt('ग्राम पंचायत : '+S.village, 960, 58, `34px ${S.hiBody}`, '#fff', 'center', 1500,20);
+  c.fillStyle=Wd.saf; c.beginPath(); c.moveTo(0,88); c.lineTo(300,88); c.lineTo(0,460); c.closePath(); c.fill();
+  c.fillStyle=Wd.grn; c.beginPath(); c.moveTo(300,88); c.lineTo(370,88); c.lineTo(0,530); c.lineTo(0,460); c.closePath(); c.fill();
+  c.fillStyle=Wd.navy; c.beginPath(); c.moveTo(370,88); c.lineTo(400,88); c.lineTo(0,560); c.lineTo(0,530); c.closePath(); c.fill();
+  if(S.showBadge) dateBadge(1680,250,150,172);
+  photoOvalFade(img, 400, 560, 280, 370); pframe(120,190,560,740,'oval');
+  c.fillStyle=Wd.navy;
+  c.beginPath(); c.moveTo(960,170); c.lineTo(1490,170); c.lineTo(1460,240); c.lineTo(930,240); c.closePath(); c.fill();
+  txt(S.postBadge, 1245, 216, `30px ${S.hiBody}`, '#fff', 'center', 430,16);
+  txt('ग्राम पंचायत चुनाव 2026', 1245, 292, `26px ${S.hiBody}`, Wd.navy, 'center', 560,16);
+  const nzs=Math.min(fitFont(S.nameLine1, 110, 52, 940, S.hiName, 97), fitFont(S.nameLine2, 110, 52, 940, S.hiName, 97));
+  txt(S.nameLine1, 1245, 420, `${nzs}px ${S.hiName}`, Wd.navy, 'center');
+  txt(S.nameLine2, 1245, 545, `${nzs}px ${S.hiName}`, Wd.grn, 'center');
+  const qw=wrapFit(S.qualities,700,26,16,'MuktaB',2);
+  qw.lines.forEach((ln,i)=> txt(ln, 1245, 615+i*40, `${qw.s}px MuktaB`, Wd.navy, 'center', 760,16));
+  c.save(); c.shadowColor='rgba(0,0,0,.35)'; c.shadowBlur=14; c.shadowOffsetY=7;
+  rr(880,690,880,150,20); c.fillStyle=Wd.navy; c.fill(); c.restore();
+  c.lineWidth=4; c.strokeStyle=Wd.gold; c.beginPath(); c.arc(960,765,56,0,TAU); c.stroke();
+  c.strokeStyle='#fff'; c.lineWidth=4; rr(932,763,56,30,5); c.stroke();
+  c.fillStyle='#fff'; c.fillRect(951,761,18,5); c.fillRect(953,740,14,19);
+  txt(S.voteLine1, 1020, 745, `25px ${S.hiBody}`, '#fff','left',700,15);
+  const v2=fitFont(S.voteLine2, 34, 20, 660, S.hiBody);
+  txt(S.voteLine2, 1020, 795, `${v2}px ${S.hiBody}`, Wd.gold);
+  txt(S.contact, 960, 905, `${fitFont(S.contact,32,18,1800,S.hiBody)}px ${S.hiBody}`, Wd.navy, 'center');
+  txt(S.requester, 960, 950, `${fitFont(S.requester,22,12,1800,S.hiBody)}px ${S.hiBody}`, Wd.grn, 'center');
+  c.fillStyle=Wd.navy; c.fillRect(0,985,1920,95);
+  c.fillStyle=Wd.saf; c.fillRect(0,985,14,95); c.fillStyle=Wd.grn; c.fillRect(1906,985,14,95);
+  txt(`${S.dateDay} ${S.dateMonth}   ·   ${S.voteLine1} — ${S.voteLine2}`, 960, 1042, `${fitFont(`${S.dateDay} ${S.dateMonth}   ·   ${S.voteLine1} — ${S.voteLine2}`, 28, 15, 1700, S.hiBody)}px ${S.hiBody}`, Wd.gold, 'center');
+}
+function drawT3L(img){
+  const G=palT3();
+  c.fillStyle=G.bg; c.fillRect(0,0,1920,1080);
+  dp(1920,1080,G.gold);
+  bgImg(1920,1080,G.bg);
+  c.save(); c.strokeStyle='rgba(232,182,76,0.12)'; c.lineWidth=2;
+  for(let r=200;r<=900;r+=140){ c.beginPath(); c.arc(760,520,r,0,TAU); c.stroke(); }
+  c.restore();
+  c.strokeStyle=G.gold; c.lineWidth=3; c.strokeRect(16,16,1888,1048);
+  c.save(); c.shadowColor='rgba(232,182,76,.5)'; c.shadowBlur=18;
+  rr(50,50,620,120,14); c.fillStyle=G.cream; c.fill(); c.restore();
+  c.lineWidth=3; c.strokeStyle=G.gold; rr(50,50,620,120,14); c.stroke();
+  txt(S.electionTitle, 78, 102, `32px ${S.hiBody}`, G.dark,'left',1000,20);
+  txt('ग्राम पंचायत : '+S.village, 78, 144, `23px MuktaB`, '#1f7a4d','left',1000,14);
+  if(S.showBadge) dateBadge(1620,168,128,138);
+  photoArch(img, 520, 150, 470, 680, G.gold, 8); pframe(520,150,470,680,'arch');
+  rr(80,840,760,95,14); c.fillStyle=G.cream; c.fill();
+  c.lineWidth=3; c.strokeStyle=G.gold; rr(80,840,760,95,14); c.stroke();
+  const nf=fitFont(`${S.nameLine1} ${S.nameLine2}`, 60, 32, 720, S.hiName, 70);
+  c.font=`${nf}px ${S.hiName}`; c.textAlign='center';
+  c.lineWidth=6; c.strokeStyle=G.gold; c.lineJoin='round';
+  c.strokeText(`${S.nameLine1} ${S.nameLine2}`, 460, 906);
+  c.fillStyle=G.dark; c.fillText(`${S.nameLine1} ${S.nameLine2}`, 460, 906);
+  c.font=`24px ${S.hiBody}`;
+  const pw=c.measureText(S.postBadge).width+64;
+  rr(460-pw/2,955,pw,48,24); c.fillStyle=G.orange; c.fill();
+  txt(S.postBadge, 460, 987, `24px ${S.hiBody}`, '#fff', 'center', 520,14);
+  const sm=fitFont(S.sloganMain, 36, 20, 620, S.hiBody);
+  txt(S.sloganMain, 1500, 470, `${sm}px ${S.hiBody}`, G.gold, 'center');
+  const uw=wrapFit(S.sloganSub,620,22,14,'MuktaB',2);
+  uw.lines.forEach((ln,i)=> txt(ln, 1500, 515+i*34, `${uw.s}px MuktaB`, '#fff', 'center', 660,14));
+  rr(1190,570,620,250,14); c.fillStyle='#ffffff'; c.fill();
+  txt('— प्रमुख संकल्प —', 1500, 606, `22px ${S.hiBody}`, G.orange, 'center');
+  for(let i=0;i<6;i++){
+    const col=i%2, row=Math.floor(i/2);
+    const x=1225+col*315, y=650+row*48;
+    c.fillStyle=G.orange; c.beginPath(); c.arc(x,y-7,13,0,TAU); c.fill();
+    txt(String(i+1), x, y-2, `16px MuktaXB`, '#fff', 'center');
+    const t=String([S.p1,S.p2,S.p3,S.p4,S.p5,S.p6][i]);
+    txt(wrapLines(t,270,'18px MuktaB')[0]||'', x+24, y, `18px MuktaB`, '#22301f');
+  }
+  rr(80,1010,1760,0.1,1); // spacer no-op
+  c.fillStyle=G.orange; c.fillRect(0,1016,1920,64);
+  txt(`${S.ctaBottom}   ·   ${S.contact}   ·   ${S.requester}`, 960, 1056, `${fitFont(`${S.ctaBottom}   ·   ${S.contact}   ·   ${S.requester}`, 22, 13, 1840, S.hiBody)}px ${S.hiBody}`, '#fff', 'center');
+}
+
+/* ============ BANNER 2:1 ============ */
+function drawT1B(img){
+  const P=palT1();
+  c.fillStyle=P.bg; c.fillRect(0,0,1800,900);
+  dp(1800,900,P.gold);
+  bgImg(1800,900,P.bg);
+  c.fillStyle=P.mag; c.beginPath(); c.arc(1560,180,330,0,TAU); c.fill();
+  c.lineWidth=4; c.strokeStyle='#fff'; c.beginPath(); c.arc(1560,180,295,0,TAU); c.stroke();
+  photoArch(img, 60, 70, 320, 700, P.gold, 7); pframe(60,70,320,700,'arch');
+  txt('ग्राम पंचायत : '+S.village, 430, 105, `28px ${S.hiBody}`, '#fff','left',560,16);
+  rr(430,130,430,54,27); c.fillStyle=P.mag; c.fill();
+  txt(S.postBadge, 645, 166, `25px ${S.hiBody}`, '#fff', 'center', 420,13);
+  const nzs=Math.min(fitFont(S.nameLine1, 110, 52, 780, S.hiName, 94), fitFont(S.nameLine2, 110, 52, 780, S.hiName, 94));
+  txt(S.nameLine1, 428, 330, `${nzs}px ${S.hiName}`, '#fff');
+  txt(S.nameLine2, 428, 450, `${nzs}px ${S.hiName}`, P.gold);
+  const hw=wrapFit(S.headline, 800, 34, 18, S.hiBody, 2);
+  hw.lines.forEach((ln,i)=> txt(ln,430,540+i*48,`${hw.s}px ${S.hiBody}`,P.gold));
+  rr(430,650,800,64,12); c.fillStyle=P.dark; c.fill();
+  const cs=fitFont(S.cta, 25, 14, 760, S.hiBody);
+  txt(S.cta, 830, 691, `${cs}px ${S.hiBody}`, '#fff', 'center');
+  if(S.showBadge) dateBadge(1560,620,150,168);
+  c.fillStyle=P.dark; c.fillRect(0,810,1800,90);
+  txt(`${S.dateDay} ${S.dateMonth}   ·   ${S.contact}   ·   ${S.requester}`, 900, 864, `${fitFont(`${S.dateDay} ${S.dateMonth}   ·   ${S.contact}   ·   ${S.requester}`, 26, 14, 1700, S.hiBody)}px ${S.hiBody}`, P.gold, 'center');
+}
+function drawT2B(img){
+  const Wd=palT2();
+  c.fillStyle=Wd.bg; c.fillRect(0,0,1800,900);
+  dp(1800,900,Wd.navy);
+  bgImg(1800,900,Wd.bg);
+  c.fillStyle=Wd.navy; c.fillRect(0,0,1800,76);
+  txt('ग्राम पंचायत : '+S.village, 900, 50, `30px ${S.hiBody}`, '#fff', 'center', 1500,18);
+  c.fillStyle=Wd.saf; c.beginPath(); c.moveTo(0,76); c.lineTo(240,76); c.lineTo(0,380); c.closePath(); c.fill();
+  c.fillStyle=Wd.grn; c.beginPath(); c.moveTo(240,76); c.lineTo(300,76); c.lineTo(0,440); c.lineTo(0,380); c.closePath(); c.fill();
+  photoOvalFade(img, 330, 480, 240, 320); pframe(90,160,480,640,'oval');
+  c.fillStyle=Wd.navy;
+  c.beginPath(); c.moveTo(640,120); c.lineTo(1180,120); c.lineTo(1155,178); c.lineTo(615,178); c.closePath(); c.fill();
+  txt(S.postBadge, 895, 159, `26px ${S.hiBody}`, '#fff', 'center', 520,14);
+  const nzs=Math.min(fitFont(S.nameLine1, 100, 48, 720, S.hiName, 86), fitFont(S.nameLine2, 100, 48, 720, S.hiName, 86));
+  txt(S.nameLine1, 900, 300, `${nzs}px ${S.hiName}`, Wd.navy, 'center');
+  txt(S.nameLine2, 900, 410, `${nzs}px ${S.hiName}`, Wd.grn, 'center');
+  txt(S.qualities, 900, 465, `24px MuktaB`, Wd.navy, 'center', 700,14);
+  rr(640,500,760,120,18); c.fillStyle=Wd.navy; c.fill();
+  txt(S.voteLine1, 670, 545, `24px ${S.hiBody}`, '#fff','left',660,14);
+  const v2=fitFont(S.voteLine2, 32, 18, 700, S.hiBody);
+  txt(S.voteLine2, 670, 592, `${v2}px ${S.hiBody}`, Wd.gold);
+  if(S.showBadge) dateBadge(1560,240,140,155);
+  txt(S.contact, 900, 700, `${fitFont(S.contact,30,16,1400,S.hiBody)}px ${S.hiBody}`, Wd.navy, 'center');
+  txt(S.requester, 900, 745, `${fitFont(S.requester,22,12,1400,S.hiBody)}px ${S.hiBody}`, Wd.grn, 'center');
+  c.fillStyle=Wd.navy; c.fillRect(0,810,1800,90);
+  txt(`${S.dateDay} ${S.dateMonth}   ·   ${S.voteLine1} — ${S.voteLine2}`, 900, 864, `${fitFont(`${S.dateDay} ${S.dateMonth}   ·   ${S.voteLine1} — ${S.voteLine2}`, 26, 14, 1700, S.hiBody)}px ${S.hiBody}`, Wd.gold, 'center');
+}
+function drawT3B(img){
+  const G=palT3();
+  c.fillStyle=G.bg; c.fillRect(0,0,1800,900);
+  dp(1800,900,G.gold);
+  bgImg(1800,900,G.bg);
+  c.strokeStyle=G.gold; c.lineWidth=3; c.strokeRect(14,14,1772,872);
+  photoArch(img, 60, 60, 300, 660, G.gold, 7); pframe(60,60,300,660,'arch');
+  rr(410,60,560,100,12); c.fillStyle=G.cream; c.fill();
+  c.lineWidth=3; c.strokeStyle=G.gold; rr(410,60,560,100,12); c.stroke();
+  txt(S.electionTitle, 435, 105, `28px ${S.hiBody}`, G.dark,'left',520,16);
+  txt('ग्राम पंचायत : '+S.village, 435, 142, `20px MuktaB`, '#1f7a4d','left',520,12);
+  rr(410,190,700,95,14); c.fillStyle=G.cream; c.fill();
+  c.lineWidth=3; c.strokeStyle=G.gold; rr(410,190,700,95,14); c.stroke();
+  const nf=fitFont(`${S.nameLine1} ${S.nameLine2}`, 56, 30, 660, S.hiName, 70);
+  c.font=`${nf}px ${S.hiName}`; c.textAlign='center';
+  c.lineWidth=6; c.strokeStyle=G.gold; c.lineJoin='round';
+  c.strokeText(`${S.nameLine1} ${S.nameLine2}`, 760, 255);
+  c.fillStyle=G.dark; c.fillText(`${S.nameLine1} ${S.nameLine2}`, 760, 255);
+  c.font=`22px ${S.hiBody}`;
+  const pw=c.measureText(S.postBadge).width+60;
+  rr(760-pw/2,305,pw,44,22); c.fillStyle=G.orange; c.fill();
+  txt(S.postBadge, 760, 335, `22px ${S.hiBody}`, '#fff', 'center');
+  const sm=fitFont(S.sloganMain, 32, 18, 700, S.hiBody);
+  txt(S.sloganMain, 760, 405, `${sm}px ${S.hiBody}`, G.gold, 'center');
+  txt(S.sloganSub, 760, 445, `20px MuktaB`, '#fff', 'center', 660,12);
+  rr(410,470,700,190,12); c.fillStyle='#ffffff'; c.fill();
+  for(let i=0;i<6;i++){
+    const col=i%2, row=Math.floor(i/2);
+    const x=440+col*355, y=510+row*52;
+    c.fillStyle=G.orange; c.beginPath(); c.arc(x,y-7,13,0,TAU); c.fill();
+    txt(String(i+1), x, y-2, `16px MuktaXB`, '#fff', 'center');
+    const t=String([S.p1,S.p2,S.p3,S.p4,S.p5,S.p6][i]);
+    txt(wrapLines(t,300,'18px MuktaB')[0]||'', x+24, y, `18px MuktaB`, '#22301f');
+  }
+  if(S.showBadge) dateBadge(1520,220,140,155);
+  rr(1160,420,580,240,14); c.fillStyle=G.orange; c.fill();
+  txt(S.ctaBottom, 1450, 500, `30px ${S.hiBody}`, '#fff', 'center');
+  txt(S.contact, 1450, 545, `22px MuktaB`, '#fff', 'center');
+  txt(S.requester, 1450, 585, `20px MuktaB`, '#fff', 'center');
+  c.fillStyle=G.orange; c.fillRect(0,830,600,70);
+  c.fillStyle='#ffffff'; c.fillRect(600,830,600,70);
+  c.fillStyle='#1a8a3c'; c.fillRect(1200,830,600,70);
+  txt(`${S.dateDay} ${S.dateMonth}`, 900, 875, `28px ${S.hiBody}`, G.dark, 'center');
+}
+
+/* ---------- dispatch ---------- */
+let photo = new Image();
+photo.src='assets/candidate.jpg'; c.imageSmoothingQuality='high';
+
+function draw(){
+  const W=cv.width, H=cv.height;
+  c.clearRect(0,0,W,H);
+  if(!photo.complete || !photo.naturalWidth){ c.fillStyle='#eee'; c.fillRect(0,0,W,H); }
+  const o=ORIENT[S.size];
+  if(o==='P'){
+    if(S.template==='t1') drawT1P(W,H,photo);
+    else if(S.template==='t2') drawT2P(W,H,photo);
+    else drawT3P(W,H,photo);
+  } else if(o==='S'){
+    if(S.template==='t1') drawT1S(photo);
+    else if(S.template==='t2') drawT2S(photo);
+    else drawT3S(photo);
+  } else if(o==='L'){
+    if(S.template==='t1') drawT1L(photo);
+    else if(S.template==='t2') drawT2L(photo);
+    else drawT3L(photo);
+  } else {
+    if(S.template==='t1') drawT1B(photo);
+    else if(S.template==='t2') drawT2B(photo);
+    else drawT3B(photo);
+  }
+  const dn=document.getElementById('dnum');
+  if(dn) dn.textContent=`डिज़ाइन #${designNumber()} / ${TOTAL_DESIGNS.toLocaleString('en-IN')}`;
+}
+
+/* ---------- UI ---------- */
+const FIELDS = ['village','nameLine1','nameLine2','postBadge','electionTitle','contact','requester',
+ 'headline','subhead','q1','q1sub','q2','cta','sloganTop','sloganTop2','sloganBottom','qualities','voteLine1','voteLine2',
+ 'sloganMain','sloganSub','ctaBottom','p1','p2','p3','p4','p5','p6',
+ 'dateDay','dateMonth','dateWeekday','polling'];
+
+function syncVisibility(){
+  document.querySelectorAll('[data-only]').forEach(el=>{
+    const list=el.getAttribute('data-only').split(',');
+    el.classList.toggle('hidden', !list.includes(S.template));
+  });
+}
+function bind(){
+  FIELDS.forEach(id=>{
+    const el=document.getElementById(id);
+    el.value=S[id];
+    el.addEventListener('input',()=>{ S[id]=el.value; draw(); });
+    el.addEventListener('change',()=>{ S[id]=el.value; draw(); });
+  });
+  document.querySelectorAll('.tab').forEach(b=>{
+    b.addEventListener('click',()=>{
+      S.template=b.dataset.t;
+      document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));
+      syncVisibility(); draw();
+    });
+  });
+  document.querySelectorAll('.sz').forEach(b=>{
+    b.addEventListener('click',()=>{
+      S.size=b.dataset.s;
+      cv.width=SIZES[S.size].w; cv.height=SIZES[S.size].h;
+      document.querySelectorAll('.sz').forEach(x=>x.classList.toggle('on',x===b));
+      draw();
+    });
+  });
+  const palSel=document.getElementById('palTheme');
+  PALETTES.forEach((p,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=p.n; palSel.appendChild(o); });
+  palSel.value=S.palIdx;
+  palSel.addEventListener('change',()=>{ S.palIdx=+palSel.value; draw(); });
+  window.setBg=function(){ const e=document.getElementById('bgNum'); if(e) e.textContent='#'+(S.patIdx|0); };
+  setBg();
+  document.getElementById('bgBtn').addEventListener('click',()=>{ S.patIdx=Math.random()*BG_COUNT|0; setBg(); draw(); });
+  window.setDv=function(){ const e=document.getElementById('dvNum'); if(e) e.textContent='#'+(S.decoV|0); };
+  setDv();
+  document.getElementById('dvBtn').addEventListener('click',()=>{ S.decoV=(S.decoV+1)%3; setDv(); draw(); });
+  document.getElementById('pfBtn').addEventListener('click',()=>{ S.photoF=(S.photoF+1)%6; const e=document.getElementById('pfNum'); if(e) e.textContent='#'+S.photoF; draw(); });
+  document.getElementById('nsBtn').addEventListener('click',()=>{ S.nameS=(S.nameS+1)%4; const e=document.getElementById('nsNum'); if(e) e.textContent='#'+S.nameS; draw(); });
+  document.getElementById('evBtn').addEventListener('click',()=>{ S.elemV=(S.elemV+1)%10; const e=document.getElementById('evNum'); if(e) e.textContent='#'+S.elemV; draw(); });
+  let DICT=null;
+  const SP_SUFF=['\u0915\u093E\u0930\u094B\u0902','\u0915\u093E\u0930','\u094B\u0902','\u0947\u0902','\u0902','\u0915\u093E','\u0915\u0940','\u0915\u0947','\u0938\u0947','\u092E\u0947\u0902','\u092A\u0930','\u0924\u0915','\u0939\u0940','\u092D\u0940','\u0928\u0947','\u0915\u094B','\u0939\u0948\u0902','\u0939\u0948','\u0925\u093E','\u0925\u0940','\u090F','\u0935','\u093E\u0930\u0947','\u0915\u0930','\u0947','\u0940','\u094B','\u093E','\u090F\u0902','\u090F\u0901','\u093E\u090F\u0901','\u093E\u090F\u0902'];
+  const SP_OK=new Set(['पुनाराम','विराह्यस','नादाना','भाटान','ग्राम','पंचायत','सरपंच','प्रत्याशी','निवेदक','टीम','सम्पर्क','संपर्क','सूत्र','मतदान','दिवस','अक्टूबर','शनिवार','रविवार','सौभाग्य','वोटर','हेतु','जनैश्चर','आदर्श','बिंदु','बिन्दु','मोहल्ला','मोहल्ले','बड़ी','बड़ा','साझा','सुझाव','पंचायत','पंचायत','विकास','विश्वास','संकल्प','विजयी','पक्की','पक्का','बनाएं','बनाए','बिंदुओं']);
+  const spOk=w=>{ window.spOk=spOk; if(DICT.has(w)||SP_OK.has(w)) return true;
+    for(const s of SP_SUFF){ if(w.endsWith(s)&&w.length-s.length>1){ const st2=w.slice(0,w.length-s.length); if(DICT.has(st2)||SP_OK.has(st2)) return true; } }
+    return false; };
+  window.runSpell=function(){ if(!DICT) return; const bad=new Set();
+    document.querySelectorAll('input,textarea').forEach(inp=>{
+      (inp.value||'').replace(/[\u0964\u0965]/g,' ').split(/[^\u0900-\u097F]+/).forEach(w=>{ if(w.length>2&&!spOk(w)) bad.add(w); }); });
+    const st=document.getElementById('spellStat');
+    st.textContent= bad.size? '⚠ '+bad.size+' संदिग्ध' : '✓ शुद्ध'; window.__spellBad=[...bad].slice(0,8); };
+  document.getElementById('spellBtn').addEventListener('click',async()=>{
+    const st=document.getElementById('spellStat');
+    if(DICT){ DICT=null; st.textContent='बंद'; return; }
+    st.textContent='लोड…';
+    try{ const r=await fetch('hi.dic'); const t=await r.text();
+      DICT=new Set(t.split('\n').map(w=>w.trim().split('/')[0]).filter(w=>w&&/[ऀ-ॿ]/.test(w)));
+      st.textContent='चालू ('+Math.round(DICT.size/1000)+'k)'; window.runSpell(); }
+    catch(e){ st.textContent='त्रुटि'; } });
+  if(document.addEventListener) document.addEventListener('input',e=>{ if(DICT&&e.target.matches&&e.target.matches('input,textarea')) window.runSpell(); });
+  document.getElementById('shuffle').addEventListener('click',()=>{
+    S.palIdx=Math.floor(Math.random()*PALETTES.length);
+    S.patIdx=Math.floor(Math.random()*BG_COUNT); setBg(); S.decoV=Math.random()*3|0; setDv();
+    S.hiName=NAME_FONTS[Math.floor(Math.random()*NAME_FONTS.length)];
+    S.hiBody=BODY_FONTS[Math.floor(Math.random()*BODY_FONTS.length)];
+    S.engFont=famVal(EN_FONTS[Math.floor(Math.random()*EN_FONTS.length)]);
+    palSel.value=S.palIdx; patSel.value=S.patIdx;
+    if(window.loadFam){ window.loadFam(S.hiName); window.loadFam(S.hiBody); window.loadFam(S.engFont); }
+    if(window.refreshFontBtns) window.refreshFontBtns();
+    draw();
+  });
+  const sel=document.getElementById('nare');
+  NARE.forEach((n,i)=>{ const o=document.createElement('option'); o.value=n; o.textContent=(i+1)+'. '+n; sel.appendChild(o); });
+  sel.addEventListener('change',()=>{
+    const v=sel.value; if(!v) return;
+    if(S.template==='t1'){ S.headline=v; }
+    else if(S.template==='t2'){
+      const m=v.split(/\s[—–-]\s/);
+      if(m.length>1){ S.sloganTop=m[0]; S.sloganTop2=''; S.sloganBottom=m.slice(1).join(' '); }
+      else { S.sloganBottom=v; }
+    } else { S.sloganMain=v; }
+    FIELDS.forEach(id=>{ document.getElementById(id).value=S[id]; });
+    draw();
+  });
+  const thumb=document.getElementById('photoThumb');
+  thumb.src=photo.src;
+  document.getElementById('uploadBtn').addEventListener('click',()=>document.getElementById('photoFile').click());
+  document.getElementById('photoFile').addEventListener('change',e=>{
+    const f=e.target.files[0]; if(!f) return;
+    const r=new FileReader();
+    r.onload=()=>{ const im=new Image(); im.onload=()=>{ photo=im; thumb.src=im.src; draw(); }; im.src=r.result; };
+    r.readAsDataURL(f);
+  });
+  document.getElementById('export').addEventListener('click',()=>{
+    cv.toBlob(b=>{
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(b);
+      a.download=`sarpanch_poster_${S.template}_${S.size}.png`;
+      a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+    },'image/png');
+  });
+}
+
+(async function init(){
+  bind(); syncVisibility();
+  await loadFonts();
+  if(window.loadFam) window.loadFam(S.engFont);
+  await new Promise(res=>{ if(photo.complete) res(); else { photo.onload=res; photo.onerror=res; } });
+  { const lm=document.getElementById('loadmsg'); if(lm&&lm.remove) lm.remove(); }
+  draw();
+})();
+</script>
+
+<script>
+/* ---------- Resource Manager: नए संसाधन जोड़ें (persist + pack share) ---------- */
+(function(){
+"use strict";
+const LS = (typeof localStorage!=='undefined') ? localStorage : null;
+let CUSTOM = {fonts:[], bgs:[], themes:[], nare:[], photo:null, bgSelection:'-1', bgOpacity:100};
+const panel = document.getElementById('panel');
+
+const sec = document.createElement('div');
+sec.innerHTML = `
+  <h2>नए संसाधन जोड़ें</h2>
+  <div class="row2">
+    <button class="btn ghost" id="addFontBtn">+ फ़ॉन्ट (.ttf)</button>
+  </div>
+  <input type="file" id="fontFile" accept=".ttf,.otf,.woff" class="hidden">
+  <div class="row2">
+    <input type="text" id="nareNew" placeholder="नया नारा लिखें…">
+    <button class="btn ghost" id="addNareBtn">+ नारा</button>
+  </div>
+  <button class="btn ghost" id="themeEdBtn">🎨 नई रंग थीम बनाएं</button>
+  <div id="themeEd" class="hidden" style="margin-top:8px">
+    <label class="f"><span>थीम का नाम</span><input type="text" id="thName" placeholder="मेरी थीम"></label>
+    <div class="row2" id="thColors"></div>
+    <button class="btn" id="thSave" style="margin-top:6px">थीम सहेजें</button>
+  </div>
+  <div class="row2" style="margin-top:8px">
+    <button class="btn ghost" id="packOut">⬇ Pack Export</button>
+    <button class="btn ghost" id="packIn">⬆ Pack Import</button>
+  </div>
+  <input type="file" id="packFile" accept=".json,application/json" class="hidden">
+  <button class="btn ghost" id="resReset" style="margin-top:6px">🗑 जोड़े संसाधन हटाएं (reset)</button>
+  <p class="note" id="resNote">जोड़े गए संसाधन इसी browser में सहेजे रहते हैं। Pack export करके Drive/team में share करें।</p>`;
+panel.insertBefore(sec, panel.querySelector('p.note'));
+const $ = id => sec.querySelector('#'+id);
+const flash = m => { $('resNote').textContent = m; };
+const save = () => { if(!LS){ flash('इस browser में storage उपलब्ध नहीं'); return false; }
+  try{ LS.setItem('spm_res', JSON.stringify(CUSTOM)); return true; }
+  catch(e){ flash('⚠ Storage भर गया — आख़िरी चीज़ सहेजी नहीं जा सकी (छोटी image/font आज़माएं)'); return false; } };
+const optAdd = (sel,val,txt)=>{ const o=document.createElement('option'); o.value=val; o.textContent=txt; sel.appendChild(o); };
+const bufToB64 = buf => { const u=new Uint8Array(buf); let s=''; for(let i=0;i<u.length;i+=0x8000) s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000)); return btoa(s); };
+const b64ToBuf = b64 => { const bin=atob(b64); const u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i); return u.buffer; };
+function shade(hex,f){ const m=hex.replace('#',''); const n=parseInt(m,16);
+  const r=Math.min(255,Math.round(((n>>16)&255)*f)), g=Math.min(255,Math.round(((n>>8)&255)*f)), b=Math.min(255,Math.round((n&255)*f));
+  return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1); }
+function downscale(dataUrl, maxEdge, cb, preservePng=false){ const im=new Image(); im.onload=()=>{ const edge=Math.max(im.width,im.height); const s=Math.min(1,maxEdge/edge);
+  const cv2=document.createElement('canvas'); cv2.width=Math.max(1,Math.round(im.width*s)); cv2.height=Math.max(1,Math.round(im.height*s));
+  cv2.getContext('2d').drawImage(im,0,0,cv2.width,cv2.height);
+  const alpha=preservePng&&/^data:image\/(png|webp)/i.test(String(dataUrl));
+  let encoded=cv2.toDataURL(alpha?'image/webp':'image/jpeg',0.88);
+  if(alpha&&!encoded.startsWith('data:image/webp')) encoded=cv2.toDataURL('image/png');
+  cb(encoded); };
+  im.onerror=()=>cb(null); im.src=dataUrl; }
+
+/* fonts */
+$('addFontBtn').onclick=()=>$('fontFile').click();
+$('fontFile').onchange=e=>{ const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=>{ const buf=r.result; const fam='CF'+Date.now().toString(36);
+    new FontFace(fam, buf).load().then(ff=>{ document.fonts.add(ff);
+      NAME_FONTS.push(famVal(fam)); BODY_FONTS.push(famVal(fam));
+      CUSTOM.fonts.push({fam, name:f.name, b64:bufToB64(buf)}); save(); draw();
+      flash('फ़ॉन्ट जुड़ गया: '+f.name);
+    }).catch(()=>flash('⚠ फ़ॉन्ट लोड नहीं हो सका')); };
+  r.readAsArrayBuffer(f); };
+
+/* Background upload + live canvas update */
+const bgUploadBtn=document.getElementById('addBgBtn');
+const bgFile=document.getElementById('bgFile');
+const bgSel=document.getElementById('bgSel');
+const bgOpacity=document.getElementById('bgOpacity');
+const bgOpacityVal=document.getElementById('bgOpacityVal');
+const bgPreviewWrap=document.getElementById('bgPreviewWrap');
+const bgPreview=document.getElementById('bgPreview');
+const bgStatus=document.getElementById('bgStatus');
+const PRESET_BGS=[['Marwar Sunrise (Drive)','assets/bgs/bg_v11_marwar.jpg'],['Tricolor 1070 (Drive)','assets/bgs/bg_tricolor_1070.jpg'],
+ ['Tricolor 1071 (Drive)','assets/bgs/bg_tricolor_1071.jpg'],['Tricolor 1072 (Drive)','assets/bgs/bg_tricolor_1072.jpg'],
+ ['Tricolor 1073 (Drive)','assets/bgs/bg_tricolor_1073.jpg'],['Tricolor 1074 (Drive)','assets/bgs/bg_tricolor_1074.jpg'],
+ ['Fresh 0795 (Drive)','assets/bgs/nb_0795.png'],['Fresh 0796 (Drive)','assets/bgs/nb_0796.png'],['Fresh 0797 (Drive)','assets/bgs/nb_0797.png'],
+ ['Fresh 0798 (Drive)','assets/bgs/nb_0798.png'],['Fresh 0799 (Drive)','assets/bgs/nb_0799.png'],['Fresh 0800 (Drive)','assets/bgs/nb_0800.png'],['Fresh 0140 (Drive)','assets/bgs/nb_0140.png'],['Fresh 0980 (Drive)','assets/bgs/nb_0980.png'],
+ ['Tricolor 0001 (Drive)','assets/bgs/bg_0001.png'],['Tricolor 0003 (Drive)','assets/bgs/bg_0003.png'],
+ ['1080-1076 (Drive)','assets/bgs/bg_tricolor_1076.jpg'],['1080-1077 (Drive)','assets/bgs/bg_tricolor_1077.jpg'],
+ ['1080-1078 (Drive)','assets/bgs/bg_tricolor_1078.jpg'],['1080-1079 (Drive)','assets/bgs/bg_tricolor_1079.jpg'],
+ ['Style-A 0001 (Drive)','assets/bgs/nb_0001.png'],['Style-C 0280 (Drive)','assets/bgs/nb_0280.png'],
+ ['Style-E 0560 (Drive)','assets/bgs/nb_0560.png'],['Style-G 0840 (Drive)','assets/bgs/nb_0840.png'],
+ ['Style-J 1100 (Drive)','assets/bgs/nb_1100.png']];
+window.PRESET_BGS=PRESET_BGS;
+if(!window.BGIMGS) window.BGIMGS=[];
+const BGIMGS=window.BGIMGS;
+while(BGIMGS.length<PRESET_BGS.length) BGIMGS.push(undefined);
+const bgOptionKeys=new Set(['-1']);
+PRESET_BGS.forEach(([n],i)=>{ optAdd(bgSel,'P'+i,'★ '+n); bgOptionKeys.add('P'+i); });
+function bgMessage(text, src){
+  if(bgStatus) bgStatus.textContent=text;
+  if(src){ bgPreview.src=src; bgPreviewWrap.classList.remove('hidden'); }
+  else { bgPreviewWrap.classList.add('hidden'); }
+}
+function updateBgOpacity(v, persist){
+  const n=Math.max(20,Math.min(100,Math.round(Number(v)||100)));
+  S.bgOpacity=n; if(bgOpacity) bgOpacity.value=n; if(bgOpacityVal) bgOpacityVal.textContent=n+'%';
+  if(persist){ CUSTOM.bgOpacity=n; save(); }
+  draw();
+}
+function pushBg(name, dataUrl, customIndex){
+  return new Promise(resolve=>{
+    const im=new Image(), idx=PRESET_BGS.length+customIndex, val='C'+customIndex;
+    im.onload=()=>{ BGIMGS[idx]=im;
+      if(!bgOptionKeys.has(val)){ optAdd(bgSel,val,'★ '+name); bgOptionKeys.add(val); }
+      resolve(true); };
+    im.onerror=()=>resolve(false); im.src=dataUrl;
+  });
+}
+async function setBgSelection(rawValue, persist=true){
+  const value=String(rawValue==null?'-1':rawValue);
+  if(value==='-1'){
+    S.bgIdx=-1; bgSel.value='-1'; bgMessage('थीम का डिफ़ॉल्ट रंग',null);
+    if(persist){ CUSTOM.bgSelection='-1'; CUSTOM.bgOpacity=S.bgOpacity; save(); }
+    draw(); return true;
+  }
+  let idx=-1, name='', src='', im=null;
+  if(value[0]==='P'){
+    const n=Number(value.slice(1)); if(!Number.isInteger(n)||!PRESET_BGS[n]) return false;
+    [name,src]=PRESET_BGS[n]; idx=n; im=BGIMGS[idx];
+    if(!im||!im.naturalWidth){ im=new Image(); const ok=await new Promise(resolve=>{ im.onload=()=>resolve(true); im.onerror=()=>resolve(false); im.src=src; });
+      if(!ok){ bgMessage('इमेज लोड नहीं हुई — दूसरा बैकग्राउंड चुनें',null); bgSel.value=String(CUSTOM.bgSelection||'-1'); return false; } BGIMGS[idx]=im; }
+  }else if(value[0]==='C'){
+    const n=Number(value.slice(1)); if(!Number.isInteger(n)||!CUSTOM.bgs[n]) return false;
+    idx=PRESET_BGS.length+n; name=CUSTOM.bgs[n].name||'अपलोड किया बैकग्राउंड'; src=CUSTOM.bgs[n].dataUrl;
+    im=BGIMGS[idx];
+    if(!im||!im.naturalWidth){ const ok=await pushBg(name,src,n); if(!ok){ bgMessage('इमेज लोड नहीं हुई — दूसरा बैकग्राउंड चुनें',null); return false; } im=BGIMGS[idx]; }
+    if(!bgOptionKeys.has(value)){ optAdd(bgSel,value,'★ '+name); bgOptionKeys.add(value); }
+  }else return false;
+  S.bgIdx=idx; bgSel.value=value; bgMessage('✓ '+name+' — poster पर लागू',src);
+  if(persist){ CUSTOM.bgSelection=value; CUSTOM.bgOpacity=S.bgOpacity; save(); }
+  draw(); return true;
+}
+bgUploadBtn.addEventListener('click',()=>bgFile.click());
+document.getElementById('clearBgBtn').addEventListener('click',()=>setBgSelection('-1',true));
+bgSel.addEventListener('change',()=>setBgSelection(bgSel.value,true));
+bgOpacity.value=S.bgOpacity; bgOpacityVal.textContent=S.bgOpacity+'%';
+bgOpacity.addEventListener('input',()=>updateBgOpacity(bgOpacity.value,false));
+bgOpacity.addEventListener('change',()=>{ CUSTOM.bgOpacity=S.bgOpacity; save(); });
+async function registerBackground(name,dataUrl,source){
+  const customIndex=CUSTOM.bgs.length;
+  CUSTOM.bgs.push({name,dataUrl});
+  const loaded=await pushBg(name,dataUrl,customIndex);
+  if(!loaded){ CUSTOM.bgs.splice(customIndex,1); return false; }
+  const applied=await setBgSelection('C'+customIndex,false);
+  if(!applied){ CUSTOM.bgs.splice(customIndex,1); return false; }
+  CUSTOM.bgSelection='C'+customIndex; CUSTOM.bgOpacity=S.bgOpacity;
+  const saved=save();
+  bgMessage('✓ '+name+' — poster पर लागू'+(saved?' और browser में सहेजा गया':' · storage भर गया; reload पर नहीं सहेजेगा'),dataUrl);
+  flash(saved?source+' से बैकग्राउंड लागू और सहेजा गया: '+name:source+' से बैकग्राउंड live लागू है; browser storage भर गया।');
+  return true;
+}
+bgFile.addEventListener('change',e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  if(!f.type||!f.type.startsWith('image/')){ bgMessage('कृपया image फ़ाइल चुनें',null); bgFile.value=''; return; }
+  bgMessage('इमेज प्रोसेस हो रही है…',null);
+  const reader=new FileReader();
+  reader.onerror=()=>{ bgMessage('फ़ाइल पढ़ी नहीं जा सकी — फिर कोशिश करें',null); bgFile.value=''; };
+  reader.onload=()=>downscale(reader.result,2600,async dataUrl=>{
+    if(!dataUrl){ bgMessage('इमेज खुल नहीं सकी — JPG या PNG आज़माएं',null); bgFile.value=''; return; }
+    const ok=await registerBackground(f.name,dataUrl,'फ़ाइल');
+    if(!ok) bgMessage('इमेज पोस्टर पर लागू नहीं हो सकी',null);
+    bgFile.value='';
+  },true);
+  reader.readAsDataURL(f);
+});
+
+/* Google Drive OAuth + Picker: minimal drive.file scope, selected images only */
+const driveBtn=document.getElementById('driveBgBtn');
+const driveModal=document.getElementById('driveBgModal');
+const driveClose=document.getElementById('driveCloseBtn');
+const driveClientId=document.getElementById('driveClientId');
+const driveApiKey=document.getElementById('driveApiKey');
+const driveCollection=document.getElementById('driveBgCollection');
+const driveConnect=document.getElementById('driveConnectBtn');
+const driveStatus=document.getElementById('driveStatus');
+const DRIVE_COLLECTIONS={
+  fresh:'1NwPHaE2LdZTYahahAjliTJKu9FVwtTDF',
+  tricolor:'1S0O-o0BwIx_K002GsCSoL-MqCdeWgqBV',
+  pack1080:'1ZPEjJdQzB2nd7SirPPlUSYEbEzLaHoMK'
+};
+let driveAccessToken='',driveTokenExpiresAt=0,driveTokenClient=null,driveLibsPromise=null;
+const DRIVE_CLIENT_KEY='spm_drive_oauth_client_id',DRIVE_API_KEY='spm_drive_picker_api_key';
+if(LS){ driveClientId.value=LS.getItem(DRIVE_CLIENT_KEY)||''; driveApiKey.value=LS.getItem(DRIVE_API_KEY)||''; }
+const setDriveStatus=t=>{ driveStatus.textContent=t; };
+function loadScriptOnce(id,url){
+  if(document.getElementById(id)) return new Promise((resolve,reject)=>{ const e=document.getElementById(id); if(e.dataset.loaded==='1') resolve(); else { e.addEventListener('load',()=>resolve(),{once:true}); e.addEventListener('error',()=>reject(new Error('Google library load failed')),{once:true}); } });
+  return new Promise((resolve,reject)=>{ const e=document.createElement('script'); e.id=id; e.src=url; e.async=true; e.defer=true; e.onload=()=>{e.dataset.loaded='1';resolve();}; e.onerror=()=>reject(new Error('Google library load failed')); document.head.appendChild(e); });
+}
+function loadDrivePickerLibraries(){
+  if(driveLibsPromise) return driveLibsPromise;
+  driveLibsPromise=Promise.all([
+    loadScriptOnce('google-gis-client','https://accounts.google.com/gsi/client'),
+    loadScriptOnce('google-api-client','https://apis.google.com/js/api.js')
+  ]).then(()=>new Promise((resolve,reject)=>{
+    if(!window.gapi||!window.google||!window.google.accounts) return reject(new Error('Google OAuth library unavailable'));
+    window.gapi.load('picker',{callback:resolve,onerror:()=>reject(new Error('Google Picker API load failed')),timeout:12000,ontimeout:()=>reject(new Error('Google Picker API timeout'))});
+  }));
+  return driveLibsPromise;
+}
+function openDriveModal(){
+  driveModal.classList.remove('hidden');
+  setDriveStatus('Google OAuth / Picker library लोड हो रही है…');
+  loadDrivePickerLibraries().then(()=>{driveConnect.disabled=false;setDriveStatus('तैयार। Client ID/API key भरें, फिर “OAuth से खोलें” दबाएँ।');})
+    .catch(e=>{driveConnect.disabled=false;setDriveStatus('Google library लोड नहीं हुई; internet या content blocker जाँचें।');});
+}
+driveBtn.addEventListener('click',openDriveModal);
+driveClose.addEventListener('click',()=>driveModal.classList.add('hidden'));
+driveModal.addEventListener('click',e=>{if(e.target===driveModal) driveModal.classList.add('hidden');});
+driveClientId.addEventListener('change',()=>{if(LS)LS.setItem(DRIVE_CLIENT_KEY,driveClientId.value.trim());});
+driveApiKey.addEventListener('change',()=>{if(LS)LS.setItem(DRIVE_API_KEY,driveApiKey.value.trim());});
+function buildDrivePicker(){
+  const folderId=DRIVE_COLLECTIONS[driveCollection.value];
+  if(!folderId){setDriveStatus('Drive folder नहीं मिला।');return;}
+  const view=new google.picker.DocsView(google.picker.ViewId.DOCS);
+  view.setParent(folderId); view.setIncludeFolders(false); view.setSelectFolderEnabled(false);
+  view.setMimeTypes('image/png,image/jpeg,image/webp');
+  const picker=new google.picker.PickerBuilder()
+    .addView(view).setOAuthToken(driveAccessToken).setDeveloperKey(driveApiKey.value.trim())
+    .setOrigin(window.location.origin).setCallback(handleDrivePickerResult).build();
+  picker.setVisible(true); setDriveStatus('Picker खुला है — background image चुनें।');
+}
+function handleDrivePickerResult(data){
+  if(!data||!window.google||!google.picker) return;
+  const action=data[google.picker.Response.ACTION];
+  if(action===google.picker.Action.CANCEL){setDriveStatus('चयन रद्द हुआ।');return;}
+  if(action!==google.picker.Action.PICKED) return;
+  const docs=data[google.picker.Response.DOCUMENTS]||[];
+  if(!docs.length){setDriveStatus('कोई image नहीं चुनी गई।');return;}
+  const doc=docs[0];
+  chooseDriveBackground({id:doc.id,name:doc.name||'Drive background',mimeType:doc.mimeType||'image/png'});
+}
+driveConnect.addEventListener('click',()=>{
+  const clientId=driveClientId.value.trim(),apiKey=driveApiKey.value.trim();
+  if(!clientId.endsWith('.apps.googleusercontent.com')){setDriveStatus('पहले सही Web OAuth Client ID डालें।');driveClientId.focus();return;}
+  if(!apiKey){setDriveStatus('Google Picker API के लिए API key डालें।');driveApiKey.focus();return;}
+  if(LS){LS.setItem(DRIVE_CLIENT_KEY,clientId);LS.setItem(DRIVE_API_KEY,apiKey);}
+  if(!window.google||!google.accounts||!google.picker){setDriveStatus('Google libraries अभी लोड हो रही हैं—एक क्षण बाद फिर दबाएँ।');return;}
+  const folder=DRIVE_COLLECTIONS[driveCollection.value];
+  driveTokenClient=google.accounts.oauth2.initTokenClient({
+    client_id:clientId,scope:'https://www.googleapis.com/auth/drive.file',include_granted_scopes:true,
+    callback:response=>{
+      if(response.error){setDriveStatus('OAuth अनुमति नहीं मिली: '+response.error);return;}
+      driveAccessToken=response.access_token;
+      driveTokenExpiresAt=Date.now()+Math.max(60,Number(response.expires_in)||3600)*1000;
+      buildDrivePicker();
+    }
+  });
+  setDriveStatus('Google sign-in खोल रहे हैं…');
+  driveTokenClient.requestAccessToken({prompt:''});
+});
+async function chooseDriveBackground(file){
+  if(!driveAccessToken||Date.now()>=driveTokenExpiresAt){setDriveStatus('OAuth session समाप्त हुई—फिर से “OAuth से खोलें” दबाएँ।');driveAccessToken='';return;}
+  if(!/^image\//.test(file.mimeType)){setDriveStatus('चुनी गई फ़ाइल image नहीं है।');return;}
+  setDriveStatus('Drive से '+file.name+' डाउनलोड हो रहा है…');
+  try{
+    const res=await fetch('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(file.id)+'?alt=media',{headers:{Authorization:'Bearer '+driveAccessToken}});
+    if(res.status===401||res.status===403){driveAccessToken='';setDriveStatus('Google Drive ने access रोक दिया। OAuth से फिर connect करें और चुनी image की अनुमति दें।');return;}
+    if(!res.ok) throw new Error('Drive download HTTP '+res.status);
+    const blob=await res.blob();
+    const raw=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.readAsDataURL(blob);});
+    const optimized=await new Promise(resolve=>downscale(raw,2600,resolve,true));
+    if(!optimized) throw new Error('Image decode failed');
+    const ok=await registerBackground('Drive · '+file.name,optimized,'Google Drive');
+    if(!ok) throw new Error('Poster image registration failed');
+    setDriveStatus('✓ '+file.name+' poster पर लागू है; token केवल इस session में रखा है।');
+    driveModal.classList.add('hidden');
+  }catch(e){setDriveStatus('Background लोड नहीं हुआ: '+String(e.message||e));}
+}
+bgSel.value='-1';
+
+/* nare */
+$('addNareBtn').onclick=()=>{ const v=$('nareNew').value.trim(); if(!v) return;
+  NARE.push(v); optAdd(document.getElementById('nare'), v, NARE.length+'. '+v);
+  CUSTOM.nare.push(v); save(); $('nareNew').value=''; flash('नारा जुड़ गया'); };
+
+/* theme editor */
+const ROLES=[['bg','गहरा bg'],['primary','मुख्य रंग'],['accent','एक्सेंट/गोल्ड'],['light','हल्का क्रीम'],
+             ['ink','टेक्स्ट स्याही'],['card1','कार्ड रंग'],['sec1','तिरंगा 1'],['sec2','तिरंगा 2']];
+ROLES.forEach(([k,lab])=>{ const l=document.createElement('label'); l.className='f';
+  l.innerHTML=`<span>${lab}</span><input type="color" id="th_${k}">`; $('thColors').appendChild(l); });
+$('themeEdBtn').onclick=()=>{ $('themeEd').classList.toggle('hidden');
+  if(!$('themeEd').classList.contains('hidden')){ const p=curPal();
+    ROLES.forEach(([k])=>{ $('th_'+k).value = p[k] && p[k].startsWith('#') ? p[k] : '#888888'; }); } };
+$('thSave').onclick=()=>{ const name=$('thName').value.trim()||('मेरी थीम '+(CUSTOM.themes.length+1));
+  const g=k=>$('th_'+k).value;
+  const th={n:'★ '+name, bg:g('bg'), deep:shade(g('bg'),0.72), primary:g('primary'), accent:g('accent'),
+    light:g('light'), light2:shade(g('light'),1.02)>='#ffffff'?'#f4f4f2':shade(g('light'),1.0), ink:g('ink'),
+    card1:g('card1'), card2:shade(g('card1'),1.03), sec1:g('sec1'), sec2:g('sec2')};
+  PALETTES.push(th); optAdd(document.getElementById('palTheme'), PALETTES.length-1, '★ '+name);
+  S.palIdx=PALETTES.length-1; document.getElementById('palTheme').value=S.palIdx;
+  CUSTOM.themes.push(th); save(); draw(); flash('थीम जुड़ गई: '+name); };
+
+/* pack export/import */
+$('packOut').onclick=()=>{ const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(CUSTOM)],{type:'application/json'}));
+  a.download='poster_resources_pack.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),4000); };
+$('packIn').onclick=()=>$('packFile').click();
+$('packFile').onchange=e=>{ const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=async()=>{ try{ await applyPack(JSON.parse(r.result)); flash('Pack import हो गया ✔'); }
+    catch(err){ flash('⚌ गलत pack फ़ाइल'); } }; r.readAsText(f); };
+async function applyPack(p){ if(!p||typeof p!=='object') throw 0;
+  (p.themes||[]).forEach(th=>{ PALETTES.push(th); optAdd(document.getElementById('palTheme'), PALETTES.length-1, th.n); CUSTOM.themes.push(th); });
+  (p.nare||[]).forEach(v=>{ NARE.push(v); optAdd(document.getElementById('nare'), v, NARE.length+'. '+v); CUSTOM.nare.push(v); });
+  const bgStart=CUSTOM.bgs.length;
+  const bgJobs=(p.bgs||[]).map((b,i)=>{ CUSTOM.bgs.push(b); return pushBg(b.name,b.dataUrl,bgStart+i); });
+  (p.fonts||[]).forEach(fo=>{ new FontFace(fo.fam, b64ToBuf(fo.b64)).load().then(ff=>{ document.fonts.add(ff);
+    NAME_FONTS.push(famVal(fo.fam)); BODY_FONTS.push(famVal(fo.fam)); draw(); }).catch(()=>{});
+    CUSTOM.fonts.push(fo); });
+  if(p.photo){ CUSTOM.photo=p.photo; loadPhoto(p.photo); }
+  if(p.bgOpacity!==undefined) updateBgOpacity(p.bgOpacity,false);
+  await Promise.all(bgJobs);
+  if(p.bgSelection!==undefined){
+    let choice=String(p.bgSelection);
+    if(choice[0]==='C') choice='C'+(bgStart+Number(choice.slice(1)));
+    await setBgSelection(choice,false);
+  }
+  CUSTOM.bgSelection=CUSTOM.bgSelection||'-1'; CUSTOM.bgOpacity=S.bgOpacity;
+  save(); draw(); }
+
+/* photo persistence */
+function loadPhoto(du){ const im=new Image(); im.onload=()=>{ photo=im;
+  document.getElementById('photoThumb').src=im.src; draw(); }; im.src=du; }
+document.getElementById('photoFile').addEventListener('change', e=>{ const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=()=> downscale(r.result, 900, du=>{ CUSTOM.photo=du; save(); }); r.readAsDataURL(f); });
+
+$('resReset').onclick=()=>{ if(LS) LS.removeItem('spm_res'); location.reload(); };
+
+/* load saved resources + restore selected background on boot */
+(async function(){
+  if(!LS) return;
+  try{ const raw=LS.getItem('spm_res'); if(!raw) return;
+    const p=JSON.parse(raw);
+    CUSTOM={fonts:[],bgs:[],themes:[],nare:[],photo:null,bgSelection:'-1',bgOpacity:100};
+    await applyPack(p);
+    $('resNote').textContent=`सहेजे संसाधन: ${CUSTOM.fonts.length} फ़ॉन्ट, ${CUSTOM.bgs.length} बैकग्राउंड, ${CUSTOM.themes.length} थीम, ${CUSTOM.nare.length} नारे`;
+  }catch(e){ console.warn('saved resources could not be restored',e); }
+})();
+})();
+</script>
+
+<script>
+/* ---------- Font dialog: Unicode text → चुने हुए font के glyphs ---------- */
+(function(){
+"use strict";
+let dlgTarget='hiName', page=0, query='';
+const injected=new Set();
+const rawFam=f=>String(f).replace(/"/g,'');
+window.ensureLink=function(f){ /* sab 162 fonts local gf.css mein bundled — CDN zaroorat nahi */ };
+window.loadFam=function(f){ window.ensureLink(f);
+  const p=(FONT_URL[f]&&!FONT_DONE[f])? loadFontFam(f):Promise.resolve();
+  return p.then(()=>document.fonts.load('20px '+f)).then(()=>draw(),()=>draw()); };
+window.refreshFontBtns=function(){ const g=id=>document.getElementById(id);
+  if(g('fHiName')) g('fHiName').textContent='अ (नाम): '+rawFam(S.hiName);
+  if(g('fHiBody')) g('fHiBody').textContent='अ (टेक्स्ट): '+rawFam(S.hiBody);
+  if(g('fEng')) g('fEng').textContent='A (English): '+rawFam(S.engFont); };
+function listFor(tab){ return tab==='eng'? EN_FONTS.map(famVal) : (tab==='hiName'? NAME_FONTS : BODY_FONTS); }
+function renderList(){
+  const all=listFor(dlgTarget).filter(f=>rawFam(f).toLowerCase().includes(query));
+  const slice=all.slice(0,(page+1)*24);
+  slice.forEach(f=>window.ensureLink(f));
+  const prev = dlgTarget==='eng' ? 'Sarpanch Election 2026' : 'पुनाराम विराह्यस 2026';
+  const cur=S[dlgTarget];
+  document.getElementById('dlgList').innerHTML = slice.map(f=>
+    '<div data-fam="'+f.replace(/"/g,'&quot;')+'" style="padding:8px 12px;margin:6px 0;border:1px solid '+(f===cur?'var(--acc)':'var(--line)')+';border-radius:10px;cursor:pointer;background:var(--panel2)">'+
+    '<div style="font-size:22px;font-family:'+f+';line-height:1.6">'+prev+'</div>'+
+    '<div style="font-size:11px;color:var(--mut)">'+rawFam(f)+(f===cur?' ✔':'')+'</div></div>').join('')||'<p class="note">कोई font नहीं मिला</p>';
+  const more=document.getElementById('dlgMore');
+  if(more) more.classList.toggle('hidden', all.length<=slice.length);
+}
+function openDlg(tab){ dlgTarget=tab; page=0; query='';
+  const s=document.getElementById('dlgSearch'); if(s) s.value='';
+  document.getElementById('fontDlg').classList.remove('hidden'); renderList(); }
+document.getElementById('fHiName').addEventListener('click',()=>openDlg('hiName'));
+document.getElementById('fHiBody').addEventListener('click',()=>openDlg('hiBody'));
+document.getElementById('fEng').addEventListener('click',()=>openDlg('eng'));
+document.getElementById('dlgClose').addEventListener('click',()=>document.getElementById('fontDlg').classList.add('hidden'));
+document.getElementById('fontDlg').addEventListener('click',e=>{ if(e.target.id==='fontDlg') e.target.classList.add('hidden'); });
+document.getElementById('dlgMore').addEventListener('click',()=>{ page++; renderList(); });
+document.getElementById('dlgSearch').addEventListener('input',e=>{ query=e.target.value.trim().toLowerCase(); page=0; renderList(); });
+document.querySelectorAll('.dlgTab').forEach(b=>b.addEventListener('click',()=>openDlg(b.dataset.tab)));
+document.getElementById('dlgList').addEventListener('click',e=>{
+  let t=e.target; while(t && t!==e.currentTarget && !(t.getAttribute&&t.getAttribute('data-fam'))) t=t.parentElement;
+  if(!t||t===e.currentTarget) return;
+  const f=t.getAttribute('data-fam'); S[dlgTarget]=f; window.loadFam(f); window.refreshFontBtns(); renderList(); draw();
+});
+window.refreshFontBtns();
+const bOpt=document.getElementById('badgeOpt');
+if(bOpt){ bOpt.value=S.showBadge?'1':'0';
+  bOpt.addEventListener('change',()=>{ S.showBadge=bOpt.value==='1'; draw(); }); }
+const bsBtn=document.getElementById('bsBtn');
+const setBs=()=>{ const e=document.getElementById('bsNum'); if(e) e.textContent='#'+(Math.abs(S.badgeStyle|0)%180); };
+setBs();
+if(bsBtn) bsBtn.addEventListener('click',()=>{ S.badgeStyle=Math.random()*180|0; setBs(); draw(); });
+document.getElementById('rand').addEventListener('click',()=>{
+  const pk=a=>a[Math.random()*a.length|0];
+  const STOPW=new Set(['का','की','के','है','हैं','को','से','पर','और','में','ही','तो','ना','नहीं','हो','कर','वोट','एक','आपका','आपकी','आपके','हमारा','हमारी','यही','मेरा','मेरी']);
+  const toks=t=>(String(t).match(/[ऀ-ॿ]{3,}/g)||[]).filter(w=>!STOPW.has(w));
+  const usedW=new Set(['पंचायत','विकास','सुझाव','मतदान','चुनाव']);
+  const pkf=a=>{ const arr=a.slice(); for(let i=arr.length-1;i>0;i--){ const j=Math.random()*(i+1)|0; const tt=arr[i]; arr[i]=arr[j]; arr[j]=tt; }
+    let pick=arr[0], bo=1e9;
+    for(const cd of arr){ const ov=toks(cd).reduce((n,w)=>n+(usedW.has(w)?1:0),0); if(ov===0){ pick=cd; bo=0; break; } if(ov<bo){ bo=ov; pick=cd; } }
+    toks(pick).forEach(w=>usedW.add(w)); return pick; };
+  const prevKey=[S.template,S.palIdx,S.patIdx,S.badgeStyle,S.photoF,S.elemV].join(',');
+  S.template=pk(['t1','t2','t3']);
+  S.palIdx=Math.random()*PALETTES.length|0;
+  S.patIdx=Math.random()*BG_COUNT|0; S.decoV=Math.random()*3|0;
+  S.hiName=pk(NAME_FONTS); S.hiBody=pk(BODY_FONTS); S.engFont=pk(EN_FONTS);
+  window.loadFam(S.hiName); window.loadFam(S.hiBody); window.loadFam(S.engFont);
+  S.badgeStyle=Math.random()*180|0; S.photoF=Math.random()*6|0; S.nameS=Math.random()*4|0; S.elemV=Math.random()*10|0;
+  S.qualities=pkf(QUAL_POOL); S.subhead=pkf(SUB_POOL);
+  S.voteLine1=pkf(V1_POOL); S.voteLine2=pkf(V2_POOL);
+  const ct=pkf(CTA_POOL); S.cta=ct; S.ctaBottom=ct;
+  const pp=POINTS_POOL.slice(); for(let i=1;i<=6;i++){ const j=Math.random()*pp.length|0; S['p'+i]=pp.splice(j,1)[0]; }
+  const n=pkf(NARE);
+  if(S.template==='t1') S.headline=n;
+  else if(S.template==='t2'){ const m=n.split(/\s[—–-]\s/);
+    if(m.length>1){ S.sloganTop=m[0]; S.sloganTop2=''; S.sloganBottom=m.slice(1).join(' '); }
+    else { S.sloganTop='आपकी आवाज़, हमारा संकल्प –'; S.sloganTop2=''; S.sloganBottom=n; } }
+  else S.sloganMain=n;
+  if([S.template,S.palIdx,S.patIdx,S.badgeStyle,S.photoF,S.elemV].join(',')===prevKey){ S.palIdx=(S.palIdx+1)%PALETTES.length; S.badgeStyle=(S.badgeStyle+53)%180; }
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t===S.template));
+  if(window.syncVisibility) syncVisibility();
+  FIELDS.forEach(id=>{ const e=document.getElementById(id); if(e&&!e.disabled) e.value=S[id]; });
+  document.getElementById('palTheme').value=S.palIdx;
+  setBg(); setDv(); { const pf=document.getElementById('pfNum'); if(pf) pf.textContent='#'+(S.photoF|0); const ns2=document.getElementById('nsNum'); if(ns2) ns2.textContent='#'+(S.nameS|0); const ev=document.getElementById('evNum'); if(ev) ev.textContent='#'+(S.elemV|0); }
+  setBs();
+  if(window.loadFam){ loadFam(S.hiName); loadFam(S.hiBody); loadFam(S.engFont); }
+  if(window.refreshFontBtns) refreshFontBtns();
+  draw();
+});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="180" viewBox="0 0 1200 180" role="img" aria-labelledby="title desc">
+<title id="title">Minimal bar divider</title><desc id="desc">Text-free horizontal minimal bar divider for poster layouts. Rajasthan/Marwar palette.</desc>
+<defs></defs>
+<path d="M40 90H1160" fill="none" stroke="#702B36" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M500 64H700M530 90H670M500 116H700" fill="none" stroke="#702B36" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="500" cy="64" r="5" fill="#D99A36" stroke="#D99A36" stroke-width="1"/><circle cx="500" cy="116" r="5" fill="#D99A36" stroke="#D99A36" stroke-width="1"/><circle cx="700" cy="64" r="5" fill="#D99A36" stroke="#D99A36" stroke-width="1"/><circle cx="700" cy="116" r="5" fill="#D99A36" stroke="#D99A36" stroke-width="1"/>
+</svg>

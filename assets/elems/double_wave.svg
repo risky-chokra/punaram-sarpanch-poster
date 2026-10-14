@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="180" viewBox="0 0 1200 180" role="img" aria-labelledby="title desc">
+<title id="title">Double-wave divider</title><desc id="desc">Text-free horizontal double-wave divider for poster layouts. Rajasthan/Marwar palette.</desc>
+<defs></defs>
+<path d="M40 90H1160" fill="none" stroke="#702B36" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M420 76Q465 38 510 76T600 76T690 76T780 76" fill="none" stroke="#702B36" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M420 104Q465 142 510 104T600 104T690 104T780 104" fill="none" stroke="#D99A36" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="600" cy="90" r="8" fill="#17624E" stroke="#702B36" stroke-width="2"/>
+</svg>

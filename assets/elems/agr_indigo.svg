@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+<title id="title">Farming and irrigation</title><desc id="desc">Text-free farming and irrigation icon in solid tile style; Rajasthan/Marwar palette. Transparent background where no badge is used.</desc>
+<defs></defs>
+<rect x="38" y="38" width="436" height="436" rx="108" fill="#273F76"/><path d="M78 162Q256 42 434 162" fill="none" stroke="#F0A43A" stroke-width="8" opacity=".9"/><g fill="none" stroke="#FFF8E9" stroke-width="19" stroke-linecap="round" stroke-linejoin="round"><path d="M123 387Q184 327 245 387Q306 327 389 387"/><path d="M140 350Q199 292 256 350Q314 292 371 350"/><path d="M256 322L256 180"/><path d="M256 252Q196 248 183 202Q235 204 256 252Z"/><path d="M256 224Q316 220 333 173Q280 175 256 224Z"/><circle cx="361" cy="130" r="35"/><path d="M361 80L361 65"/><path d="M361 195L361 180"/></g><g fill="#F0A43A" stroke="#FFF8E9" stroke-width="8" stroke-linejoin="round"><path d="M196 207Q229 212 247 244Q218 241 196 207Z"/></g>
+</svg>

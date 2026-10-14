@@ -1,0 +1,162 @@
+@font-face{font-family:'Poppins';src:url('fonts/gf/poppins.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Noto Sans';src:url('fonts/gf/noto-sans.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Rajdhani';src:url('fonts/gf/rajdhani.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Mukta';src:url('fonts/gf/mukta.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Hind';src:url('fonts/gf/hind.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Teko';src:url('fonts/gf/teko.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Baloo 2';src:url('fonts/gf/baloo-2.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Kalam';src:url('fonts/gf/kalam.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Noto Sans Devanagari';src:url('fonts/gf/noto-sans-devanagari.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Khand';src:url('fonts/gf/khand.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Martel';src:url('fonts/gf/martel.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Yantramanav';src:url('fonts/gf/yantramanav.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Eczar';src:url('fonts/gf/eczar.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Biryani';src:url('fonts/gf/biryani.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Amita';src:url('fonts/gf/amita.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Palanquin Dark';src:url('fonts/gf/palanquin-dark.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Pragati Narrow';src:url('fonts/gf/pragati-narrow.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Rozha One';src:url('fonts/gf/rozha-one.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Palanquin';src:url('fonts/gf/palanquin.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Khula';src:url('fonts/gf/khula.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Martel Sans';src:url('fonts/gf/martel-sans.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Sarala';src:url('fonts/gf/sarala.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Akshar';src:url('fonts/gf/akshar.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Yatra One';src:url('fonts/gf/yatra-one.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Tiro Devanagari Hindi';src:url('fonts/gf/tiro-devanagari-hindi.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Glegoo';src:url('fonts/gf/glegoo.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Karma';src:url('fonts/gf/karma.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Halant';src:url('fonts/gf/halant.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Kripa';src:url('fonts/gf/kripa.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Laila';src:url('fonts/gf/laila.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Amiko';src:url('fonts/gf/amiko.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Anek Devanagari';src:url('fonts/gf/anek-devanagari.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Inknut Antiqua';src:url('fonts/gf/inknut-antiqua.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Noto Serif Devanagari';src:url('fonts/gf/noto-serif-devanagari.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Cambay';src:url('fonts/gf/cambay.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Gotu';src:url('fonts/gf/gotu.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Sarpanch';src:url('fonts/gf/sarpanch.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Jaldi';src:url('fonts/gf/jaldi.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Vesper Libre';src:url('fonts/gf/vesper-libre.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Kadwa';src:url('fonts/gf/kadwa.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Bakbak One';src:url('fonts/gf/bakbak-one.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Alkatra';src:url('fonts/gf/alkatra.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Arya';src:url('fonts/gf/arya.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Modak';src:url('fonts/gf/modak.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Sumana';src:url('fonts/gf/sumana.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Kurale';src:url('fonts/gf/kurale.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'IBM Plex Sans Devanagari';src:url('fonts/gf/ibm-plex-sans-devanagari.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Sura';src:url('fonts/gf/sura.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Tiro Devanagari Sanskrit';src:url('fonts/gf/tiro-devanagari-sanskrit.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Asar';src:url('fonts/gf/asar.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Tillana';src:url('fonts/gf/tillana.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Sahitya';src:url('fonts/gf/sahitya.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Dekko';src:url('fonts/gf/dekko.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Tiro Devanagari Marathi';src:url('fonts/gf/tiro-devanagari-marathi.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Ranga';src:url('fonts/gf/ranga.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Rhodium Libre';src:url('fonts/gf/rhodium-libre.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Annapurna SIL';src:url('fonts/gf/annapurna-sil.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Gajraj One';src:url('fonts/gf/gajraj-one.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Playpen Sans Deva';src:url('fonts/gf/playpen-sans-deva.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Jaini Purva';src:url('fonts/gf/jaini-purva.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Jaini';src:url('fonts/gf/jaini.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Matangi';src:url('fonts/gf/matangi.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Roboto';src:url('fonts/gf/roboto.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Open Sans';src:url('fonts/gf/open-sans.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Google Sans';src:url('fonts/gf/google-sans.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Inter';src:url('fonts/gf/inter.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Montserrat';src:url('fonts/gf/montserrat.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Poppins';src:url('fonts/gf/poppins.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Lato';src:url('fonts/gf/lato.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Noto Sans JP';src:url('fonts/gf/noto-sans-jp.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Arimo';src:url('fonts/gf/arimo.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Roboto Condensed';src:url('fonts/gf/roboto-condensed.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Roboto Mono';src:url('fonts/gf/roboto-mono.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Oswald';src:url('fonts/gf/oswald.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Noto Sans';src:url('fonts/gf/noto-sans.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'DM Sans';src:url('fonts/gf/dm-sans.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Raleway';src:url('fonts/gf/raleway.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Playfair Display';src:url('fonts/gf/playfair-display.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Nunito';src:url('fonts/gf/nunito.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Nunito Sans';src:url('fonts/gf/nunito-sans.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Roboto Slab';src:url('fonts/gf/roboto-slab.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Rubik';src:url('fonts/gf/rubik.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Manrope';src:url('fonts/gf/manrope.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Ubuntu';src:url('fonts/gf/ubuntu.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Outfit';src:url('fonts/gf/outfit.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Kanit';src:url('fonts/gf/kanit.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Merriweather';src:url('fonts/gf/merriweather.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Plus Jakarta Sans';src:url('fonts/gf/plus-jakarta-sans.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Work Sans';src:url('fonts/gf/work-sans.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Lora';src:url('fonts/gf/lora.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Quicksand';src:url('fonts/gf/quicksand.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Bebas Neue';src:url('fonts/gf/bebas-neue.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Figtree';src:url('fonts/gf/figtree.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Archivo Black';src:url('fonts/gf/archivo-black.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Noto Sans KR';src:url('fonts/gf/noto-sans-kr.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'PT Sans';src:url('fonts/gf/pt-sans.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'JetBrains Mono';src:url('fonts/gf/jetbrains-mono.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Noto Sans TC';src:url('fonts/gf/noto-sans-tc.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Archivo';src:url('fonts/gf/archivo.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Mulish';src:url('fonts/gf/mulish.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Barlow';src:url('fonts/gf/barlow.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Source Sans 3';src:url('fonts/gf/source-sans-3.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'IBM Plex Sans';src:url('fonts/gf/ibm-plex-sans.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Jost';src:url('fonts/gf/jost.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Prompt';src:url('fonts/gf/prompt.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Inconsolata';src:url('fonts/gf/inconsolata.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Fira Sans';src:url('fonts/gf/fira-sans.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Saira';src:url('fonts/gf/saira.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Black Ops One';src:url('fonts/gf/black-ops-one.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Space Grotesk';src:url('fonts/gf/space-grotesk.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Libre Baskerville';src:url('fonts/gf/libre-baskerville.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Noto Serif';src:url('fonts/gf/noto-serif.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Bricolage Grotesque';src:url('fonts/gf/bricolage-grotesque.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Karla';src:url('fonts/gf/karla.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Cormorant Garamond';src:url('fonts/gf/cormorant-garamond.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Titillium Web';src:url('fonts/gf/titillium-web.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Share Tech';src:url('fonts/gf/share-tech.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Smooch Sans';src:url('fonts/gf/smooch-sans.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Heebo';src:url('fonts/gf/heebo.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'PT Serif';src:url('fonts/gf/pt-serif.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'IBM Plex Mono';src:url('fonts/gf/ibm-plex-mono.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Josefin Sans';src:url('fonts/gf/josefin-sans.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Barlow Condensed';src:url('fonts/gf/barlow-condensed.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Source Code Pro';src:url('fonts/gf/source-code-pro.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Inter Tight';src:url('fonts/gf/inter-tight.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Noto Sans SC';src:url('fonts/gf/noto-sans-sc.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Dancing Script';src:url('fonts/gf/dancing-script.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Libre Franklin';src:url('fonts/gf/libre-franklin.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Anton';src:url('fonts/gf/anton.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Instrument Serif';src:url('fonts/gf/instrument-serif.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Fraunces';src:url('fonts/gf/fraunces.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'EB Garamond';src:url('fonts/gf/eb-garamond.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Noto Serif JP';src:url('fonts/gf/noto-serif-jp.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Public Sans';src:url('fonts/gf/public-sans.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Fjalla One';src:url('fonts/gf/fjalla-one.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Sora';src:url('fonts/gf/sora.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Cairo';src:url('fonts/gf/cairo.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Rajdhani';src:url('fonts/gf/rajdhani.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Changa One';src:url('fonts/gf/changa-one.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Geist';src:url('fonts/gf/geist.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Cabin';src:url('fonts/gf/cabin.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Urbanist';src:url('fonts/gf/urbanist.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Lobster Two';src:url('fonts/gf/lobster-two.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Bitter';src:url('fonts/gf/bitter.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Schibsted Grotesk';src:url('fonts/gf/schibsted-grotesk.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Assistant';src:url('fonts/gf/assistant.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Mukta';src:url('fonts/gf/mukta.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Lexend';src:url('fonts/gf/lexend.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Merriweather Sans';src:url('fonts/gf/merriweather-sans.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Caveat';src:url('fonts/gf/caveat.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'DM Serif Display';src:url('fonts/gf/dm-serif-display.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Hind Siliguri';src:url('fonts/gf/hind-siliguri.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Dosis';src:url('fonts/gf/dosis.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Roboto Flex';src:url('fonts/gf/roboto-flex.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Alfa Slab One';src:url('fonts/gf/alfa-slab-one.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Nanum Gothic';src:url('fonts/gf/nanum-gothic.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Source Serif 4';src:url('fonts/gf/source-serif-4.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Fredoka';src:url('fonts/gf/fredoka.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Red Hat Display';src:url('fonts/gf/red-hat-display.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Instrument Sans';src:url('fonts/gf/instrument-sans.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Exo 2';src:url('fonts/gf/exo-2.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'Noto Sans Khmer';src:url('fonts/gf/noto-sans-khmer.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="180" viewBox="0 0 1200 180" role="img" aria-labelledby="title desc">
+<title id="title">Diamond chain divider</title><desc id="desc">Text-free horizontal diamond chain divider for poster layouts. Rajasthan/Marwar palette.</desc>
+<defs></defs>
+<path d="M40 90H1160" fill="none" stroke="#702B36" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M520 90L536 68L552 90L536 112Z" fill="none" stroke="#D99A36" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M552 90L568 68L584 90L568 112Z" fill="none" stroke="#D99A36" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M584 90L600 68L616 90L600 112Z" fill="none" stroke="#D99A36" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M616 90L632 68L648 90L632 112Z" fill="none" stroke="#D99A36" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M648 90L664 68L680 90L664 112Z" fill="none" stroke="#D99A36" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M680 90L696 68L712 90L696 112Z" fill="none" stroke="#D99A36" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
