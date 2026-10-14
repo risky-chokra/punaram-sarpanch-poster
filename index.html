@@ -147,7 +147,7 @@
       <button class="sz" data-s="b21">फ्लेक्स बैनर 2:1<small>1800×900</small></button>
     </div>
 
-    <h2>डिज़ाइन थीम</h2>
+    <h2>डिज़ाइन थीम <small style="font-size:10px;color:var(--mut);font-weight:600;letter-spacing:0;text-transform:none">Pro contrast auto</small></h2>
     <div class="row2">
       <label class="f"><span>रंग थीम</span><select id="palTheme"></select></label>
       <label class="f"><span>डिज़ाइन पैटर्न <b id="bgNum">#0</b>/999</span><button class="btn ghost" id="bgBtn" type="button">🖼 अगला पैटर्न</button></label>
@@ -389,7 +389,26 @@ PALETTES.push(...GEN_THEMES);
 const famVal = r => r.includes(' ')?'"'+r+'"':r;
 let NAME_FONTS = ['Modak','Khand','Shrikhand','Rozha','Tillana','MuktaXB','MuktaB','NotoB','Kalam','RajdhaniB','HalantB','PalanquinB','HindB','SahityaB','MartelH','MartelB','MartelSansB','AmitaR','AmitaB','TiroHindi','TekoV','Baloo2V','AnekV','Farsan','Rakkas','YatraOne','Dekko','NotoBlk','NotoXBd','NotoSB','NotoMd','KhandMd','KhandSB','TillanaB'].concat(GF_HI.map(famVal));
 let BODY_FONTS = NAME_FONTS.slice();
-const curPal = () => PALETTES[S.palIdx] || PALETTES[0];
+function colorRgb(value){
+  const s=String(value||'').trim(); let m=s.match(/^#([\da-f]{3}|[\da-f]{6})$/i);
+  if(m){let h=m[1];if(h.length===3)h=h.split('').map(x=>x+x).join('');const n=parseInt(h,16);return {r:n>>16,g:(n>>8)&255,b:n&255};}
+  m=s.match(/^hsla?\(\s*([\d.]+)(?:deg)?\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%/i);
+  if(m){let h=((+m[1]%360)+360)%360/360, sat=+m[2]/100, l=+m[3]/100;const q=l<.5?l*(1+sat):l+sat-l*sat, p2=2*l-q, hc=t=>{t=(t+h+1)%1;return t<1/6?p2+(q-p2)*6*t:t<.5?q:t<2/3?p2+(q-p2)*(2/3-t)*6:p2};return {r:Math.round(hc(1/3)*255),g:Math.round(hc(0)*255),b:Math.round(hc(-1/3)*255)};}
+  return {r:20,g:30,b:45};
+}
+function luminance(col){const q=colorRgb(col),f=v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)};return .2126*f(q.r)+.7152*f(q.g)+.0722*f(q.b);}
+function hexRgb(q){return '#'+[q.r,q.g,q.b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');}
+function tuneLuma(col,min,max){let q=colorRgb(col),l=luminance(col);if(l<min){const t=(min-l)/Math.max(.001,1-l);q={r:q.r+(255-q.r)*t,g:q.g+(255-q.g)*t,b:q.b+(255-q.b)*t};}else if(l>max){const t=max/Math.max(.001,l);q={r:q.r*t,g:q.g*t,b:q.b*t};}return hexRgb(q);}
+function contrastPalette(raw){
+  const p=raw||PALETTES[0];
+  return {...p,
+    bg:tuneLuma(p.bg,.035,.16), deep:tuneLuma(p.deep,.02,.095), primary:tuneLuma(p.primary,.04,.17),
+    accent:tuneLuma(p.accent,.42,.72), light:tuneLuma(p.light,.86,.98), light2:tuneLuma(p.light2,.91,.99),
+    ink:tuneLuma(p.ink,.015,.12), card1:tuneLuma(p.card1,.84,.98), card2:tuneLuma(p.card2,.84,.98),
+    sec1:tuneLuma(p.sec1,.06,.17), sec2:tuneLuma(p.sec2,.05,.24)
+  };
+}
+const curPal = () => contrastPalette(PALETTES[S.palIdx] || PALETTES[0]);
 function palT1(){ const p=curPal(); return {bg:p.bg, mag:p.primary, gold:p.accent, cream:p.light, ink:p.ink, pink:p.card1, lav:p.card2, dark:p.deep}; }
 function palT2(){ const p=curPal(); return {bg:p.light2, navy:p.primary, saf:p.sec1, grn:p.sec2, gold:p.accent}; }
 function palT3(){ const p=curPal(); return {bg:p.bg, gold:p.accent, cream:p.light, orange:p.sec1, dark:p.deep}; }
@@ -399,7 +418,7 @@ function designNumber(){
   return (((((L*PALETTES.length + S.palIdx)*BG_COUNT + S.patIdx)*LAYOUT_COUNT + (S.layoutV|0))*NAME_FONTS.length + nf)*BODY_FONTS.length + bf)*EN_FONTS.length + ef + 1;
 }
 const dp=(W,H,col)=>drawPattern(S.patIdx,W,H,col);
-function bgImg(W,H,tint){ const im=S.bgIdx===-2?DRIVE_RANDOM_IMAGE:(S.bgIdx<0?null:BGIMGS[S.bgIdx]); if(!im||!im.naturalWidth) return; const a=Math.max(0,Math.min(1,(Number(S.bgOpacity)||100)/100)); c.save(); c.globalAlpha=a; cover(im,0,0,W,H); c.globalAlpha=0.22; c.fillStyle=tint; c.fillRect(0,0,W,H); c.restore(); }
+function bgImg(W,H,tint){ const im=S.bgIdx===-2?DRIVE_RANDOM_IMAGE:(S.bgIdx<0?null:BGIMGS[S.bgIdx]); if(!im||!im.naturalWidth) return; const a=Math.max(0,Math.min(1,(Number(S.bgOpacity)||100)/100)); c.save(); c.globalAlpha=a; cover(im,0,0,W,H); c.globalAlpha=.46; c.fillStyle=tint; c.fillRect(0,0,W,H); const vignette=c.createLinearGradient(0,0,W,H); vignette.addColorStop(0,'rgba(0,0,0,.20)');vignette.addColorStop(.52,'rgba(0,0,0,.02)');vignette.addColorStop(1,'rgba(0,0,0,.16)');c.globalAlpha=.62;c.fillStyle=vignette;c.fillRect(0,0,W,H);c.restore(); }
 const PHOTO_FRAME_COUNT=240;
 const LAYOUT_COUNT=96;
 const TOTAL_DESIGNS = 3*3*6*LAYOUT_COUNT*PHOTO_FRAME_COUNT*4*4*PALETTES.length*BG_COUNT*180*NAME_FONTS.length*BODY_FONTS.length;
