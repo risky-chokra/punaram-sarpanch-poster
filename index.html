@@ -132,7 +132,7 @@
       <button class="quick-action" id="quickBackground" type="button"><span class="qa-icon">☁</span><span>Drive<br>Background</span></button>
       <button class="quick-action" id="quickPhoto" type="button"><span class="qa-icon">◉</span><span>Upload<br>Photo</span></button>
     </div>
-    <p class="note" style="margin:0 0 4px;color:#c7c1df">✓ Common campaign layouts only — safe, clean aur balanced</p>
+    <p class="note" style="margin:0 0 4px;color:#c7c1df">✓ Fixed canvas: layout poster ko resize, crop ya stretch nahi karta</p>
     <h2>पोस्टर स्टाइल</h2>
     <div class="tabs">
       <button class="tab on" data-t="t1"><div class="sw sw1"></div>रॉयल पर्पल<br><small>सुझाव पोस्टर</small></button>
@@ -1290,26 +1290,25 @@ function freshProfessionalLayout(previous){
 }
 function nextProfessionalLayout(){const old=Math.abs(S.layoutV|0)%LAYOUT_COUNT;const n=freshProfessionalLayout(old);S.layoutV=n;const e=document.getElementById('layoutNum');if(e)e.textContent='#'+n;draw();}
 function layoutOverlay(W,H){
-  // 12 standard campaign layouts × 3 balanced spacing variations. No experimental crops or overlays.
+  // Fixed-canvas policy: layouts never resize, crop, squeeze or reposition the poster.
+  // They only add very thin, conventional perimeter treatments inside the bleed-safe edge.
   const v=Math.abs(S.layoutV|0)%LAYOUT_COUNT;if(!v)return;
-  const type=v%12,tier=(v/12)|0,p=curPal(),accent=p.accent||'#e8b64c',deep=p.deep||p.primary||'#241436',light=p.light||'#fff7e8',soft=p.light2||'#f2f4f7';
-  const copy=document.createElement('canvas');copy.width=W;copy.height=H;copy.getContext('2d').drawImage(cv,0,0);
-  const m=Math.max(10,Math.min(W,H)*(.014+tier*.004)),r=Math.max(8,m*.85);
-  const bg=(a,b)=>{const g=c.createLinearGradient(0,0,W,H);g.addColorStop(0,a);g.addColorStop(1,b);c.fillStyle=g;c.fillRect(0,0,W,H);};
-  const card=(x,y,w,h,rad=r,shadow=true)=>{c.save();if(shadow){c.shadowColor='rgba(0,0,0,.22)';c.shadowBlur=m*1.6;c.shadowOffsetY=m*.45;}rr(x,y,w,h,rad);c.clip();drawAspectSafe(c,copy,x,y,w,h);c.restore();};
-  const border=(x,y,w,h,col,lw)=>{c.save();c.strokeStyle=col;c.lineWidth=lw;rr(x,y,w,h,r);c.stroke();c.restore();};
-  if(type===0){drawAspectSafe(c,copy,0,0,W,H);}
-  else if(type===1){bg(light,soft);card(m,m,W-2*m,H-2*m);border(m,m,W-2*m,H-2*m,accent,Math.max(2,m*.12));}
-  else if(type===2){bg(deep,accent);card(m*1.25,m*1.25,W-m*2.5,H-m*2.5);border(m*1.25,m*1.25,W-m*2.5,H-m*2.5,light,Math.max(2,m*.12));}
-  else if(type===3){bg(soft,light);const rail=Math.max(m*3.4,W*.07);c.fillStyle=accent;c.fillRect(0,0,rail,H);card(rail+m,m,W-rail-m*2,H-m*2);}
-  else if(type===4){bg(soft,light);const rail=Math.max(m*3.4,W*.07);c.fillStyle=deep;c.fillRect(W-rail,0,rail,H);card(m,m,W-rail-m*2,H-m*2);}
-  else if(type===5){bg(light,soft);c.fillStyle=deep;c.fillRect(0,0,W,m*2.15);c.fillStyle=accent;c.fillRect(0,H-m*1.15,W,m*1.15);card(m,m*2.7,W-m*2,H-m*4.2);}
-  else if(type===6){bg(deep,light);c.fillStyle=accent;c.fillRect(0,0,W,m*.8);card(m*1.15,m*1.65,W-m*2.3,H-m*3.3,m*1.1);border(m*1.15,m*1.65,W-m*2.3,H-m*3.3,accent,Math.max(2,m*.14));}
-  else if(type===7){bg(soft,light);c.fillStyle=accent;c.fillRect(0,0,m*.8,H);c.fillStyle=deep;c.fillRect(W-m*.8,0,m*.8,H);card(m*1.55,m*1.15,W-m*3.1,H-m*2.3,m*.55);}
-  else if(type===8){bg(light,soft);const pad=m*1.9;card(pad,pad,W-pad*2,H-pad*2,m*.35);border(pad,pad,W-pad*2,H-pad*2,deep,Math.max(2,m*.10));}
-  else if(type===9){bg(deep,accent);const pad=m*1.45;card(pad,pad,W-pad*2,H-pad*2,m*.6);border(pad,pad,W-pad*2,H-pad*2,accent,Math.max(2,m*.17));}
-  else if(type===10){bg(soft,light);c.fillStyle=accent;c.fillRect(0,0,W,m*.75);c.fillStyle=deep;c.fillRect(0,H-m*.75,W,m*.75);card(m,m*1.4,W-m*2,H-m*2.8);}
-  else {bg(light,soft);const side=Math.max(m*2.2,W*.045);c.fillStyle=accent;c.fillRect(0,0,side,H);c.fillStyle=deep;c.fillRect(side,0,m*.45,H);card(side+m*1.2,m,W-side-m*2.2,H-m*2,m*.75);}
+  const type=v%12,tier=(v/12)|0,p=curPal(),accent=p.accent||'#e8b64c',deep=p.deep||p.primary||'#241436',light=p.light||'#fff7e8';
+  const e=Math.max(3,Math.min(W,H)*(.004+tier*.0012)),inset=e*(1.6+tier*.2);
+  const line=(col,lw,off=inset)=>{c.save();c.strokeStyle=col;c.lineWidth=lw;c.strokeRect(off,off,W-off*2,H-off*2);c.restore();};
+  const corner=(col,lw,len)=>{c.save();c.strokeStyle=col;c.lineWidth=lw;c.lineCap='square';[[inset,inset,1,1],[W-inset,inset,-1,1],[inset,H-inset,1,-1],[W-inset,H-inset,-1,-1]].forEach(([x,y,dx,dy])=>{c.beginPath();c.moveTo(x+dx*len,y);c.lineTo(x,y);c.lineTo(x,y+dy*len);c.stroke();});c.restore();};
+  if(type===0){line(accent,e*.75);}
+  else if(type===1){line(light,e*.85);line(accent,e*.42,inset+e*2.2);}
+  else if(type===2){c.save();c.fillStyle=accent;c.fillRect(0,0,W,e*1.15);c.fillRect(0,H-e*1.15,W,e*1.15);c.restore();}
+  else if(type===3){corner(accent,e*1.15,e*8);}
+  else if(type===4){line(deep,e*.9);corner(light,e*.45,e*5);}
+  else if(type===5){c.save();c.strokeStyle=accent;c.lineWidth=e*.7;c.setLineDash([e*2.2,e*1.2]);c.strokeRect(inset,inset,W-inset*2,H-inset*2);c.restore();}
+  else if(type===6){c.save();c.fillStyle=accent;c.fillRect(0,0,e*1.1,H);c.fillStyle=deep;c.fillRect(W-e*1.1,0,e*1.1,H);c.restore();}
+  else if(type===7){line(light,e*1.1);line(deep,e*.35,inset+e*2.5);}
+  else if(type===8){corner(deep,e*1.25,e*10);corner(accent,e*.48,e*5);}
+  else if(type===9){c.save();c.fillStyle=accent;c.fillRect(0,0,W,e*.8);c.fillStyle=deep;c.fillRect(0,H-e*.8,W,e*.8);c.restore();}
+  else if(type===10){line(accent,e*.5);c.save();c.strokeStyle=light;c.lineWidth=e*.4;c.strokeRect(inset+e*2,inset+e*2,W-(inset+e*2)*2,H-(inset+e*2)*2);c.restore();}
+  else {line(deep,e*.9);corner(accent,e*.55,e*7);}
 }
 
 /* ---------- dispatch ---------- */
