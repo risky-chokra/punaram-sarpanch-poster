@@ -288,6 +288,7 @@
     <div class="drive-config">
       <label class="f"><span>Google OAuth Web Client ID <small>(.apps.googleusercontent.com)</small></span><input type="text" id="driveClientId" autocomplete="off" placeholder="1234567890-abc.apps.googleusercontent.com"></label>
       <label class="f"><span>Google API Key <small>(Picker API के लिए)</small></span><input type="text" id="driveApiKey" autocomplete="off" placeholder="AIza…"></label>
+      <label class="f"><span>Google Cloud Project Number <small>(Picker App ID; digits only)</small></span><input type="text" id="driveAppId" inputmode="numeric" autocomplete="off" placeholder="123456789012"></label>
       <label class="f"><span>Google Drive folder link या folder ID paste करें</span><input type="text" id="driveFolderLink" autocomplete="off" value="https://drive.google.com/drive/folders/1yTMrsJenZfGLvwuZeGcb6KkBQcTxtdxn" placeholder="https://drive.google.com/drive/folders/…"></label>
       <div class="row2">
         <label class="f"><span>या सीधा background pack</span><select id="driveBgCollection">
@@ -299,7 +300,7 @@
         <button class="btn" id="driveConnectBtn" type="button" disabled>🔐 OAuth से browse करें</button>
       </div>
       <div id="driveStatus" role="status">Drive Picker तैयार हो रहा है…</div>
-      <p class="drive-hint">एक बार Google Cloud में Drive API और Google Picker API चालू करें; Web OAuth origin <b>https://risky-chokra.github.io</b> रखें और OAuth consent screen में अपना account test user बनाएं। लिंक से folder के अंदर जा सकेंगे; ऐप केवल चुनी image पढ़ने के लिए <code>drive.file</code> scope लेगा। Client ID/API key public identifiers हैं—client secret या access token यहाँ न डालें। API key को केवल इस site origin और Google Picker/Drive API तक restrict करें।</p>
+      <p class="drive-hint">Google Cloud के एक ही project में Drive API और Google Picker API चालू करें; उसी project का Web OAuth Client ID, API key और numeric Project Number यहाँ भरें। OAuth JavaScript origin ठीक <b>https://risky-chokra.github.io</b> रखें; Testing mode में अपना Google account Test users में जोड़ें। API key website restrictions में <code>https://risky-chokra.github.io/*</code> और Picker iframe के लिए <code>https://docs.google.com/*</code> जोड़ें; API restrictions केवल Google Picker API + Google Drive API रखें। लिंक से nested folders browse कर सकते हैं; ऐप केवल चुनी image के लिए <code>drive.file</code> scope लेता है। Client ID/API key/Project Number public identifiers हैं—client secret या access token यहाँ न डालें।</p>
     </div>
   </div>
 </div>
@@ -1528,6 +1529,7 @@ const driveModal=document.getElementById('driveBgModal');
 const driveClose=document.getElementById('driveCloseBtn');
 const driveClientId=document.getElementById('driveClientId');
 const driveApiKey=document.getElementById('driveApiKey');
+const driveAppId=document.getElementById('driveAppId');
 const driveFolderLink=document.getElementById('driveFolderLink');
 const driveCollection=document.getElementById('driveBgCollection');
 const driveConnect=document.getElementById('driveConnectBtn');
@@ -1538,8 +1540,8 @@ const DRIVE_COLLECTIONS={
   pack1080:'1ZPEjJdQzB2nd7SirPPlUSYEbEzLaHoMK'
 };
 let driveAccessToken='',driveTokenExpiresAt=0,driveTokenClient=null,driveLibsPromise=null;
-const DRIVE_CLIENT_KEY='spm_drive_oauth_client_id',DRIVE_API_KEY='spm_drive_picker_api_key',DRIVE_FOLDER_KEY='spm_drive_folder_link';
-if(LS){ driveClientId.value=LS.getItem(DRIVE_CLIENT_KEY)||''; driveApiKey.value=LS.getItem(DRIVE_API_KEY)||''; driveFolderLink.value=LS.getItem(DRIVE_FOLDER_KEY)||driveFolderLink.value; }
+const DRIVE_CLIENT_KEY='spm_drive_oauth_client_id',DRIVE_API_KEY='spm_drive_picker_api_key',DRIVE_APP_ID_KEY='spm_drive_picker_app_id',DRIVE_FOLDER_KEY='spm_drive_folder_link';
+if(LS){ driveClientId.value=LS.getItem(DRIVE_CLIENT_KEY)||''; driveApiKey.value=LS.getItem(DRIVE_API_KEY)||''; driveAppId.value=LS.getItem(DRIVE_APP_ID_KEY)||''; driveFolderLink.value=LS.getItem(DRIVE_FOLDER_KEY)||driveFolderLink.value; }
 const setDriveStatus=t=>{ driveStatus.textContent=t; };
 function loadScriptOnce(id,url){
   if(document.getElementById(id)) return new Promise((resolve,reject)=>{ const e=document.getElementById(id); if(e.dataset.loaded==='1') resolve(); else { e.addEventListener('load',()=>resolve(),{once:true}); e.addEventListener('error',()=>reject(new Error('Google library load failed')),{once:true}); } });
@@ -1559,7 +1561,7 @@ function loadDrivePickerLibraries(){
 function openDriveModal(){
   driveModal.classList.remove('hidden');
   setDriveStatus('Google OAuth / Picker library लोड हो रही है…');
-  loadDrivePickerLibraries().then(()=>{driveConnect.disabled=false;setDriveStatus('तैयार। Client ID/API key भरें, फिर “OAuth से खोलें” दबाएँ।');})
+  loadDrivePickerLibraries().then(()=>{driveConnect.disabled=false;setDriveStatus('तैयार। Client ID, API key और Project Number भरें, फिर “OAuth से खोलें” दबाएँ।');})
     .catch(e=>{driveConnect.disabled=false;setDriveStatus('Google library लोड नहीं हुई; internet या content blocker जाँचें।');});
 }
 driveBtn.addEventListener('click',openDriveModal);
@@ -1567,6 +1569,7 @@ driveClose.addEventListener('click',()=>driveModal.classList.add('hidden'));
 driveModal.addEventListener('click',e=>{if(e.target===driveModal) driveModal.classList.add('hidden');});
 driveClientId.addEventListener('change',()=>{if(LS)LS.setItem(DRIVE_CLIENT_KEY,driveClientId.value.trim());});
 driveApiKey.addEventListener('change',()=>{if(LS)LS.setItem(DRIVE_API_KEY,driveApiKey.value.trim());});
+driveAppId.addEventListener('change',()=>{if(LS)LS.setItem(DRIVE_APP_ID_KEY,driveAppId.value.trim());});
 driveFolderLink.addEventListener('change',()=>{if(LS)LS.setItem(DRIVE_FOLDER_KEY,driveFolderLink.value.trim());});
 function parseDriveFolderId(value){
   const raw=String(value||'').trim();
@@ -1589,7 +1592,7 @@ function buildDrivePicker(){
   const view=new google.picker.DocsView(google.picker.ViewId.DOCS);
   view.setParent(folderId); view.setIncludeFolders(true); view.setSelectFolderEnabled(false);
   const picker=new google.picker.PickerBuilder()
-    .addView(view).setOAuthToken(driveAccessToken).setDeveloperKey(driveApiKey.value.trim())
+    .addView(view).setAppId(driveAppId.value.trim()).setOAuthToken(driveAccessToken).setDeveloperKey(driveApiKey.value.trim())
     .setOrigin(window.location.origin).setCallback(handleDrivePickerResult).build();
   picker.setVisible(true); setDriveStatus('Picker खुला है — nested folder खोलकर background image चुनें।');
 }
@@ -1604,12 +1607,12 @@ function handleDrivePickerResult(data){
   chooseDriveBackground({id:doc.id,name:doc.name||'Drive background',mimeType:doc.mimeType||'image/png'});
 }
 driveConnect.addEventListener('click',()=>{
-  const clientId=driveClientId.value.trim(),apiKey=driveApiKey.value.trim();
+  const clientId=driveClientId.value.trim(),apiKey=driveApiKey.value.trim(),appId=driveAppId.value.trim();
   if(!clientId.endsWith('.apps.googleusercontent.com')){setDriveStatus('पहले सही Web OAuth Client ID डालें।');driveClientId.focus();return;}
   if(!apiKey){setDriveStatus('Google Picker API के लिए API key डालें।');driveApiKey.focus();return;}
-  if(LS){LS.setItem(DRIVE_CLIENT_KEY,clientId);LS.setItem(DRIVE_API_KEY,apiKey);}
+  if(!/^\d+$/.test(appId)){setDriveStatus('उसी Google Cloud project का numeric Project Number / Picker App ID डालें।');driveAppId.focus();return;}
+  if(LS){LS.setItem(DRIVE_CLIENT_KEY,clientId);LS.setItem(DRIVE_API_KEY,apiKey);LS.setItem(DRIVE_APP_ID_KEY,appId);}
   if(!window.google||!google.accounts||!google.picker){setDriveStatus('Google libraries अभी लोड हो रही हैं—एक क्षण बाद फिर दबाएँ।');return;}
-  const folder=DRIVE_COLLECTIONS[driveCollection.value];
   driveTokenClient=google.accounts.oauth2.initTokenClient({
     client_id:clientId,scope:'https://www.googleapis.com/auth/drive.file',include_granted_scopes:true,
     callback:response=>{
