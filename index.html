@@ -518,8 +518,8 @@ function elemOverlay(W,H){ const v=S.elemV|0; if(!v) return;
    ['mandala_teal','bead_line',null,'tex_navy'],['floral_corners','diamond_chain',null,'tex_teal'],['sun_corners','double_wave',null,'tex_navy']][v]; if(!set) return;
   c.save(); c.globalAlpha=0.85;
   if(set[3]){ const tx=ELEM_IMGS[set[3]]; if(tx&&tx.complete&&tx.naturalWidth){ c.save(); c.globalAlpha=0.13; const pat=c.createPattern(tx,'repeat'); if(pat){c.fillStyle=pat;c.fillRect(0,0,W,H);} c.restore(); } }
-  const ci=ELEM_IMGS[set[0]]; if(ci&&ci.complete&&ci.naturalWidth){ const s=Math.min(W,H)*0.24;
-    drawAspectSafe(c,ci,0,0,s,s); c.save(); c.translate(W,0); c.scale(-1,1); drawAspectSafe(c,ci,0,0,s,s); c.restore(); }
+  // Corner artwork is intentionally disabled: it created an unwanted framed box in the top-left preview area.
+  // Keep all decorative elements away from the header, text and candidate photo safe zones.
   const di=ELEM_IMGS[set[1]]; if(di&&di.complete&&di.naturalWidth){ const dw=W*0.55, dh=Math.max(20,dw*0.08);
     drawAspectSafe(c,di,(W-dw)/2,H-dh*1.6,dw,dh); }
   if(set[2]){ const ic=ELEM_IMGS[set[2]]; if(ic&&ic.complete&&ic.naturalWidth){ const s2=Math.min(W,H)*0.07;
@@ -2214,7 +2214,7 @@ document.getElementById('rand').addEventListener('click',()=>{
   S.patIdx=pk(SAFE_PATTERN_IDS); S.decoV=Math.random()*3|0; S.layoutV=freshProfessionalLayout(Math.abs(S.layoutV|0)%LAYOUT_COUNT);
   S.hiName=pk(SAFE_NAME_FONTS); S.hiBody=pk(SAFE_BODY_FONTS); S.engFont=pk(SAFE_ENG_FONTS);
   window.loadFam(S.hiName); window.loadFam(S.hiBody); window.loadFam(S.engFont);
-  S.badgeStyle=Math.random()*180|0; const oldFrame=Math.abs(S.photoF|0)%PHOTO_FRAME_COUNT; S.photoF=freshProfessionalFrame(oldFrame); S.nameS=Math.random()*4|0; S.elemV=Math.random()*10|0;
+  S.badgeStyle=Math.random()*180|0; const oldFrame=Math.abs(S.photoF|0)%PHOTO_FRAME_COUNT; S.photoF=freshProfessionalFrame(oldFrame); S.nameS=Math.random()*4|0; S.elemV=0;
   S.qualities=pkf(QUAL_POOL); S.subhead=pkf(SUB_POOL);
   S.voteLine1=pkf(V1_POOL); S.voteLine2=pkf(V2_POOL);
   const ct=pkf(CTA_POOL); S.cta=ct; S.ctaBottom=ct;
