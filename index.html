@@ -770,7 +770,8 @@ function rr(x,y,w,h,r){
   c.lineTo(x,y+r); c.arcTo(x,y,x+r,y,r); c.closePath();
 }
 // Never compress visible campaign copy into microtext; unsafe copy is shortened with a visible warning instead.
-const LEGIBLE_TEXT_FLOOR=16;
+// Never allow canvas copy to fall into phone-unreadable microtext.
+const LEGIBLE_TEXT_FLOOR=18;
 function fitOneLine(str,maxW,font){
   const value=String(str||''); if(!maxW) return value; c.font=font;
   if(c.measureText(value).width<=maxW) return value;
@@ -787,7 +788,12 @@ function paintReadableText(text,x,y,color,fontPx){
   c.shadowOffsetY=Math.max(.35,Math.min(2.4,px*.026));
   c.fillText(text,x,y); c.restore();
 }
+// Text is always clipped to a small inner canvas safe area, so even unusual long input
+// can never paint on top of the decorative outer border.
 function txt(str,x,y,font,color,align='left',maxW=0,minPx=0){
+  c.save();
+  const edge=Math.max(24,Math.round(Math.min(c.canvas.width,c.canvas.height)*.03));
+  c.beginPath(); c.rect(edge,edge,Math.max(1,c.canvas.width-edge*2),Math.max(1,c.canvas.height-edge*2)); c.clip();
   c.textBaseline='alphabetic'; c.fillStyle=color;
   const s0=String(str), floor=Math.max(Number(minPx)||0,LEGIBLE_TEXT_FLOOR);
   const norm=(px,fam)=>{ c.font=`${px}px ${fam}`; const m=c.measureText(s0||'अ');
@@ -804,7 +810,7 @@ function txt(str,x,y,font,color,align='left',maxW=0,minPx=0){
   const dev=/[\u0900-\u097F]/.test(s);
   const m=f.match(/^([\d.]+)px\s+([\s\S]+)$/);
   if(m && S.engFont){
-    if(!dev){ const ep=norm(+m[1],S.engFont); c.font=`${ep}px ${S.engFont}`; c.textAlign=align; paintReadableText(s,x,y,color,ep); return; }
+    if(!dev){ const ep=norm(+m[1],S.engFont); c.font=`${ep}px ${S.engFont}`; c.textAlign=align; paintReadableText(s,x,y,color,ep); c.restore(); return; }
     if(/[A-Za-z0-9]/.test(s)){
       const hf=m[2], ef=S.engFont;
       const hpx=norm(+m[1],hf), epx=norm(+m[1],ef);
@@ -818,10 +824,10 @@ function txt(str,x,y,font,color,align='left',maxW=0,minPx=0){
       let sx = align==='center'? x-tot/2 : (align==='right'? x-tot : x);
       c.textAlign='left';
       runs.forEach(([t,d],i)=>{ const px=d?hpx:epx; c.font=`${px}px ${d?hf:ef}`; paintReadableText(t,sx,y,color,px); sx+=widths[i]; });
-      return;
+      c.restore(); return;
     }
   }
-  c.font=f; c.textAlign=align; paintReadableText(s,x,y,color,m?+m[1]:12);
+  c.font=f; c.textAlign=align; paintReadableText(s,x,y,color,m?+m[1]:18); c.restore();
 }
 // Text safety ledger: a render never paints extra wrapped lines after a reserved block ends.
 const TEXT_SAFETY=new Set();
@@ -1064,30 +1070,33 @@ function fitFont(text, base, min, maxW, fam, maxH=0){
     if(maxH) s=Math.max(min,Math.min(s,Math.floor(maxH/per))); c.font=`${s}px ${fam}`; }
   return s;
 }
+// Measure the actual glyph box, not just nominal font pixels. This keeps every pill's
+// padding and baseline balanced across Hindi, English and mixed labels.
+function measuredPillLabel(label,opt={},fallbackPadX=12,fallbackPadY=7){
+  const fam=opt.fam||S.hiBody,maxW=opt.maxW||99999,padX=opt.padX??fallbackPadX,padY=opt.padY??fallbackPadY;
+  const innerW=Math.max(8,maxW-padX*2),fs=fitFont(label,opt.base||24,opt.min||LEGIBLE_TEXT_FLOOR,innerW,fam,opt.maxH||0);
+  c.font=`${fs}px ${fam}`;
+  const metrics=c.measureText(String(label||'')),measured=metrics.width;
+  if(measured>innerW+.5) markTextSafety(opt.safetyLabel||'पिल टेक्स्ट');
+  const asc=Math.max(fs*.68,metrics.actualBoundingBoxAscent||fs*.78),desc=Math.max(fs*.18,metrics.actualBoundingBoxDescent||fs*.22);
+  const w=Math.min(maxW,Math.max(opt.minW||0,measured+padX*2));
+  const h=Math.max(opt.minH||0,asc+desc+padY*2);
+  return {fam,maxW,padX,padY,innerW,fs,measured,asc,desc,w,h,baseline:(asc-desc)/2};
+}
 // Every label pill is measured from its own text first, so short and long labels both get balanced padding.
 function textPill(label,cx,cy,opt={}){
-  const fam=opt.fam||S.hiBody, maxW=opt.maxW||99999, padX=opt.padX||12, padY=opt.padY||7;
-  const fs=fitFont(label,opt.base||24,opt.min||12,Math.max(8,maxW-padX*2),fam,opt.maxH||0);
-  c.font=`${fs}px ${fam}`; const measured=c.measureText(String(label||'')).width;
-  if(measured>Math.max(8,maxW-padX*2)+.5)markTextSafety(opt.safetyLabel||'पिल टेक्स्ट');
-  const w=Math.min(maxW,Math.max(opt.minW||0,measured+padX*2));
-  const h=Math.max(opt.minH||0,fs+padY*2), r=Math.min(h/2,opt.radius||h/2);
-  const fill=opt.fill||'#222', ink=readablePillInk(opt.text||'#fff',fill);
-  c.save(); rr(cx-w/2,cy-h/2,w,h,r); c.fillStyle=fill; c.fill();
-  if(opt.stroke){c.strokeStyle=opt.stroke;c.lineWidth=opt.lineWidth||1;rr(cx-w/2,cy-h/2,w,h,r);c.stroke();} c.restore();
-  txt(label,cx,cy+fs*.34,`${fs}px ${fam}`,ink,'center',Math.max(8,w-padX*2),opt.min||10);
-  return {w,h,fs};
+  const q=measuredPillLabel(label,opt,12,7),r=Math.min(q.h/2,opt.radius||q.h/2),fill=opt.fill||'#222',ink=readablePillInk(opt.text||'#fff',fill);
+  c.save(); rr(cx-q.w/2,cy-q.h/2,q.w,q.h,r); c.fillStyle=fill; c.fill();
+  if(opt.stroke){c.strokeStyle=opt.stroke;c.lineWidth=opt.lineWidth||1;rr(cx-q.w/2,cy-q.h/2,q.w,q.h,r);c.stroke();} c.restore();
+  txt(label,cx,cy+q.baseline,`${q.fs}px ${q.fam}`,ink,'center',Math.max(8,q.w-q.padX*2),opt.min||LEGIBLE_TEXT_FLOOR);
+  return {w:q.w,h:q.h,fs:q.fs};
 }
 // Dynamic trapezoid variant for T2 post labels: the coloured background follows its own label width.
 function textTrapezoid(label,cx,cy,opt={}){
-  const fam=opt.fam||S.hiBody,maxW=opt.maxW||99999,padX=opt.padX||18,padY=opt.padY||9;
-  const fs=fitFont(label,opt.base||26,opt.min||12,Math.max(8,maxW-padX*2),fam,opt.maxH||0);
-  c.font=`${fs}px ${fam}`;const measured=c.measureText(String(label||'')).width;
-  if(measured>Math.max(8,maxW-padX*2)+.5)markTextSafety(opt.safetyLabel||'ट्रेपेज़ॉइड लेबल');
-  const w=Math.min(maxW,Math.max(opt.minW||0,measured+padX*2)),h=Math.max(opt.minH||0,fs+padY*2),cut=Math.min(h*.42,opt.cut||h*.28),x=cx-w/2,y=cy-h/2,ink=readablePillInk(opt.text||'#fff',opt.fill||'#222');
-  c.save();c.beginPath();c.moveTo(x+cut,y);c.lineTo(x+w,y);c.lineTo(x+w-cut,y+h);c.lineTo(x,y+h);c.closePath();c.fillStyle=opt.fill||'#222';c.fill();if(opt.stroke){c.lineWidth=opt.lineWidth||1;c.strokeStyle=opt.stroke;c.stroke();}c.restore();
-  txt(label,cx,cy+fs*.34,`${fs}px ${fam}`,ink,'center',Math.max(8,w-padX*2),opt.min||10);
-  return {w,h,fs};
+  const q=measuredPillLabel(label,opt,18,9),cut=Math.min(q.h*.42,opt.cut||q.h*.28),x=cx-q.w/2,y=cy-q.h/2,ink=readablePillInk(opt.text||'#fff',opt.fill||'#222');
+  c.save();c.beginPath();c.moveTo(x+cut,y);c.lineTo(x+q.w,y);c.lineTo(x+q.w-cut,y+q.h);c.lineTo(x,y+q.h);c.closePath();c.fillStyle=opt.fill||'#222';c.fill();if(opt.stroke){c.lineWidth=opt.lineWidth||1;c.strokeStyle=opt.stroke;c.stroke();}c.restore();
+  txt(label,cx,cy+q.baseline,`${q.fs}px ${q.fam}`,ink,'center',Math.max(8,q.w-q.padX*2),opt.min||LEGIBLE_TEXT_FLOOR);
+  return {w:q.w,h:q.h,fs:q.fs};
 }
 
 /* ============ PORTRAIT (2:3 / 9:16 / A4) ============ */
