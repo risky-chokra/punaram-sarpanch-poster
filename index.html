@@ -234,9 +234,9 @@
       <input type="file" id="photoFile" accept="image/*" class="hidden">
     </div>
     <label class="f" style="margin-top:8px"><span>तैयार सेफ फ़ोटो</span>
-      <select id="preparedPhoto"><option value="assets/candidate-expanded-9x16.png?v=1">Portrait Safe — सभी लंबे / oval frames के लिए</option><option value="assets/candidate-expanded-square.png?v=1">Square Safe — circle / square frames के लिए</option><option value="assets/candidate-expanded-4x5.png?v=1">4:5 Safe — सामान्य vertical frame</option><option value="assets/candidate.jpg?v=20261014">Original फोटो</option></select>
+      <select id="preparedPhoto"><option value="auto">Auto Fit — frame के हिसाब से फोटो</option><option value="assets/candidate-expanded-9x16.png?v=1">Portrait Safe — लंबे / oval frames</option><option value="assets/candidate-expanded-square.png?v=1">Square Safe — circle / square frames</option><option value="assets/candidate-expanded-4x5.png?v=1">4:5 Safe — सामान्य vertical frame</option><option value="assets/candidate.jpg?v=20261014">Original फोटो</option></select>
     </label>
-    <p class="note">✓ Portrait Safe default चुना गया है — लंबे/oval frames में खाली band नहीं आएगा; सिर, हाथ और कंधे crop नहीं होंगे।</p>
+    <p class="note">✓ Auto Fit चालू है — frame के आकार के अनुसार सही expanded photo अपने-आप लगेगी; सिर, हाथ और कंधे crop नहीं होंगे।</p>
     <label class="f" style="margin-top:8px"><span>मतदान बैज</span>
       <select id="badgeOpt"><option value="1">दिखाएं (auto-size)</option><option value="0">छिपाएं</option></select>
     </label>
@@ -727,12 +727,14 @@ function archPath(x,y,w,h){
   c.lineTo(x+w,y+h); c.closePath();
 }
 function photoArch(img,x,y,w,h,border,bw){
+  img=photoForFrame('portrait',img);
   const pad=frameGutter(w,h);c.save();archPath(x,y,w,h);c.clip();
   const g=c.createLinearGradient(x,y,x+w,y+h);g.addColorStop(0,'#f8f8fb');g.addColorStop(1,'#e8edf2');c.fillStyle=g;c.fillRect(x,y,w,h);
   if(pad){archPath(x+pad,y+pad,w-pad*2,h-pad*2);c.clip();containPhoto(c,img,x+pad,y+pad,w-pad*2,h-pad*2,.02);}else containPhoto(c,img,x,y,w,h,.028);c.restore();
   if(border){c.save();archPath(x,y,w,h);c.lineWidth=bw;c.strokeStyle=border;c.stroke();c.restore();}
 }
 function photoOvalFade(img,cx,cy,rx,ry){
+  img=photoForFrame('oval',img);
   const off=document.createElement('canvas');off.width=Math.ceil(rx*2);off.height=Math.ceil(ry*2);const o=off.getContext('2d'),pad=frameGutter(off.width,off.height);
   o.save();o.beginPath();o.ellipse(rx,ry,rx*.995,ry*.995,0,0,TAU);o.clip();const g=o.createLinearGradient(0,0,off.width,off.height);g.addColorStop(0,'#f8f8fb');g.addColorStop(1,'#e7edf1');o.fillStyle=g;o.fillRect(0,0,off.width,off.height);
   if(pad){o.beginPath();o.ellipse(rx,ry,Math.max(2,rx-pad),Math.max(2,ry-pad),0,0,TAU);o.clip();containPhoto(o,img,pad,pad,off.width-pad*2,off.height-pad*2,.02);}else containPhoto(o,img,0,0,off.width,off.height,.028);o.restore();c.drawImage(off,cx-rx,cy-ry);
@@ -1324,7 +1326,17 @@ function layoutOverlay(W,H){
 
 /* ---------- dispatch ---------- */
 let photo = new Image();
-photo.src='assets/candidate-expanded-9x16.png?v=1'; c.imageSmoothingQuality='high';
+let photoMode='auto';
+const autoPortraitPhoto=new Image(), autoSquarePhoto=new Image();
+autoPortraitPhoto.src='assets/candidate-expanded-9x16.png?v=1';
+autoSquarePhoto.src='assets/candidate-expanded-square.png?v=1';
+photo.src=autoPortraitPhoto.src; c.imageSmoothingQuality='high';
+function photoForFrame(shape, fallback){
+  // Auto Fit never crops the person. It picks the expanded portrait matching the frame geometry.
+  if(photoMode!=='auto') return fallback;
+  if(shape==='circle'||shape==='square') return autoSquarePhoto.complete&&autoSquarePhoto.naturalWidth?autoSquarePhoto:fallback;
+  return autoPortraitPhoto.complete&&autoPortraitPhoto.naturalWidth?autoPortraitPhoto:fallback;
+}
 
 function draw(){
   const W=cv.width, H=cv.height;
@@ -1460,13 +1472,16 @@ function bind(){
   });
   const thumb=document.getElementById('photoThumb');
   thumb.src=photo.src;
-  const usePhoto=(src)=>{ const im=new Image(); im.onload=()=>{ photo=im; thumb.src=im.src; draw(); }; im.src=src; };
-  document.getElementById('preparedPhoto').addEventListener('change',e=>usePhoto(e.target.value));
+  const usePhoto=(src,mode='manual')=>{ const im=new Image(); im.onload=()=>{ photo=im; photoMode=mode; thumb.src=im.src; draw(); }; im.src=src; };
+  document.getElementById('preparedPhoto').addEventListener('change',e=>{
+    if(e.target.value==='auto') usePhoto(autoPortraitPhoto.src,'auto');
+    else usePhoto(e.target.value,'manual');
+  });
   document.getElementById('uploadBtn').addEventListener('click',()=>document.getElementById('photoFile').click());
   document.getElementById('photoFile').addEventListener('change',e=>{
     const f=e.target.files[0]; if(!f) return;
     const r=new FileReader();
-    r.onload=()=>usePhoto(r.result);
+    r.onload=()=>usePhoto(r.result,'custom');
     r.readAsDataURL(f);
   });
   document.getElementById('export').addEventListener('click',()=>{
