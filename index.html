@@ -76,6 +76,11 @@
   label.f textarea{resize:vertical; min-height:52px;}
   .row2{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
   .hidden{display:none !important;}
+  .top-photo-picker{margin:-2px 0 12px;padding:11px;border:1px solid #f6c44588;border-radius:13px;background:linear-gradient(135deg,#312943,#211e33);box-shadow:0 5px 16px #0003;}
+  .top-photo-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;color:#fff5cd;font-size:13px;}
+  .top-photo-title span{font-size:10px;font-weight:700;letter-spacing:.6px;color:#161224;background:#f6c445;border-radius:999px;padding:3px 7px;}
+  .top-photo-picker label.f{margin:8px 0 0;}
+  .top-photo-picker label.f>span{color:#d9d3ea;}
   .photo-row{display:flex; gap:8px; align-items:center;}
   .photo-row img{width:52px;height:64px;object-fit:contain;background:#f7f8fb;border-radius:8px;border:1px solid var(--line);}
   .note{font-size:11.5px;color:var(--mut);margin-top:6px;line-height:1.5;}
@@ -123,6 +128,18 @@
 <body>
 <main>
   <aside id="panel">
+    <section class="top-photo-picker" aria-label="Photo selection">
+      <div class="top-photo-title"><strong>📷 फ़ोटो चुनें</strong><span>Auto Fit</span></div>
+      <div class="photo-row">
+        <img id="photoThumb" alt="चुनी हुई फ़ोटो">
+        <button class="btn ghost" id="uploadBtn" type="button">⬆ अपनी फ़ोटो अपलोड करें</button>
+        <input type="file" id="photoFile" accept="image/*" class="hidden">
+      </div>
+      <label class="f"><span>फ्रेम के हिसाब से फ़ोटो</span>
+        <select id="preparedPhoto"><option value="auto">Auto Fit — frame के हिसाब से फोटो</option><option value="assets/candidate-expanded-9x16.png?v=1">Portrait Safe — लंबे / oval frames</option><option value="assets/candidate-expanded-square.png?v=1">Square Safe — circle / square frames</option><option value="assets/candidate-expanded-4x5.png?v=1">4:5 Safe — सामान्य vertical frame</option><option value="assets/candidate.jpg?v=20261014">Original फोटो</option></select>
+      </label>
+      <p class="note">✓ Photo aur frame ka ratio app automatically match karega — बिना stretch या crop के।</p>
+    </section>
     <div class="quick-grid" aria-label="Quick poster actions">
       <button class="quick-action primary" id="rand" type="button"><span class="qa-icon">🎲</span><span>Random<br>Poster</span></button>
       <button class="quick-action primary" id="export" type="button"><span class="qa-icon">⬇</span><span>PNG<br>Download</span></button>
@@ -227,16 +244,8 @@
       <label class="f" data-only="t2,t3"><span>मतदान केंद्र</span><input type="text" id="polling"></label>
     </div>
 
-    <h2>फ़ोटो व फ़ॉन्ट</h2>
-    <div class="photo-row">
-      <img id="photoThumb" alt="">
-      <button class="btn ghost" id="uploadBtn">फ़ोटो बदलें</button>
-      <input type="file" id="photoFile" accept="image/*" class="hidden">
-    </div>
-    <label class="f" style="margin-top:8px"><span>तैयार सेफ फ़ोटो</span>
-      <select id="preparedPhoto"><option value="auto">Auto Fit — frame के हिसाब से फोटो</option><option value="assets/candidate-expanded-9x16.png?v=1">Portrait Safe — लंबे / oval frames</option><option value="assets/candidate-expanded-square.png?v=1">Square Safe — circle / square frames</option><option value="assets/candidate-expanded-4x5.png?v=1">4:5 Safe — सामान्य vertical frame</option><option value="assets/candidate.jpg?v=20261014">Original फोटो</option></select>
-    </label>
-    <p class="note">✓ Auto Fit चालू है — frame के आकार के अनुसार सही expanded photo अपने-आप लगेगी; सिर, हाथ और कंधे crop नहीं होंगे।</p>
+    <h2>फ़ोटो फ्रेम व फ़ॉन्ट</h2>
+    <p class="note">ऊपर से फ़ोटो चुनें। यहाँ frame और font बदलें।</p>
     <label class="f" style="margin-top:8px"><span>मतदान बैज</span>
       <select id="badgeOpt"><option value="1">दिखाएं (auto-size)</option><option value="0">छिपाएं</option></select>
     </label>
