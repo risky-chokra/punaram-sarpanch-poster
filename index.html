@@ -232,6 +232,7 @@
       <button class="btn ghost" id="uploadBtn">फ़ोटो बदलें</button>
       <input type="file" id="photoFile" accept="image/*" class="hidden">
     </div>
+    <p class="note">✓ Smart photo fit चालू है — सिर, हाथ और कंधे crop नहीं होंगे।</p>
     <label class="f" style="margin-top:8px"><span>मतदान बैज</span>
       <select id="badgeOpt"><option value="1">दिखाएं (auto-size)</option><option value="0">छिपाएं</option></select>
     </label>
@@ -717,6 +718,12 @@ function cover(img,x,y,w,h,vy=0.18){
   const dw=img.width*s, dh=img.height*s;
   c.drawImage(img, x+(w-dw)/2, y+(h-dh)*(dh>h?vy:0.5), dw, dh);
 }
+function containPhoto(ctx,img,x,y,w,h,pad=.028){
+  // Portraits always use contain (not cover): head, hands and shoulders stay inside every frame.
+  const safeW=w*(1-pad*2), safeH=h*(1-pad*2), scale=Math.min(safeW/img.width,safeH/img.height);
+  const dw=img.width*scale, dh=img.height*scale;
+  ctx.drawImage(img,x+(w-dw)/2,y+(h-dh)/2,dw,dh);
+}
 function archPath(x,y,w,h){
   const r=w/2;
   c.beginPath(); c.moveTo(x,y+h); c.lineTo(x,y+r); c.arc(x+r,y+r,r,Math.PI,0);
@@ -724,20 +731,17 @@ function archPath(x,y,w,h){
 }
 function photoArch(img,x,y,w,h,border,bw){
   c.save(); archPath(x,y,w,h); c.clip();
-  c.fillStyle='#d9d9e0'; c.fillRect(x,y,w,h); cover(img,x,y,w,h); c.restore();
+  const g=c.createLinearGradient(x,y,x+w,y+h); g.addColorStop(0,'#f8f8fb');g.addColorStop(1,'#e8edf2');c.fillStyle=g;c.fillRect(x,y,w,h);
+  containPhoto(c,img,x,y,w,h); c.restore();
   if(border){ c.save(); archPath(x,y,w,h); c.lineWidth=bw; c.strokeStyle=border; c.stroke(); c.restore(); }
 }
 function photoOvalFade(img,cx,cy,rx,ry){
-  const off=document.createElement('canvas'); off.width=rx*2; off.height=ry*2;
+  const off=document.createElement('canvas'); off.width=Math.ceil(rx*2); off.height=Math.ceil(ry*2);
   const o=off.getContext('2d');
-  const s=Math.max(off.width/img.width, off.height/img.height);
-  const dw=img.width*s, dh=img.height*s;
-  o.drawImage(img,(off.width-dw)/2,(off.height-dh)*(dh>off.height?0.18:0.5),dw,dh);
+  const g=o.createLinearGradient(0,0,off.width,off.height);g.addColorStop(0,'#f8f8fb');g.addColorStop(1,'#e7edf1');o.fillStyle=g;o.fillRect(0,0,off.width,off.height);
+  containPhoto(o,img,0,0,off.width,off.height,.028);
   o.globalCompositeOperation='destination-in';
-  o.translate(rx,ry); o.scale(1,ry/rx);
-  const g=o.createRadialGradient(0,0,rx*0.3,0,0,rx);
-  g.addColorStop(0,'rgba(0,0,0,1)'); g.addColorStop(0.72,'rgba(0,0,0,0.95)'); g.addColorStop(1,'rgba(0,0,0,0)');
-  o.fillStyle=g; o.beginPath(); o.arc(0,0,rx,0,TAU); o.fill();
+  o.beginPath();o.ellipse(rx,ry,rx*.995,ry*.995,0,0,TAU);o.fillStyle='#fff';o.fill();
   c.drawImage(off,cx-rx,cy-ry);
 }
 function chatIcon(x,y,s,color){
