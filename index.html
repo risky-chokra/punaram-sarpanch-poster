@@ -1300,8 +1300,9 @@ function drawT3P(W,H,img){
   rr(X(70),Y(80),F(660),F(160),F(18)); c.fillStyle=G.cream; c.fill(); c.restore();
   c.lineWidth=F(4); c.strokeStyle=G.gold; rr(X(70),Y(80),F(660),F(160),F(18)); c.stroke();
   drawCentredPlateRows([
-    {text:S.electionTitle,base:F(42),min:F(22),fam:S.hiBody,color:G.dark},
-    {text:'ग्राम पंचायत : '+S.village,base:F(30),min:F(18),fam:'MuktaB',color:'#1f7a4d'}
+    // Keep the election title and village prominent while measured plate bounds preserve padding.
+    {text:S.electionTitle,base:F(48),min:F(24),fam:S.hiBody,color:G.dark},
+    {text:'ग्राम पंचायत : '+S.village,base:F(36),min:F(20),fam:'MuktaB',color:'#1f7a4d'}
   ],{x:X(70),y:Y(80),w:F(660),h:F(160)},{padX:F(30),gap:F(10)});
   if(S.showBadge) dateBadge(X(950),Y(235),F(165),F(195));
   // No oversized decorative arch behind the selected photo frame: exactly one photo frame remains visible.
