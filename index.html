@@ -238,6 +238,9 @@
     <label class="f"><span>डिज़ाइन वैरिएंट <b id="dvNum">#0</b>/2</span>
       <button class="btn ghost" id="dvBtn" type="button">🎨 डिज़ाइन बदलें</button>
     </label>
+    <label class="f"><span>प्रो लेआउट <b id="layoutNum">#7</b>/95</span>
+      <button class="btn ghost" id="layoutBtn" type="button">🎲 नया प्रो लेआउट (96 styles)</button>
+    </label>
     <label class="f"><span>प्रो फोटो फ्रेम <b id="pfNum">#17</b>/239</span>
       <button class="btn ghost" id="pfBtn" type="button">🎲 नया प्रो फ्रेम (240 styles)</button>
     </label>
@@ -337,7 +340,7 @@ const S = {
   p5:'समान न्याय एवं भ्रष्टाचार मुक्त पंचायत', p6:'हर परिवार के लिए सम्मान एवं सहयोग',
   dateDay:'24', dateMonth:'अक्टूबर 2026', dateWeekday:'शनिवार',
   polling:'मतदान केंद्र : राजकीय विद्यालय, नादाना भाटान',
-  hiName:'Modak', hiBody:'MuktaXB', engFont:'Poppins', showBadge:true, badgeStyle:0, decoV:0, photoF:17, nameS:0, elemV:0,
+  hiName:'Modak', hiBody:'MuktaXB', engFont:'Poppins', showBadge:true, badgeStyle:0, decoV:0, layoutV:7, photoF:17, nameS:0, elemV:0,
 };
 
 const SIZES = {
@@ -393,12 +396,13 @@ function palT3(){ const p=curPal(); return {bg:p.bg, gold:p.accent, cream:p.ligh
 function designNumber(){
   const L=['t1','t2','t3'].indexOf(S.template);
   const nf=Math.max(0,NAME_FONTS.indexOf(S.hiName)), bf=Math.max(0,BODY_FONTS.indexOf(S.hiBody)), ef=Math.max(0,EN_FONTS.indexOf(S.engFont));
-  return ((((L*PALETTES.length + S.palIdx)*BG_COUNT + S.patIdx)*NAME_FONTS.length + nf)*BODY_FONTS.length + bf)*EN_FONTS.length + ef + 1;
+  return (((((L*PALETTES.length + S.palIdx)*BG_COUNT + S.patIdx)*LAYOUT_COUNT + (S.layoutV|0))*NAME_FONTS.length + nf)*BODY_FONTS.length + bf)*EN_FONTS.length + ef + 1;
 }
 const dp=(W,H,col)=>drawPattern(S.patIdx,W,H,col);
 function bgImg(W,H,tint){ const im=S.bgIdx===-2?DRIVE_RANDOM_IMAGE:(S.bgIdx<0?null:BGIMGS[S.bgIdx]); if(!im||!im.naturalWidth) return; const a=Math.max(0,Math.min(1,(Number(S.bgOpacity)||100)/100)); c.save(); c.globalAlpha=a; cover(im,0,0,W,H); c.globalAlpha=0.22; c.fillStyle=tint; c.fillRect(0,0,W,H); c.restore(); }
 const PHOTO_FRAME_COUNT=240;
-const TOTAL_DESIGNS = 3*3*6*PHOTO_FRAME_COUNT*4*4*PALETTES.length*BG_COUNT*180*NAME_FONTS.length*BODY_FONTS.length;
+const LAYOUT_COUNT=96;
+const TOTAL_DESIGNS = 3*3*6*LAYOUT_COUNT*PHOTO_FRAME_COUNT*4*4*PALETTES.length*BG_COUNT*180*NAME_FONTS.length*BODY_FONTS.length;
 const ELEM_IMGS={}; const ICONK=['ic_panchayat','ic_women','ic_streetlight','ic_school','ic_senior','ic_sports'];
 [['corner_fans','assets/elems/corner_fans.svg'],['floral_corners','assets/elems/floral_corners.svg'],['sun_corners','assets/elems/sun_corners.svg'],
  ['bead_line','assets/elems/bead_line.svg'],['diamond_chain','assets/elems/diamond_chain.svg'],['double_wave','assets/elems/double_wave.svg'],
@@ -1238,6 +1242,33 @@ function drawT3B(img){
   txt(`${S.dateDay} ${S.dateMonth}`, 900, 875, `28px ${S.hiBody}`, G.dark, 'center');
 }
 
+/* ---------- professional layout compositor ---------- */
+let LAYOUT_QUEUE=[];
+function freshProfessionalLayout(previous){
+  if(!LAYOUT_QUEUE.length){LAYOUT_QUEUE=Array.from({length:LAYOUT_COUNT-1},(_,i)=>i+1);for(let i=LAYOUT_QUEUE.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[LAYOUT_QUEUE[i],LAYOUT_QUEUE[j]]=[LAYOUT_QUEUE[j],LAYOUT_QUEUE[i]];}}
+  let n=LAYOUT_QUEUE.pop(); if(n===previous&&LAYOUT_QUEUE.length)n=LAYOUT_QUEUE.pop(); return n||1;
+}
+function nextProfessionalLayout(){const old=Math.abs(S.layoutV|0)%LAYOUT_COUNT;const n=freshProfessionalLayout(old);S.layoutV=n;const e=document.getElementById('layoutNum');if(e)e.textContent='#'+n;draw();}
+function layoutOverlay(W,H){
+  const v=Math.abs(S.layoutV|0)%LAYOUT_COUNT; if(!v) return;
+  const type=v%8, tier=(v/8)|0, p=curPal();
+  const accent=p.accent||'#e8b64c', deep=p.deep||p.primary||'#241436', light=p.light||'#fff7e8', sec=p.sec1||'#f58220';
+  const copy=document.createElement('canvas'); copy.width=W; copy.height=H; const cc=copy.getContext('2d'); cc.drawImage(cv,0,0);
+  const m=Math.max(12,Math.min(W,H)*(0.018+tier*.0015)), r=Math.max(12,m*1.1), scale=1-(m/W)*2;
+  c.clearRect(0,0,W,H);
+  const card=(x,y,w,h,rad=r)=>{c.save();c.beginPath();rr(x,y,w,h,rad);c.clip();c.drawImage(copy,x,y,w,h);c.restore();};
+  const back=(a,b)=>{const g=c.createLinearGradient(0,0,W,H);g.addColorStop(0,a);g.addColorStop(1,b);c.fillStyle=g;c.fillRect(0,0,W,H);};
+  if(type===0){back(deep,accent);c.save();c.shadowColor='rgba(0,0,0,.28)';c.shadowBlur=m*2;c.shadowOffsetY=m*.6;card(m,m,W-m*2,H-m*2);c.restore();c.lineWidth=Math.max(2,m*.16);c.strokeStyle=light;rr(m,m,W-m*2,H-m*2,r);c.stroke();c.lineWidth=Math.max(1,m*.07);c.strokeStyle=accent;rr(m*1.55,m*1.55,W-m*3.1,H-m*3.1,r*.72);c.stroke();}
+  else if(type===1){back(light,accent);c.fillStyle=deep;c.globalAlpha=.82;c.fillRect(0,0,m*2.2,H);c.globalAlpha=1;c.save();c.shadowColor='rgba(0,0,0,.24)';c.shadowBlur=m*2;card(m*1.35,m*.8,W-m*2.15,H-m*1.6,m*.45);c.restore();c.fillStyle=accent;c.fillRect(m*.35,H*.13,m*.42,H*.74);}
+  else if(type===2){back(deep,sec);c.save();c.beginPath();c.moveTo(m,0);c.lineTo(W,0);c.lineTo(W-m,H);c.lineTo(0,H);c.closePath();c.clip();c.drawImage(copy,0,0,W,H);c.restore();c.globalAlpha=.88;c.fillStyle=accent;c.beginPath();c.moveTo(0,0);c.lineTo(m*2.5,0);c.lineTo(m*.75,H);c.lineTo(0,H);c.closePath();c.fill();c.globalAlpha=1;}
+  else if(type===3){back(light,deep);const rail=Math.max(m*3.6,W*(tier%2?.085:.065));c.fillStyle=accent;c.fillRect(0,0,rail,H);c.globalAlpha=.32;c.fillStyle=light;for(let y=m;y<H;y+=m*1.7)c.fillRect(rail*.28,y,rail*.45,m*.35);c.globalAlpha=1;c.save();c.shadowColor='rgba(0,0,0,.2)';c.shadowBlur=m*1.4;card(rail+m*.65,m*.55,W-rail-m*1.2,H-m*1.1,m*.5);c.restore();}
+  else if(type===4){back(deep,light);c.globalAlpha=.32;c.fillStyle=accent;for(let i=-H;i<W+H;i+=m*3.8){c.save();c.translate(i,0);c.rotate(-.55);c.fillRect(0,0,m*.65,H*1.7);c.restore();}c.globalAlpha=1;c.save();c.shadowColor='rgba(0,0,0,.32)';c.shadowBlur=m*2.4;c.shadowOffsetY=m*.5;card(m*1.1,m*1.7,W-m*2.2,H-m*3.4,m*1.15);c.restore();c.strokeStyle=accent;c.lineWidth=m*.16;rr(m*1.1,m*1.7,W-m*2.2,H-m*3.4,m*1.15);c.stroke();}
+  else if(type===5){back(accent,deep);const top=m*(1.6+tier*.09), bottom=m*(2.2+tier*.12);c.save();c.beginPath();c.moveTo(0,top);c.lineTo(W,0);c.lineTo(W,H-bottom);c.lineTo(0,H);c.closePath();c.clip();c.drawImage(copy,0,0,W,H);c.restore();c.fillStyle=light;c.globalAlpha=.9;c.fillRect(0,0,W,top*.26);c.fillRect(0,H-bottom*.26,W,bottom*.26);c.globalAlpha=1;}
+  else if(type===6){back(light,deep);const off=m*1.25;c.fillStyle=accent;c.fillRect(0,0,W,H);c.globalAlpha=.18;c.fillStyle=light;for(let x=off;x<W;x+=off*2.2)for(let y=off;y<H;y+=off*2.2){c.beginPath();c.arc(x,y,off*.14,0,TAU);c.fill();}c.globalAlpha=1;c.save();c.shadowColor='rgba(0,0,0,.35)';c.shadowBlur=m*2;card(m*1.65,m*1.08,W-m*3.3,H-m*2.16,m*.25);c.restore();c.strokeStyle=light;c.lineWidth=m*.15;rr(m*1.65,m*1.08,W-m*3.3,H-m*2.16,m*.25);c.stroke();}
+  else {back(deep,accent);const pad=m*(1.15+tier*.04);c.save();c.beginPath();c.moveTo(pad,0);c.lineTo(W-pad,0);c.lineTo(W,H-pad);c.lineTo(0,H-pad);c.closePath();c.clip();c.drawImage(copy,0,0,W,H);c.restore();c.strokeStyle=light;c.lineWidth=m*.13;c.beginPath();c.moveTo(pad,0);c.lineTo(W-pad,0);c.lineTo(W,H-pad);c.lineTo(0,H-pad);c.closePath();c.stroke();}
+  c.save();c.globalAlpha=.72;c.font=`${Math.max(10,m*.48)}px sans-serif`;c.fillStyle=light;c.textAlign='right';c.fillText('LAYOUT '+String(v).padStart(2,'0'),W-m*1.1,H-m*.55);c.restore();
+}
+
 /* ---------- dispatch ---------- */
 let photo = new Image();
 photo.src='assets/candidate.jpg?v=20261014'; c.imageSmoothingQuality='high';
@@ -1264,6 +1295,7 @@ function draw(){
     else if(S.template==='t2') drawT2B(photo);
     else drawT3B(photo);
   }
+  layoutOverlay(W,H);
   const dn=document.getElementById('dnum');
   if(dn) dn.textContent=`डिज़ाइन #${designNumber()} / ${TOTAL_DESIGNS.toLocaleString('en-IN')}`;
 }
@@ -1312,6 +1344,9 @@ function bind(){
   window.setDv=function(){ const e=document.getElementById('dvNum'); if(e) e.textContent='#'+(S.decoV|0); };
   setDv();
   document.getElementById('dvBtn').addEventListener('click',()=>{ S.decoV=(S.decoV+1)%3; setDv(); draw(); });
+  window.setLayout=function(){ const e=document.getElementById('layoutNum'); if(e) e.textContent='#'+(Math.abs(S.layoutV|0)%LAYOUT_COUNT); };
+  setLayout();
+  document.getElementById('layoutBtn').addEventListener('click',()=>{ nextProfessionalLayout(); });
   document.getElementById('pfBtn').addEventListener('click',()=>{ nextProfessionalFrame(); });
   document.getElementById('nsBtn').addEventListener('click',()=>{ S.nameS=(S.nameS+1)%4; const e=document.getElementById('nsNum'); if(e) e.textContent='#'+S.nameS; draw(); });
   document.getElementById('evBtn').addEventListener('click',()=>{ S.elemV=(S.elemV+1)%10; const e=document.getElementById('evNum'); if(e) e.textContent='#'+S.elemV; draw(); });
@@ -1337,7 +1372,7 @@ function bind(){
   if(document.addEventListener) document.addEventListener('input',e=>{ if(DICT&&e.target.matches&&e.target.matches('input,textarea')) window.runSpell(); });
   document.getElementById('shuffle').addEventListener('click',()=>{
     S.palIdx=Math.floor(Math.random()*PALETTES.length);
-    S.patIdx=Math.floor(Math.random()*BG_COUNT); setBg(); S.decoV=Math.random()*3|0; setDv();
+    S.patIdx=Math.floor(Math.random()*BG_COUNT); setBg(); S.decoV=Math.random()*3|0; setDv(); S.layoutV=freshProfessionalLayout(Math.abs(S.layoutV|0)%LAYOUT_COUNT); setLayout();
     S.hiName=NAME_FONTS[Math.floor(Math.random()*NAME_FONTS.length)];
     S.hiBody=BODY_FONTS[Math.floor(Math.random()*BODY_FONTS.length)];
     S.engFont=famVal(EN_FONTS[Math.floor(Math.random()*EN_FONTS.length)]);
@@ -1922,10 +1957,10 @@ document.getElementById('rand').addEventListener('click',()=>{
     let pick=arr[0], bo=1e9;
     for(const cd of arr){ const ov=toks(cd).reduce((n,w)=>n+(usedW.has(w)?1:0),0); if(ov===0){ pick=cd; bo=0; break; } if(ov<bo){ bo=ov; pick=cd; } }
     toks(pick).forEach(w=>usedW.add(w)); return pick; };
-  const prevKey=[S.template,S.palIdx,S.patIdx,S.badgeStyle,S.photoF,S.elemV].join(',');
+  const prevKey=[S.template,S.palIdx,S.patIdx,S.layoutV,S.badgeStyle,S.photoF,S.elemV].join(',');
   S.template=pk(['t1','t2','t3']);
   S.palIdx=Math.random()*PALETTES.length|0;
-  S.patIdx=Math.random()*BG_COUNT|0; S.decoV=Math.random()*3|0;
+  S.patIdx=Math.random()*BG_COUNT|0; S.decoV=Math.random()*3|0; S.layoutV=freshProfessionalLayout(Math.abs(S.layoutV|0)%LAYOUT_COUNT);
   S.hiName=pk(NAME_FONTS); S.hiBody=pk(BODY_FONTS); S.engFont=pk(EN_FONTS);
   window.loadFam(S.hiName); window.loadFam(S.hiBody); window.loadFam(S.engFont);
   S.badgeStyle=Math.random()*180|0; const oldFrame=Math.abs(S.photoF|0)%PHOTO_FRAME_COUNT; S.photoF=freshProfessionalFrame(oldFrame); S.nameS=Math.random()*4|0; S.elemV=Math.random()*10|0;
@@ -1939,12 +1974,12 @@ document.getElementById('rand').addEventListener('click',()=>{
     if(m.length>1){ S.sloganTop=m[0]; S.sloganTop2=''; S.sloganBottom=m.slice(1).join(' '); }
     else { S.sloganTop='आपकी आवाज़, हमारा संकल्प –'; S.sloganTop2=''; S.sloganBottom=n; } }
   else S.sloganMain=n;
-  if([S.template,S.palIdx,S.patIdx,S.badgeStyle,S.photoF,S.elemV].join(',')===prevKey){ S.palIdx=(S.palIdx+1)%PALETTES.length; S.badgeStyle=(S.badgeStyle+53)%180; }
+  if([S.template,S.palIdx,S.patIdx,S.layoutV,S.badgeStyle,S.photoF,S.elemV].join(',')===prevKey){ S.palIdx=(S.palIdx+1)%PALETTES.length; S.badgeStyle=(S.badgeStyle+53)%180; }
   document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x.dataset.t===S.template));
   if(window.syncVisibility) syncVisibility();
   FIELDS.forEach(id=>{ const e=document.getElementById(id); if(e&&!e.disabled) e.value=S[id]; });
   document.getElementById('palTheme').value=S.palIdx;
-  setBg(); setDv(); { const pf=document.getElementById('pfNum'); if(pf) pf.textContent='#'+(S.photoF|0); const ns2=document.getElementById('nsNum'); if(ns2) ns2.textContent='#'+(S.nameS|0); const ev=document.getElementById('evNum'); if(ev) ev.textContent='#'+(S.elemV|0); }
+  setBg(); setDv(); setLayout(); { const pf=document.getElementById('pfNum'); if(pf) pf.textContent='#'+(S.photoF|0); const ns2=document.getElementById('nsNum'); if(ns2) ns2.textContent='#'+(S.nameS|0); const ev=document.getElementById('evNum'); if(ev) ev.textContent='#'+(S.elemV|0); }
   setBs();
   if(window.loadFam){ loadFam(S.hiName); loadFam(S.hiBody); loadFam(S.engFont); }
   if(window.refreshFontBtns) refreshFontBtns();
