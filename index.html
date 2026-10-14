@@ -1228,8 +1228,7 @@ function drawT3P(W,H,img){
   txt(S.electionTitle, X(100), Y(152), `${F(42)}px ${S.hiBody}`, G.dark,'left',F(600),F(22));
   txt('ग्राम पंचायत : '+S.village, X(100), Y(208), `${F(30)}px MuktaB`, '#1f7a4d');
   if(S.showBadge) dateBadge(X(950),Y(235),F(165),F(195));
-  c.save(); c.strokeStyle='rgba(232,182,76,.35)'; c.lineWidth=F(22);
-  archPath(X(342),Y(252),F(516),Y(806)); c.stroke(); c.restore();
+  // No oversized decorative arch behind the selected photo frame: exactly one photo frame remains visible.
   photoArch(img, X(350), Y(260), F(500), Y(790), G.gold, F(10)); pframe(X(350),Y(260),F(500),Y(790),'arch');
   rr(X(150),Y(1075),F(900),F(118),F(18)); c.fillStyle=G.cream; c.fill();
   c.lineWidth=F(4); c.strokeStyle=G.gold; rr(X(150),Y(1075),F(900),F(118),F(18)); c.stroke();
