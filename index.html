@@ -927,18 +927,19 @@ function dateBadge(cx,cy,r,rMax){
   else { const ir=(rad,lw,dash)=>{ c.lineWidth=lw; if(c.setLineDash) c.setLineDash(dash||[]); c.beginPath(); c.arc(cx,cy,rad,0,TAU); c.stroke(); if(c.setLineDash) c.setLineDash([]); };
     if(ringv===0) ir(r*0.88,r*0.05); else if(ringv===1) ir(r*0.88,r*0.045,[r*0.14,r*0.09]); else { ir(r*0.90,r*0.03); ir(r*0.84,r*0.03); } }
   // content — all inside 0.80r safe zone
-  const pillW=(bar&&shape===2)? r*1.5 : r*0.92;
-  const pillH=r*0.26, pillY=cy-r*0.72;
+  const voteLabel='मतदान दिवस', voteBase=Math.round(r*0.15), votePad=r*.12;
+  const voteFs=fitFont(voteLabel,voteBase,Math.round(r*0.09),r*1.25,S.hiBody);
+  c.font=`${voteFs}px ${S.hiBody}`; const pillW=Math.min(r*1.5,Math.max((bar&&shape===2)?r*1.12:r*.92,c.measureText(voteLabel).width+votePad*2));
+  const pillH=Math.max(r*.26,voteFs+r*.10), pillY=cy-r*.72;
   rr(cx-pillW/2,pillY,pillW,pillH,pillH/2); c.fillStyle=SC.pill; c.fill();
-  { const ps=fitFont('मतदान दिवस', Math.round(r*0.15), Math.round(r*0.09), pillW*0.86, S.hiBody);
-    c.font=`${ps}px ${S.hiBody}`; c.textAlign='center'; c.textBaseline='middle';
-    c.fillStyle=SC.pillTx; c.fillText('मतदान दिवस',cx,pillY+pillH/2+r*0.012); c.textBaseline='alphabetic'; }
+  c.textAlign='center'; c.textBaseline='middle'; c.fillStyle=SC.pillTx; c.fillText(voteLabel,cx,pillY+pillH/2+r*0.012); c.textBaseline='alphabetic';
   { const px=Math.round(r*0.46); c.save(); c.font=`${px}px NotoBlk`; c.textAlign='center'; c.textBaseline='alphabetic';
     c.fillStyle=SC.day; c.fillText(String(S.dateDay),cx,cy+r*0.07); c.restore(); }
   txt(S.dateMonth,cx,cy+r*0.36,`${Math.round(r*0.21)}px MuktaXB`,SC.mon,'center',r*1.5,Math.round(r*0.12));
-  const ww=r*0.60;
-  rr(cx-ww/2,cy+r*0.47,ww,r*0.22,r*0.11); c.fillStyle=SC.wd; c.fill();
-  txt(S.dateWeekday,cx,cy+r*0.625,`${Math.round(r*0.14)}px MuktaB`,'#ffffff','center',ww*0.9,Math.round(r*0.10));
+  const weekdayFs=fitFont(S.dateWeekday,Math.round(r*.14),Math.round(r*.09),r*.82,'MuktaB');
+  c.font=`${weekdayFs}px MuktaB`; const ww=Math.max(r*.60,Math.min(r*.92,c.measureText(S.dateWeekday).width+r*.16)),wh=Math.max(r*.22,weekdayFs+r*.08);
+  rr(cx-ww/2,cy+r*0.47,ww,wh,wh/2); c.fillStyle=SC.wd; c.fill();
+  txt(S.dateWeekday,cx,cy+r*.47+wh*.68,`${weekdayFs}px MuktaB`,'#ffffff','center',ww-r*.12,Math.round(r*.09));
   c.restore();
 }
 function fitFont(text, base, min, maxW, fam, maxH=0){
@@ -948,6 +949,18 @@ function fitFont(text, base, min, maxW, fam, maxH=0){
   if(b>0){ const per=b/s; if(per>1.45) s=Math.max(min,Math.floor(s*1.45/per));
     if(maxH) s=Math.max(min,Math.min(s,Math.floor(maxH/per))); c.font=`${s}px ${fam}`; }
   return s;
+}
+// Every label pill is measured from its own text first, so short and long labels both get balanced padding.
+function textPill(label,cx,cy,opt={}){
+  const fam=opt.fam||S.hiBody, maxW=opt.maxW||99999, padX=opt.padX||12, padY=opt.padY||7;
+  const fs=fitFont(label,opt.base||24,opt.min||12,Math.max(8,maxW-padX*2),fam,opt.maxH||0);
+  c.font=`${fs}px ${fam}`; const measured=c.measureText(String(label||'')).width;
+  const w=Math.max(opt.minW||0,Math.min(maxW,measured+padX*2));
+  const h=Math.max(opt.minH||0,fs+padY*2), r=Math.min(h/2,opt.radius||h/2);
+  c.save(); rr(cx-w/2,cy-h/2,w,h,r); c.fillStyle=opt.fill||'#222'; c.fill();
+  if(opt.stroke){c.strokeStyle=opt.stroke;c.lineWidth=opt.lineWidth||1;rr(cx-w/2,cy-h/2,w,h,r);c.stroke();} c.restore();
+  txt(label,cx,cy+fs*.34,`${fs}px ${fam}`,opt.text||'#fff','center',Math.max(8,w-padX*2),opt.min||10);
+  return {w,h,fs};
 }
 
 /* ============ PORTRAIT (2:3 / 9:16 / A4) ============ */
@@ -969,8 +982,7 @@ function drawT1P(W,H,img){
     for(let i=0;i<8;i++){ const a=i/8*TAU; c.beginPath();
       if(c.ellipse) c.ellipse(X(585)+Math.cos(a)*F(120),Y(230)+Math.sin(a)*F(120),F(34),F(14),a,0,TAU); else c.arc(X(585)+Math.cos(a)*F(120),Y(230)+Math.sin(a)*F(120),F(24),0,TAU); c.fill(); } c.globalAlpha=1; } }
   txt('ग्राम पंचायत : '+S.village, X(60), Y(92), `${F(34)}px ${S.hiBody}`, '#ffffff','left',X(680),F(20));
-  rr(X(60),Y(122),F(470),F(66),F(33)); c.fillStyle=P.mag; c.fill();
-  txt(S.postBadge, X(295), Y(165), `${F(30)}px ${S.hiBody}`, '#ffffff', 'center', F(430),F(16));
+  textPill(S.postBadge,X(295),Y(155),{base:F(30),min:F(16),maxW:F(470),padX:F(22),padY:F(12),fill:P.mag,text:'#ffffff',fam:S.hiBody});
   const nzs=Math.min(fitFont(S.nameLine1, F(148), F(60), F(600), S.hiName, F(122)), fitFont(S.nameLine2, F(148), F(60), F(600), S.hiName, F(122)));
   ndraw(S.nameLine1, X(58), Y(355), nzs, S.hiName, '#ffffff');
   ndraw(S.nameLine2, X(58), Y(512), nzs, S.hiName, P.gold);
@@ -1004,8 +1016,7 @@ function drawT1P(W,H,img){
   txt(S.cta, X(600), Y(1510), `${cs}px ${S.hiBody}`, '#ffffff', 'center');
   // Expand the footer into the unused blank strip, then give each text row its own dedicated band.
   c.fillStyle=P.dark; c.fillRect(0,Y(1560),W,H-Y(1560));
-  rr(X(390),Y(1580),F(420),F(48),F(24)); c.fillStyle=P.gold; c.fill();
-  txt(`${S.dateDay} ${S.dateMonth}`, X(600), Y(1613), `${F(25)}px ${S.hiBody}`, P.dark, 'center', F(640),F(15));
+  textPill(`${S.dateDay} ${S.dateMonth}`,X(600),Y(1604),{base:F(25),min:F(15),maxW:F(640),padX:F(24),padY:F(10),fill:P.gold,text:P.dark,fam:S.hiBody});
   txt(S.contact, X(600), Y(1690), `${fitFont(S.contact, F(23), F(15), F(1120), S.hiBody)}px ${S.hiBody}`, '#ffffff', 'center');
   txt(S.requester, X(600), Y(1750), `${F(18)}px MuktaB`, P.gold, 'center', F(1100),F(12));
   c.fillStyle=P.mag; c.fillRect(X(60),Y(1792),F(520),F(5));
@@ -1102,10 +1113,7 @@ function drawT3P(W,H,img){
   c.lineWidth=F(8); c.strokeStyle=G.gold; c.lineJoin='round';
   c.strokeText(`${S.nameLine1} ${S.nameLine2}`, X(600), Y(1163));
   c.fillStyle=G.dark; c.fillText(`${S.nameLine1} ${S.nameLine2}`, X(600), Y(1163));
-  c.font=`${F(32)}px ${S.hiBody}`;
-  const pw=c.measureText(S.postBadge).width+F(90);
-  rr(X(600)-pw/2,Y(1215),pw,F(64),F(32)); c.fillStyle=G.orange; c.fill();
-  txt(S.postBadge, X(600), Y(1257), `${F(32)}px ${S.hiBody}`, '#ffffff', 'center');
+  textPill(S.postBadge,X(600),Y(1247),{base:F(32),min:F(16),maxW:F(700),padX:F(45),padY:F(12),fill:G.orange,text:'#ffffff',fam:S.hiBody});
   const sm=fitFont(S.sloganMain, F(46), F(26), F(1040), S.hiBody);
   txt(S.sloganMain, X(600), Y(1345), `${sm}px ${S.hiBody}`, G.gold, 'center');
   txt(S.sloganSub, X(600), Y(1408), `${F(32)}px MuktaB`, '#ffffff', 'center');
@@ -1142,8 +1150,7 @@ function drawT1S(img){
   c.lineWidth=3; c.strokeStyle='#fff'; c.beginPath(); c.arc(930,150,268,0,TAU); c.stroke();
   dotGrid(480,120,6,4,24,P.gold,3);
   txt('ग्राम पंचायत : '+S.village, 50, 78, `28px ${S.hiBody}`, '#fff','left',560,16);
-  rr(50,100,430,56,28); c.fillStyle=P.mag; c.fill();
-  txt(S.postBadge, 265, 137, `25px ${S.hiBody}`, '#fff', 'center', 400,13);
+  textPill(S.postBadge,265,128,{base:25,min:13,maxW:430,padX:18,padY:9,fill:P.mag,text:'#fff',fam:S.hiBody});
   const nzs=Math.min(fitFont(S.nameLine1, 105, 48, 540, S.hiName, 90), fitFont(S.nameLine2, 105, 48, 540, S.hiName, 90));
   txt(S.nameLine1, 48, 300, `${nzs}px ${S.hiName}`, '#fff');
   txt(S.nameLine2, 48, 415, `${nzs}px ${S.hiName}`, P.gold);
@@ -1243,8 +1250,7 @@ function drawT1L(img){
   c.lineWidth=4; c.strokeStyle='#fff'; c.beginPath(); c.arc(1660,240,340,0,TAU); c.stroke();
   dotGrid(980,120,7,4,26,P.gold,3);
   txt('ग्राम पंचायत : '+S.village, 60, 80, `30px ${S.hiBody}`, '#fff','left',640,18);
-  rr(60,105,470,60,30); c.fillStyle=P.mag; c.fill();
-  txt(S.postBadge, 295, 144, `27px ${S.hiBody}`, '#fff', 'center', 460,15);
+  textPill(S.postBadge,295,135,{base:27,min:14,maxW:470,padX:20,padY:10,fill:P.mag,text:'#fff',fam:S.hiBody});
   const nzs=Math.min(fitFont(S.nameLine1, 120, 56, 1120, S.hiName, 101), fitFont(S.nameLine2, 120, 56, 1120, S.hiName, 101));
   txt(S.nameLine1, 58, 320, `${nzs}px ${S.hiName}`, '#fff');
   txt(S.nameLine2, 58, 450, `${nzs}px ${S.hiName}`, P.gold);
@@ -1320,10 +1326,7 @@ function drawT3L(img){
   c.lineWidth=6; c.strokeStyle=G.gold; c.lineJoin='round';
   c.strokeText(`${S.nameLine1} ${S.nameLine2}`, 460, 906);
   c.fillStyle=G.dark; c.fillText(`${S.nameLine1} ${S.nameLine2}`, 460, 906);
-  c.font=`24px ${S.hiBody}`;
-  const pw=c.measureText(S.postBadge).width+64;
-  rr(460-pw/2,955,pw,48,24); c.fillStyle=G.orange; c.fill();
-  txt(S.postBadge, 460, 987, `24px ${S.hiBody}`, '#fff', 'center', 520,14);
+  textPill(S.postBadge,460,979,{base:24,min:14,maxW:520,padX:32,padY:8,fill:G.orange,text:'#fff',fam:S.hiBody});
   const sm=fitFont(S.sloganMain, 36, 20, 620, S.hiBody);
   txt(S.sloganMain, 1500, 470, `${sm}px ${S.hiBody}`, G.gold, 'center');
   const uw=wrapFit(S.sloganSub,620,22,14,'MuktaB',2);
@@ -1353,8 +1356,7 @@ function drawT1B(img){
   c.lineWidth=4; c.strokeStyle='#fff'; c.beginPath(); c.arc(1560,180,295,0,TAU); c.stroke();
   photoArch(img, 60, 70, 320, 700, P.gold, 7); pframe(60,70,320,700,'arch');
   txt('ग्राम पंचायत : '+S.village, 430, 105, `28px ${S.hiBody}`, '#fff','left',560,16);
-  rr(430,130,430,54,27); c.fillStyle=P.mag; c.fill();
-  txt(S.postBadge, 645, 166, `25px ${S.hiBody}`, '#fff', 'center', 420,13);
+  textPill(S.postBadge,645,157,{base:25,min:13,maxW:430,padX:18,padY:9,fill:P.mag,text:'#fff',fam:S.hiBody});
   const nzs=Math.min(fitFont(S.nameLine1, 110, 52, 780, S.hiName, 94), fitFont(S.nameLine2, 110, 52, 780, S.hiName, 94));
   txt(S.nameLine1, 428, 330, `${nzs}px ${S.hiName}`, '#fff');
   txt(S.nameLine2, 428, 450, `${nzs}px ${S.hiName}`, P.gold);
@@ -1411,10 +1413,7 @@ function drawT3B(img){
   c.lineWidth=6; c.strokeStyle=G.gold; c.lineJoin='round';
   c.strokeText(`${S.nameLine1} ${S.nameLine2}`, 760, 255);
   c.fillStyle=G.dark; c.fillText(`${S.nameLine1} ${S.nameLine2}`, 760, 255);
-  c.font=`22px ${S.hiBody}`;
-  const pw=c.measureText(S.postBadge).width+60;
-  rr(760-pw/2,305,pw,44,22); c.fillStyle=G.orange; c.fill();
-  txt(S.postBadge, 760, 335, `22px ${S.hiBody}`, '#fff', 'center');
+  textPill(S.postBadge,760,327,{base:22,min:13,maxW:500,padX:30,padY:8,fill:G.orange,text:'#fff',fam:S.hiBody});
   const sm=fitFont(S.sloganMain, 32, 18, 700, S.hiBody);
   txt(S.sloganMain, 760, 405, `${sm}px ${S.hiBody}`, G.gold, 'center');
   txt(S.sloganSub, 760, 445, `20px MuktaB`, '#fff', 'center', 660,12);
