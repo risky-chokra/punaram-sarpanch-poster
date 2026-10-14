@@ -577,7 +577,10 @@ function tricolorCircleFrame(x,y,w,h,shape,variant){
   else {externalFrameStroke(x,y,w,h,shape,a,green,unit*1.2,null,unit*1.5);externalFrameStroke(x,y,w,h,shape,b,white,unit*1.8);externalFrameStroke(x,y,w,h,shape,d,saffron,unit*1.2,null,unit*1.5);}
   c.restore();
 }
+// A consistent, slightly shorter silhouette keeps the campaign photo prominent without dominating the copy.
+const PHOTO_FRAME_HEIGHT_SCALE=.92;
 function pframe(x,y,w,h,shape){
+  y+=h*(1-PHOTO_FRAME_HEIGHT_SCALE)/2; h*=PHOTO_FRAME_HEIGHT_SCALE;
   const f=Math.abs(S.photoF|0)%PHOTO_FRAME_COUNT;if(!f)return;
   if(f>=TRICOLOR_FRAME_START){tricolorCircleFrame(x,y,w,h,shape,f-TRICOLOR_FRAME_START);return;}
   const g=frameGutter(w,h),unit=Math.max(2,Math.min(w,h)*.013),family=f%24,variant=(f/24)|0,p=curPal();
@@ -928,6 +931,7 @@ function archPath(x,y,w,h){
   c.lineTo(x+w,y+h); c.closePath();
 }
 function photoArch(img,x,y,w,h,border,bw){
+  y+=h*(1-PHOTO_FRAME_HEIGHT_SCALE)/2; h*=PHOTO_FRAME_HEIGHT_SCALE;
   PHOTO_HIT={kind:'arch',x,y,w,h};
   img=photoForFrame('portrait',img,w/h);
   const pad=frameGutter(w,h);c.save();archPath(x,y,w,h);c.clip();
@@ -936,6 +940,7 @@ function photoArch(img,x,y,w,h,border,bw){
   if(border){c.save();archPath(x,y,w,h);c.lineWidth=bw;c.strokeStyle=border;c.stroke();c.restore();}
 }
 function photoOvalFade(img,cx,cy,rx,ry){
+  ry*=PHOTO_FRAME_HEIGHT_SCALE;
   img=photoForFrame('oval',img,(rx*2)/(ry*2));
   const off=document.createElement('canvas');off.width=Math.ceil(rx*2);off.height=Math.ceil(ry*2);
   const o=off.getContext('2d'),pad=frameGutter(off.width,off.height);
