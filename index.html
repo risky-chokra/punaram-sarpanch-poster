@@ -171,6 +171,7 @@
     </div>
     <label class="f"><span>इमेज की तीव्रता <b id="bgOpacityVal">100%</b></span><input type="range" id="bgOpacity" min="20" max="100" step="5" value="100"></label>
     <div class="note">इमेज चुनते या अपलोड करते ही पोस्टर लाइव अपडेट होगा। चुनी हुई इमेज इसी browser में सहेजी जाती है।</div>
+    <div class="note" id="driveRandomStatus" role="status" aria-live="polite">हर Random Poster पर Drive folder से नया background चुना जाएगा।</div>
 
     <h2>मुख्य जानकारी</h2>
     <label class="f"><span>ग्राम पंचायत</span><input type="text" id="village"></label>
@@ -368,6 +369,7 @@ const PALETTES = [
 ];
 const BG_COUNT=1000;
 const BGIMGS = window.BGIMGS || (window.BGIMGS = []);
+let DRIVE_RANDOM_IMAGE=null, DRIVE_RANDOM_IMAGE_DATA='', DRIVE_RANDOM_IMAGE_NAME='';
 const GF_HI = ["Poppins", "Noto Sans", "Rajdhani", "Mukta", "Hind", "Teko", "Baloo 2", "Kalam", "Noto Sans Devanagari", "Khand", "Martel", "Yantramanav", "Eczar", "Biryani", "Amita", "Palanquin Dark", "Pragati Narrow", "Rozha One", "Palanquin", "Khula", "Martel Sans", "Sarala", "Akshar", "Yatra One", "Tiro Devanagari Hindi", "Glegoo", "Karma", "Halant", "Kripa", "Laila", "Amiko", "Anek Devanagari", "Inknut Antiqua", "Noto Serif Devanagari", "Cambay", "Gotu", "Sarpanch", "Jaldi", "Vesper Libre", "Kadwa", "Bakbak One", "Alkatra", "Arya", "Modak", "Sumana", "Kurale", "IBM Plex Sans Devanagari", "Sura", "Tiro Devanagari Sanskrit", "Asar", "Tillana", "Sahitya", "Dekko", "Tiro Devanagari Marathi", "Ranga", "Rhodium Libre", "Annapurna SIL", "Gajraj One", "Playpen Sans Deva", "Jaini Purva", "Jaini", "Matangi"];
 const EN_FONTS = ["Roboto", "Open Sans", "Google Sans", "Inter", "Montserrat", "Poppins", "Lato", "Noto Sans JP", "Arimo", "Roboto Condensed", "Roboto Mono", "Oswald", "Noto Sans", "DM Sans", "Raleway", "Playfair Display", "Nunito", "Nunito Sans", "Roboto Slab", "Rubik", "Manrope", "Ubuntu", "Outfit", "Kanit", "Merriweather", "Plus Jakarta Sans", "Work Sans", "Lora", "Quicksand", "Bebas Neue", "Figtree", "Archivo Black", "Noto Sans KR", "PT Sans", "JetBrains Mono", "Noto Sans TC", "Archivo", "Mulish", "Barlow", "Source Sans 3", "IBM Plex Sans", "Jost", "Prompt", "Inconsolata", "Fira Sans", "Saira", "Black Ops One", "Space Grotesk", "Libre Baskerville", "Noto Serif", "Bricolage Grotesque", "Karla", "Cormorant Garamond", "Titillium Web", "Share Tech", "Smooch Sans", "Heebo", "PT Serif", "IBM Plex Mono", "Josefin Sans", "Barlow Condensed", "Source Code Pro", "Inter Tight", "Noto Sans SC", "Dancing Script", "Libre Franklin", "Anton", "Instrument Serif", "Fraunces", "EB Garamond", "Noto Serif JP", "Public Sans", "Fjalla One", "Sora", "Cairo", "Rajdhani", "Changa One", "Geist", "Cabin", "Urbanist", "Lobster Two", "Bitter", "Schibsted Grotesk", "Assistant", "Mukta", "Lexend", "Merriweather Sans", "Caveat", "DM Serif Display", "Hind Siliguri", "Dosis", "Roboto Flex", "Alfa Slab One", "Nanum Gothic", "Source Serif 4", "Fredoka", "Red Hat Display", "Instrument Sans", "Exo 2", "Noto Sans Khmer"];
 const GEN_THEMES=(()=>{ const out=[]; let k=0;
@@ -394,7 +396,7 @@ function designNumber(){
   return ((((L*PALETTES.length + S.palIdx)*BG_COUNT + S.patIdx)*NAME_FONTS.length + nf)*BODY_FONTS.length + bf)*EN_FONTS.length + ef + 1;
 }
 const dp=(W,H,col)=>drawPattern(S.patIdx,W,H,col);
-function bgImg(W,H,tint){ if(S.bgIdx<0||!BGIMGS[S.bgIdx]||!BGIMGS[S.bgIdx].naturalWidth) return; const im=BGIMGS[S.bgIdx]; const a=Math.max(0,Math.min(1,(Number(S.bgOpacity)||100)/100)); c.save(); c.globalAlpha=a; cover(im,0,0,W,H); c.globalAlpha=0.22; c.fillStyle=tint; c.fillRect(0,0,W,H); c.restore(); }
+function bgImg(W,H,tint){ const im=S.bgIdx===-2?DRIVE_RANDOM_IMAGE:(S.bgIdx<0?null:BGIMGS[S.bgIdx]); if(!im||!im.naturalWidth) return; const a=Math.max(0,Math.min(1,(Number(S.bgOpacity)||100)/100)); c.save(); c.globalAlpha=a; cover(im,0,0,W,H); c.globalAlpha=0.22; c.fillStyle=tint; c.fillRect(0,0,W,H); c.restore(); }
 const TOTAL_DESIGNS = 3*3*6*6*4*4*PALETTES.length*BG_COUNT*180*NAME_FONTS.length*BODY_FONTS.length;
 const ELEM_IMGS={}; const ICONK=['ic_panchayat','ic_women','ic_streetlight','ic_school','ic_senior','ic_sports'];
 [['corner_fans','assets/elems/corner_fans.svg'],['floral_corners','assets/elems/floral_corners.svg'],['sun_corners','assets/elems/sun_corners.svg'],
@@ -1207,7 +1209,7 @@ function drawT3B(img){
 
 /* ---------- dispatch ---------- */
 let photo = new Image();
-photo.src='assets/candidate.jpg'; c.imageSmoothingQuality='high';
+photo.src='assets/candidate.jpg?v=20261014'; c.imageSmoothingQuality='high';
 
 function draw(){
   const W=cv.width, H=cv.height;
@@ -1308,10 +1310,11 @@ function bind(){
     S.hiName=NAME_FONTS[Math.floor(Math.random()*NAME_FONTS.length)];
     S.hiBody=BODY_FONTS[Math.floor(Math.random()*BODY_FONTS.length)];
     S.engFont=famVal(EN_FONTS[Math.floor(Math.random()*EN_FONTS.length)]);
-    palSel.value=S.palIdx; patSel.value=S.patIdx;
+    palSel.value=S.palIdx;
     if(window.loadFam){ window.loadFam(S.hiName); window.loadFam(S.hiBody); window.loadFam(S.engFont); }
     if(window.refreshFontBtns) window.refreshFontBtns();
     draw();
+    if(window.autoRandomDriveBackground) window.autoRandomDriveBackground();
   });
   const sel=document.getElementById('nare');
   NARE.forEach((n,i)=>{ const o=document.createElement('option'); o.value=n; o.textContent=(i+1)+'. '+n; sel.appendChild(o); });
@@ -1445,6 +1448,7 @@ const BGIMGS=window.BGIMGS;
 while(BGIMGS.length<PRESET_BGS.length) BGIMGS.push(undefined);
 const bgOptionKeys=new Set(['-1']);
 PRESET_BGS.forEach(([n],i)=>{ optAdd(bgSel,'P'+i,'★ '+n); bgOptionKeys.add('P'+i); });
+optAdd(bgSel,'D','☁ Drive — पिछला random background'); bgOptionKeys.add('D');
 function bgMessage(text, src){
   if(bgStatus) bgStatus.textContent=text;
   if(src){ bgPreview.src=src; bgPreviewWrap.classList.remove('hidden'); }
@@ -1484,6 +1488,11 @@ async function setBgSelection(rawValue, persist=true){
     im=BGIMGS[idx];
     if(!im||!im.naturalWidth){ const ok=await pushBg(name,src,n); if(!ok){ bgMessage('इमेज लोड नहीं हुई — दूसरा बैकग्राउंड चुनें',null); return false; } im=BGIMGS[idx]; }
     if(!bgOptionKeys.has(value)){ optAdd(bgSel,value,'★ '+name); bgOptionKeys.add(value); }
+  }else if(value==='D'){
+    if(!DRIVE_RANDOM_IMAGE||!DRIVE_RANDOM_IMAGE.naturalWidth){ bgMessage('पहले “Random Poster बनाओ” दबाकर Drive background लोड करें',null); bgSel.value=String(CUSTOM.bgSelection||'-1'); return false; }
+    S.bgIdx=-2; bgSel.value='D'; bgMessage('✓ Drive · '+DRIVE_RANDOM_IMAGE_NAME+' — poster पर लागू',DRIVE_RANDOM_IMAGE_DATA);
+    if(persist){ CUSTOM.bgSelection='-1'; CUSTOM.bgOpacity=S.bgOpacity; save(); }
+    draw(); return true;
   }else return false;
   S.bgIdx=idx; bgSel.value=value; bgMessage('✓ '+name+' — poster पर लागू',src);
   if(persist){ CUSTOM.bgSelection=value; CUSTOM.bgOpacity=S.bgOpacity; save(); }
@@ -1709,6 +1718,103 @@ document.getElementById('photoFile').addEventListener('change', e=>{ const f=e.t
 
 $('resReset').onclick=()=>{ if(LS) LS.removeItem('spm_res'); location.reload(); };
 
+/* Lazy-load the public Drive folder index once, then fetch only one raster background per random poster. */
+const DRIVE_AUTO_CACHE_PREFIX='spm_drive_auto_pool_v1_';
+const DRIVE_AUTO_CACHE_TTL=24*60*60*1000;
+const DRIVE_AUTO_RASTER_TYPES=new Set(['image/png','image/jpeg','image/jpg','image/webp','image/gif','image/bmp']);
+const driveAutoPools=new Map(),driveAutoPoolJobs=new Map(),driveAutoUsed=new Map();
+const driveRandomStatus=document.getElementById('driveRandomStatus');
+let driveRandomRequestSeq=0;
+function setDriveRandomStatus(text){ if(driveRandomStatus) driveRandomStatus.textContent=text; }
+function selectedDriveRandomRoot(){
+  return driveCollection.value==='link'?parseDriveFolderId(driveFolderLink.value):(DRIVE_COLLECTIONS[driveCollection.value]||parseDriveFolderId(driveFolderLink.value));
+}
+async function listPublicDriveFolder(folderId,key){
+  const all=[]; let pageToken='';
+  do{
+    const u=new URL('https://www.googleapis.com/drive/v3/files');
+    u.searchParams.set('q',`'${folderId}' in parents and trashed = false`);
+    u.searchParams.set('fields','nextPageToken,files(id,name,mimeType,shortcutDetails(targetId,targetMimeType))');
+    u.searchParams.set('pageSize','1000'); u.searchParams.set('key',key);
+    if(pageToken) u.searchParams.set('pageToken',pageToken);
+    const r=await fetch(u.toString());
+    if(!r.ok) throw new Error('Drive folder list HTTP '+r.status);
+    const data=await r.json(); all.push(...(data.files||[])); pageToken=data.nextPageToken||'';
+  }while(pageToken);
+  return all;
+}
+async function getDriveRandomPool(root,key){
+  if(driveAutoPools.has(root)) return driveAutoPools.get(root);
+  if(driveAutoPoolJobs.has(root)) return driveAutoPoolJobs.get(root);
+  const cacheKey=DRIVE_AUTO_CACHE_PREFIX+root;
+  if(LS){
+    try{
+      const cached=JSON.parse(LS.getItem(cacheKey)||'null');
+      if(cached&&cached.root===root&&Date.now()-cached.at<DRIVE_AUTO_CACHE_TTL&&Array.isArray(cached.files)&&cached.files.length){
+        driveAutoPools.set(root,cached.files); setDriveRandomStatus('Drive pool ready: '+cached.files.length.toLocaleString('en-IN')+' images.'); return cached.files;
+      }
+    }catch(e){}
+  }
+  const job=(async()=>{
+    const queue=[root],seenFolders=new Set(),byId=new Map();
+    while(queue.length){
+      const batch=[];
+      while(queue.length&&batch.length<8){const id=queue.shift();if(!seenFolders.has(id)){seenFolders.add(id);batch.push(id);}}
+      if(!batch.length) continue;
+      setDriveRandomStatus('Drive folders scan हो रहे हैं… '+seenFolders.size+' folders');
+      const pages=await Promise.all(batch.map(id=>listPublicDriveFolder(id,key)));
+      for(const files of pages) for(const f of files){
+        const mime=f.mimeType||'',shortcut=f.shortcutDetails||{};
+        if(mime==='application/vnd.google-apps.folder'){queue.push(f.id);continue;}
+        if(mime==='application/vnd.google-apps.shortcut'){
+          if(shortcut.targetMimeType==='application/vnd.google-apps.folder') queue.push(shortcut.targetId);
+          else if(DRIVE_AUTO_RASTER_TYPES.has(shortcut.targetMimeType)&&shortcut.targetId) byId.set(shortcut.targetId,{id:shortcut.targetId,name:f.name||'Drive background'});
+          continue;
+        }
+        if(DRIVE_AUTO_RASTER_TYPES.has(mime)&&f.id) byId.set(f.id,{id:f.id,name:f.name||'Drive background'});
+      }
+      if(seenFolders.size>2000) throw new Error('Drive folder tree बहुत बड़ा है');
+    }
+    const files=[...byId.values()];
+    if(!files.length) throw new Error('इस folder में PNG/JPG background नहीं मिला');
+    driveAutoPools.set(root,files);
+    if(LS){try{LS.setItem(cacheKey,JSON.stringify({root,at:Date.now(),files}));}catch(e){}}
+    setDriveRandomStatus('Drive pool तैयार: '+files.length.toLocaleString('en-IN')+' raster backgrounds; हर random पर नया image।');
+    return files;
+  })();
+  driveAutoPoolJobs.set(root,job);
+  try{return await job;}finally{driveAutoPoolJobs.delete(root);}
+}
+function pickUnusedDriveImage(root,files){
+  let used=driveAutoUsed.get(root); if(!used){used=new Set();driveAutoUsed.set(root,used);}
+  let available=files.filter(f=>!used.has(f.id));
+  if(!available.length){used.clear();available=files;}
+  const f=available[Math.random()*available.length|0]; used.add(f.id); return f;
+}
+function blobToDataUrl(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.readAsDataURL(blob);});}
+function dataUrlToImage(url){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(new Error('Drive image decode failed'));im.src=url;});}
+async function autoRandomDriveBackground(){
+  const seq=++driveRandomRequestSeq,root=selectedDriveRandomRoot(),key=driveApiKey.value.trim();
+  if(!root){setDriveRandomStatus('Drive folder link/pack सही नहीं है।');return;}
+  if(!key){setDriveRandomStatus('Drive API key नहीं मिली।');return;}
+  try{
+    setDriveRandomStatus('Drive से नया background चुन रहे हैं…');
+    const files=await getDriveRandomPool(root,key); if(seq!==driveRandomRequestSeq)return;
+    const f=pickUnusedDriveImage(root,files);
+    const u=new URL('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(f.id));
+    u.searchParams.set('alt','media');u.searchParams.set('key',key);
+    const res=await fetch(u.toString()); if(!res.ok)throw new Error('image fetch HTTP '+res.status);
+    const raw=await blobToDataUrl(await res.blob());
+    const optimized=await new Promise(resolve=>downscale(raw,2600,resolve,true));
+    if(!optimized)throw new Error('image optimize failed');
+    const im=await dataUrlToImage(optimized); if(seq!==driveRandomRequestSeq)return;
+    DRIVE_RANDOM_IMAGE=im;DRIVE_RANDOM_IMAGE_DATA=optimized;DRIVE_RANDOM_IMAGE_NAME=f.name;
+    const applied=await setBgSelection('D',false); if(!applied)throw new Error('Drive background apply failed');
+    setDriveRandomStatus('Drive से नया background लगा: '+String(f.name).slice(0,80)+' · '+files.length.toLocaleString('en-IN')+' images pool');
+  }catch(e){if(seq===driveRandomRequestSeq)setDriveRandomStatus('Drive background नहीं आया; बाकी random poster जारी है। '+String(e.message||e).slice(0,110));}
+}
+window.autoRandomDriveBackground=autoRandomDriveBackground;
+
 /* load saved resources + restore selected background on boot */
 (async function(){
   if(!LS) return;
@@ -1775,6 +1881,7 @@ const bsBtn=document.getElementById('bsBtn');
 const setBs=()=>{ const e=document.getElementById('bsNum'); if(e) e.textContent='#'+(Math.abs(S.badgeStyle|0)%180); };
 setBs();
 if(bsBtn) bsBtn.addEventListener('click',()=>{ S.badgeStyle=Math.random()*180|0; setBs(); draw(); });
+
 document.getElementById('rand').addEventListener('click',()=>{
   const pk=a=>a[Math.random()*a.length|0];
   const STOPW=new Set(['का','की','के','है','हैं','को','से','पर','और','में','ही','तो','ना','नहीं','हो','कर','वोट','एक','आपका','आपकी','आपके','हमारा','हमारी','यही','मेरा','मेरी']);
@@ -1811,6 +1918,7 @@ document.getElementById('rand').addEventListener('click',()=>{
   if(window.loadFam){ loadFam(S.hiName); loadFam(S.hiBody); loadFam(S.engFont); }
   if(window.refreshFontBtns) refreshFontBtns();
   draw();
+  if(window.autoRandomDriveBackground) window.autoRandomDriveBackground();
 });
 })();
 </script>
