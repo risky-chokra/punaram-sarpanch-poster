@@ -203,7 +203,7 @@
     <h2>साइज़</h2>
     <div class="sizes">
       <button class="sz on" data-s="s916">WhatsApp Status — Best<small>1080 × 1920 · 9:16</small></button>
-      <button class="sz" data-s="p1080">Poster 1080 × 1720<small>Alternative</small></button>
+      <button class="sz" data-s="p1080">PNG 1080 × 1720<small>150 DPI · Poster</small></button>
       <button class="sz" data-s="p23">पोस्टर 2:3<small>1200×1800 · Alternative</small></button>
       <button class="sz" data-s="a4">A4 प्रिंट 300dpi<small>2480×3508</small></button>
       <button class="sz" data-s="sq">Square 1:1<small>1080×1080</small></button>
@@ -424,7 +424,7 @@ const S = {
 };
 
 const SIZES = {
-  p1080:{w:1080,h:1720}, p23:{w:1200,h:1800}, s916:{w:1080,h:1920}, a4:{w:2480,h:3508},
+  p1080:{w:1080,h:1720,presetDpi:150}, p23:{w:1200,h:1800}, s916:{w:1080,h:1920}, a4:{w:2480,h:3508},
   sq:{w:1080,h:1080}, l169:{w:1920,h:1080}, b21:{w:1800,h:900},
 };
 const ORIENT = { p1080:'P', p23:'P', s916:'P', a4:'P', sq:'S', l169:'L', b21:'B' };
@@ -1648,7 +1648,8 @@ function bind(){
       S.size=b.dataset.s;
       cv.width=SIZES[S.size].w; cv.height=SIZES[S.size].h;
       document.querySelectorAll('.sz').forEach(x=>x.classList.toggle('on',x===b));
-      setExportDpi(S.exportDpi);
+      // This compact poster preset is intentionally coupled to its requested 150-DPI PNG metadata.
+      setExportDpi(SIZES[S.size].presetDpi||S.exportDpi);
       draw();
     });
   });
