@@ -865,9 +865,7 @@ function drawT2P(W,H,img){
   elemOverlay(W,H);
   c.fillStyle=Wd.navy; c.fillRect(0,0,W,Y(100));
   txt('ग्राम पंचायत : '+S.village, X(600), Y(64), `${F(40)}px ${S.hiBody}`, '#ffffff', 'center', X(1120),F(24));
-  c.fillStyle=Wd.saf; c.beginPath(); c.moveTo(0,Y(100)); c.lineTo(X(360),Y(100)); c.lineTo(0,Y(500)); c.closePath(); c.fill();
-  c.fillStyle=Wd.grn; c.beginPath(); c.moveTo(X(360),Y(100)); c.lineTo(X(445),Y(100)); c.lineTo(0,Y(585)); c.lineTo(0,Y(500)); c.closePath(); c.fill();
-  c.fillStyle=Wd.navy; c.beginPath(); c.moveTo(X(445),Y(100)); c.lineTo(X(480),Y(100)); c.lineTo(0,Y(620)); c.lineTo(0,Y(585)); c.closePath(); c.fill();
+  // Top-left background area intentionally remains clear for the selected background image.
   { const dv=S.decoV|0;
   if(dv===1){ c.fillStyle=Wd.saf; c.beginPath(); c.moveTo(W,Y(100)); c.lineTo(W-F(180),Y(100)); c.lineTo(W,Y(320)); c.closePath(); c.fill(); }
   else if(dv===2){ c.strokeStyle=Wd.gold; c.globalAlpha=.5; c.lineWidth=F(3);
@@ -1019,9 +1017,7 @@ function drawT2S(img){
   bgImg(1080,1080,Wd.bg);
   c.fillStyle=Wd.navy; c.fillRect(0,0,1080,76);
   txt('ग्राम पंचायत : '+S.village, 540, 50, `30px ${S.hiBody}`, '#fff', 'center', 900,18);
-  c.fillStyle=Wd.saf; c.beginPath(); c.moveTo(0,76); c.lineTo(280,76); c.lineTo(0,420); c.closePath(); c.fill();
-  c.fillStyle=Wd.grn; c.beginPath(); c.moveTo(280,76); c.lineTo(345,76); c.lineTo(0,485); c.lineTo(0,420); c.closePath(); c.fill();
-  c.fillStyle=Wd.navy; c.beginPath(); c.moveTo(345,76); c.lineTo(375,76); c.lineTo(0,515); c.lineTo(0,485); c.closePath(); c.fill();
+  // Top-left background area intentionally remains clear for the selected background image.
   txt(S.sloganTop, 610, 150, `24px ${S.hiBody}`, Wd.navy, 'center', 288,13);
   txt(S.sloganTop2, 610, 192, `24px ${S.hiBody}`, Wd.navy, 'center', 288,13);
   txt(`${S.nameLine1} ${S.nameLine2}`, 610, 238, `24px ${S.hiBody}`, Wd.grn, 'center', 288,13);
@@ -1119,9 +1115,7 @@ function drawT2L(img){
   bgImg(1920,1080,Wd.bg);
   c.fillStyle=Wd.navy; c.fillRect(0,0,1920,88);
   txt('ग्राम पंचायत : '+S.village, 960, 58, `34px ${S.hiBody}`, '#fff', 'center', 1500,20);
-  c.fillStyle=Wd.saf; c.beginPath(); c.moveTo(0,88); c.lineTo(300,88); c.lineTo(0,460); c.closePath(); c.fill();
-  c.fillStyle=Wd.grn; c.beginPath(); c.moveTo(300,88); c.lineTo(370,88); c.lineTo(0,530); c.lineTo(0,460); c.closePath(); c.fill();
-  c.fillStyle=Wd.navy; c.beginPath(); c.moveTo(370,88); c.lineTo(400,88); c.lineTo(0,560); c.lineTo(0,530); c.closePath(); c.fill();
+  // Top-left background area intentionally remains clear for the selected background image.
   if(S.showBadge) dateBadge(1680,250,150,172);
   photoOvalFade(img, 400, 560, 280, 370); pframe(120,190,560,740,'oval');
   c.fillStyle=Wd.navy;
@@ -1224,8 +1218,7 @@ function drawT2B(img){
   bgImg(1800,900,Wd.bg);
   c.fillStyle=Wd.navy; c.fillRect(0,0,1800,76);
   txt('ग्राम पंचायत : '+S.village, 900, 50, `30px ${S.hiBody}`, '#fff', 'center', 1500,18);
-  c.fillStyle=Wd.saf; c.beginPath(); c.moveTo(0,76); c.lineTo(240,76); c.lineTo(0,380); c.closePath(); c.fill();
-  c.fillStyle=Wd.grn; c.beginPath(); c.moveTo(240,76); c.lineTo(300,76); c.lineTo(0,440); c.lineTo(0,380); c.closePath(); c.fill();
+  // Top-left background area intentionally remains clear for the selected background image.
   photoOvalFade(img, 330, 480, 240, 320); pframe(90,160,480,640,'oval');
   c.fillStyle=Wd.navy;
   c.beginPath(); c.moveTo(640,120); c.lineTo(1180,120); c.lineTo(1155,178); c.lineTo(615,178); c.closePath(); c.fill();
