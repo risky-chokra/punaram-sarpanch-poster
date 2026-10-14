@@ -35,8 +35,8 @@
   .btn.ghost{background:transparent; color:var(--txt); border:1px solid var(--line);}
   .btn:active{transform:translateY(1px);}
   .quick-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:2px 0 13px;margin-bottom:4px;border-bottom:1px solid var(--line);}
-  .quick-action{min-height:54px;padding:5px 4px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--txt);font:700 10px/1.22 inherit;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:.15s;}
-  .quick-action .qa-icon{font-size:16px;line-height:1}.quick-action:hover{border-color:var(--acc);background:#302b45}.quick-action.primary{border-color:#e8b64c;background:linear-gradient(145deg,#f6c445,#d9913a);color:#241309}.quick-action.primary:hover{background:linear-gradient(145deg,#ffd45c,#e5a53f)}
+  .quick-action{min-height:42px;padding:4px 3px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);color:var(--txt);font:700 10px/1.12 inherit;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:.15s;}
+  .quick-action:hover{border-color:var(--acc);background:#302b45}.quick-action.primary{border-color:#e8b64c;background:linear-gradient(145deg,#f6c445,#d9913a);color:#241309}.quick-action.primary:hover{background:linear-gradient(145deg,#ffd45c,#e5a53f)}
   main{flex:1; display:flex; min-height:0;}
   #panel{
     width:400px; flex:0 0 400px; overflow-y:auto; background:var(--panel);
@@ -123,7 +123,7 @@
   .drive-config input:focus,.drive-config select:focus{border-color:var(--acc);}
   .drive-hint{font-size:11px;line-height:1.5;color:var(--mut);margin-top:8px;}
   #driveStatus{font-size:12px;line-height:1.5;margin-top:8px;color:#f6c445;min-height:19px;}
-  @media(max-width:600px){.quick-grid{gap:6px}.quick-action{min-height:50px;font-size:9px;border-radius:9px}.quick-action .qa-icon{font-size:15px}.drive-overlay{padding:7px}.drive-modal{width:100%;max-height:94vh;padding:12px}.drive-config .row2{grid-template-columns:1fr}}
+  @media(max-width:600px){.quick-grid{gap:6px}.quick-action{min-height:40px;padding:3px 2px;font-size:9px;border-radius:8px}.drive-overlay{padding:7px}.drive-modal{width:100%;max-height:94vh;padding:12px}.drive-config .row2{grid-template-columns:1fr}}
   #stage{
     flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:18px; min-width:0;
     background:
@@ -343,14 +343,14 @@
 
   <section id="stage">
     <div class="quick-grid" aria-label="Quick poster actions">
-      <button class="quick-action primary" id="rand" type="button"><span class="qa-icon">🎲</span><span>Random<br>Poster</span></button>
-      <button class="quick-action primary" id="export" type="button"><span class="qa-icon">⬇</span><span>PNG<br>Download</span></button>
-      <button class="quick-action" id="quickDesign" type="button"><span class="qa-icon">✨</span><span>New<br>Design</span></button>
-      <button class="quick-action" id="quickLayout" type="button"><span class="qa-icon">▦</span><span>New<br>Layout</span></button>
-      <button class="quick-action" id="quickFrame" type="button"><span class="qa-icon">▣</span><span>Photo<br>Frame</span></button>
-      <button class="quick-action" id="quickPattern" type="button"><span class="qa-icon">◈</span><span>New<br>Pattern</span></button>
-      <button class="quick-action" id="quickBackground" type="button"><span class="qa-icon">☁</span><span>Drive<br>Background</span></button>
-      <button class="quick-action" id="quickPhoto" type="button"><span class="qa-icon">◉</span><span>Upload<br>Photo</span></button>
+      <button class="quick-action primary" id="rand" type="button"><span>Random<br>Poster</span></button>
+      <button class="quick-action primary" id="export" type="button"><span>PNG<br>Download</span></button>
+      <button class="quick-action" id="quickDesign" type="button"><span>New<br>Design</span></button>
+      <button class="quick-action" id="quickLayout" type="button"><span>New<br>Layout</span></button>
+      <button class="quick-action" id="quickFrame" type="button"><span>Photo<br>Frame</span></button>
+      <button class="quick-action" id="quickPattern" type="button"><span>New<br>Pattern</span></button>
+      <button class="quick-action" id="quickBackground" type="button"><span>Drive<br>Background</span></button>
+      <button class="quick-action" id="quickPhoto" type="button"><span>Upload<br>Photo</span></button>
     </div>
     <canvas id="poster" width="1080" height="1920"></canvas>
   </section>
