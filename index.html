@@ -201,13 +201,17 @@
 
     <h2>साइज़</h2>
     <div class="sizes">
-      <button class="sz on" data-s="s916">WhatsApp Status — Best<small>1080 × 1920 · 9:16 · 300 DPI</small></button>
-      <button class="sz" data-s="p1080">Poster 1080 × 1720<small>300 DPI · Alternative</small></button>
+      <button class="sz on" data-s="s916">WhatsApp Status — Best<small>1080 × 1920 · 9:16</small></button>
+      <button class="sz" data-s="p1080">Poster 1080 × 1720<small>Alternative</small></button>
       <button class="sz" data-s="p23">पोस्टर 2:3<small>1200×1800 · Alternative</small></button>
       <button class="sz" data-s="a4">A4 प्रिंट 300dpi<small>2480×3508</small></button>
       <button class="sz" data-s="sq">Square 1:1<small>1080×1080</small></button>
       <button class="sz" data-s="l169">Landscape 16:9<small>1920×1080</small></button>
       <button class="sz" data-s="b21">फ्लेक्स बैनर 2:1<small>1800×900</small></button>
+    </div>
+    <div class="row2" style="margin-top:9px">
+      <label class="f"><span>PNG Export DPI</span><select id="exportDpi"><option value="72">72 DPI — Web</option><option value="96">96 DPI — Screen</option><option value="150">150 DPI — Standard</option><option value="300" selected>300 DPI — Print (Recommended)</option><option value="600">600 DPI — High Print</option></select></label>
+      <div class="note" id="dpiStatus" style="align-self:end;margin:0 0 7px">PNG export: 300 DPI metadata</div>
     </div>
 
     <h2>डिज़ाइन थीम <small style="font-size:10px;color:var(--mut);font-weight:600;letter-spacing:0;text-transform:none">Pro contrast auto</small></h2>
@@ -385,7 +389,7 @@
 <script>
 "use strict";
 const S = {
-  template:'t1', size:'s916', palIdx:0, patIdx:0, bgIdx:-1, bgOpacity:100,
+  template:'t1', size:'s916', exportDpi:300, palIdx:0, patIdx:0, bgIdx:-1, bgOpacity:100,
   village:'नादाना भाटान',
   nameLine1:'पुनाराम', nameLine2:'विराह्यस',
   postBadge:'सरपंच प्रत्याशी',
@@ -1575,6 +1579,10 @@ function bind(){
       draw();
     });
   });
+  const dpiSelect=document.getElementById('exportDpi'),dpiStatus=document.getElementById('dpiStatus');
+  const setExportDpi=value=>{ const n=Math.round(Number(value)||300); S.exportDpi=Math.max(72,Math.min(600,n)); if(dpiSelect)dpiSelect.value=String(S.exportDpi); if(dpiStatus)dpiStatus.textContent=`PNG export: ${S.exportDpi} DPI metadata · pixel size वही रहेगी`; };
+  setExportDpi(S.exportDpi);
+  if(dpiSelect)dpiSelect.addEventListener('change',e=>setExportDpi(e.target.value));
   const palSel=document.getElementById('palTheme');
   PALETTES.forEach((p,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=p.n; palSel.appendChild(o); });
   palSel.value=S.palIdx;
@@ -1689,10 +1697,11 @@ function bind(){
   const withPngDpi=async(blob,dpi=300)=>{ const raw=new Uint8Array(await blob.arrayBuffer()); if(raw.length<20||raw[1]!==80||raw[2]!==78||raw[3]!==71)return blob; const parts=[raw.slice(0,8)],ppm=Math.round(dpi/.0254); let at=8,added=false; while(at+12<=raw.length){ const n=new DataView(raw.buffer,raw.byteOffset+at,4).getUint32(0,false),end=at+12+n;if(end>raw.length)break;const type=String.fromCharCode(...raw.slice(at+4,at+8));if(type!=='pHYs')parts.push(raw.slice(at,end));if(type==='IHDR'&&!added){const d=new Uint8Array(9),dv=new DataView(d.buffer);dv.setUint32(0,ppm,false);dv.setUint32(4,ppm,false);d[8]=1;parts.push(pngChunk('pHYs',d));added=true;}at=end;}return new Blob(parts,{type:'image/png'}); };
   document.getElementById('export').addEventListener('click',()=>{
     cv.toBlob(async b=>{
-      const out=await withPngDpi(b,300);
+      const dpi=Math.max(72,Math.min(600,Math.round(Number(S.exportDpi)||300)));
+      const out=await withPngDpi(b,dpi);
       const a=document.createElement('a');
       a.href=URL.createObjectURL(out);
-      a.download=`sarpanch_poster_${S.template}_${S.size}_300dpi.png`;
+      a.download=`sarpanch_poster_${S.template}_${S.size}_${dpi}dpi.png`;
       a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),4000);
     },'image/png');
   });
